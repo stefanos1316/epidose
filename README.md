@@ -63,10 +63,14 @@ designs. These files follow a similar structure:
     batch of tracing information to determine the number of contacts with
     infected people (`matches_with_batch`). Both designs use the same interface
     for this class
-    
-This code deliberately does _not_ implement any interactions with (simulated)
-Bluetooth devices or backend services.
-    
+
+This code includes a simple implementation of a Bluetooth transmitter
+and receiver process of the unlinkable protocol (beacon_tx_unlinkable and
+beacon_rx_unlinkable).  These record data into a SQLite database.  They can
+be combined with a backend service and a corresponding client to offer a
+full functioning prototype of a complete system.  Both programs can be
+run with a *--help* argument in order to obtain usage information.
+
 ## Installing the reference implementation
 
 You'll need to install the project. For example as follows:
