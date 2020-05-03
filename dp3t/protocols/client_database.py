@@ -19,7 +19,7 @@ __copyright__ = """
 """
 __license__ = "Apache 2.0"
 
-from peewee import BigIntegerField, IntegerField, Model, SqliteDatabase
+from peewee import BigIntegerField, BlobField, IntegerField, Model, SqliteDatabase
 from time import time
 
 #################################
@@ -29,6 +29,7 @@ from time import time
 DATABASE_PATH = "/var/lib/dp3t/database.db"
 
 EPOCH_START = 0
+
 
 db = SqliteDatabase(None)
 
@@ -44,30 +45,34 @@ class State(BaseModel):
     last_ephid_change = BigIntegerField()
 
 
-class Singleton(type):
-    """Ensure single object creation
-    See: https://stackoverflow.com/a/6798042/20520
-    """
+class EpochIds(BaseModel):
+    """Pairs of seeds and ephids employed per epoch by this device."""
 
-    _instances = {}
-
-    def __call__(cls, *args, **kwargs):
-        if cls not in cls._instances:
-            cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
-        return cls._instances[cls]
+    epoch = BigIntegerField(unique=True, primary_key=True, index=True)
+    seed = BlobField()
+    ephid = BlobField()
 
 
-class ClientDatabase(metaclass=Singleton):
+# Available tables
+MODELS = [State, EpochIds]
+
+
+class ClientDatabase:
     """Simple reference implementation of the client database."""
 
     def __init__(self, db_path=DATABASE_PATH):
         """Setup the database access and schema."""
 
         db.init(db_path)
-        db.create_tables([State])
+        db.create_tables(MODELS)
         self.state, created = State.get_or_create(
             singleton=0, last_ephid_change=EPOCH_START
         )
+
+    def close(self):
+        """Close the dabase connection. Useful to reset state in testing."""
+        db.drop_tables(MODELS)
+        db.close()
 
     def get_last_ephid_change(self):
         """Return the last time the ephemeral id was changed."""
@@ -77,3 +82,19 @@ class ClientDatabase(metaclass=Singleton):
         """Set ephid change time to the specified (default current) time."""
         self.state.last_ephid_change = t
         self.state.save()
+
+    def add_epoch_ids(self, add_epoch, add_seed, add_ephid):
+        """Add the seed and ephid for the specified epoch."""
+        EpochIds.create(epoch=add_epoch, seed=add_seed, ephid=add_ephid)
+
+    def get_epoch_seeds(self, start_epoch, end_epoch):
+        """Return the seeds for the specified epoch range."""
+        query = EpochIds.select(EpochIds.seed).where(
+            EpochIds.epoch.between(start_epoch, end_epoch)
+        )
+        return [rec.seed for rec in query]
+
+    def delete_past_epoch_ids(self, last_retained_epoch):
+        """Delete identifiers associated with past epochs."""
+        query = EpochIds.delete().where(EpochIds.epoch < last_retained_epoch)
+        query.execute()
