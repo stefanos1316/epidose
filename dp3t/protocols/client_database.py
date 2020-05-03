@@ -41,7 +41,7 @@ class BaseModel(Model):
 
 class State(BaseModel):
     singleton = IntegerField(default=1, unique=True)
-    # Time (in seconds since Epoch) ephid was last changed
+    # Time (in seconds since Unix Epoch) ephid was last changed
     last_ephid_change = BigIntegerField()
 
 
@@ -53,8 +53,17 @@ class EpochIds(BaseModel):
     ephid = BlobField()
 
 
+class DailyObservations(BaseModel):
+    """Observations for each day."""
+
+    # Represented as seconds since Unix Epoch to day's beginning
+    day = BigIntegerField(index=True)
+    # Hashed observation
+    observation = BlobField()
+
+
 # Available tables
-MODELS = [State, EpochIds]
+MODELS = [State, EpochIds, DailyObservations]
 
 
 class ClientDatabase:
@@ -97,4 +106,20 @@ class ClientDatabase:
     def delete_past_epoch_ids(self, last_retained_epoch):
         """Delete identifiers associated with past epochs."""
         query = EpochIds.delete().where(EpochIds.epoch < last_retained_epoch)
+        query.execute()
+
+    def add_observation(self, add_day, add_observation):
+        """Add a hashed observation for the specified day."""
+        DailyObservations.create(day=add_day, observation=add_observation)
+
+    def get_observations(self):
+        """Return as an iterable all past observations."""
+        query = DailyObservations.select(DailyObservations.observation)
+        return map(lambda rec: rec.observation, query)
+
+    def delete_past_observations(self, last_retained_day):
+        """Delete observations of past days."""
+        query = DailyObservations.delete().where(
+            DailyObservations.day < last_retained_day
+        )
         query.execute()

@@ -63,10 +63,27 @@ def test_add_get_epoch_ids(db_connection):
     assert b"S7" not in seeds
 
 
-def test_add_delete_past_epochs(db_connection):
+def test_delete_past_epochs(db_connection):
     for i in range(1, 10):
         db_connection.add_epoch_ids(i, f"S{i}", f"E{i}")
     db_connection.delete_past_epoch_ids(5)
     seeds = db_connection.get_epoch_seeds(2, 6)
     assert b"S4" not in seeds
     assert b"S5" in seeds
+
+
+def test_add_observation(db_connection):
+    for i in range(1, 10):
+        db_connection.add_observation(i, f"H{i}")
+    observations = list(db_connection.get_observations())
+    assert b"H4" in observations
+    assert b"X" not in observations
+
+
+def test_delete_past_observations(db_connection):
+    for i in range(1, 10):
+        db_connection.add_observation(i, f"H{i}")
+    db_connection.delete_past_observations(5)
+    observations = list(db_connection.get_observations())
+    assert b"H5" in observations
+    assert b"H4" not in observations
