@@ -112,6 +112,7 @@ def main():
         )
     )
     print(" * and the corresponding epochs\n")
+    print(f"Epochs: {tracing_info_bob[0]} Seed[0]={tracing_info_bob[1][0]}\n")
 
     ### Contact tracing ###
 
