@@ -15,10 +15,7 @@ __copyright__ = """
 """
 __license__ = "Apache 2.0"
 
-from datetime import datetime, timedelta, timezone
-import pytest
-
-from dp3t.protocols.client_database import ClientDatabase
+from dp3t.protocols.client_database import ClientDatabase, EPOCH_START
 
 
 ############################
@@ -27,6 +24,6 @@ from dp3t.protocols.client_database import ClientDatabase
 
 
 def test_database_initialization():
-    d = ClientDatabase(':memory:')
+    d = ClientDatabase(":memory:")
     print(d.last_ephid_change())
-    assert d.last_ephid_change() == datetime(1970, 1, 1, 0, 0)
+    assert d.last_ephid_change() == EPOCH_START

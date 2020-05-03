@@ -19,35 +19,42 @@ __copyright__ = """
 """
 __license__ = "Apache 2.0"
 
-from datetime import datetime
-from peewee import *
-
+from peewee import BigIntegerField, IntegerField, Model, SqliteDatabase
 
 #################################
 ### GLOBAL PROTOCOL CONSTANTS ###
 #################################
 
-DATABASE_PATH = '/var/lib/dp3t/database.db'
+DATABASE_PATH = "/var/lib/dp3t/database.db"
+
+EPOCH_START = 0
 
 db = SqliteDatabase(None)
+
 
 class BaseModel(Model):
     class Meta:
         database = db
 
+
 class State(BaseModel):
     singleton = IntegerField(default=0, unique=True)
-    last_ephid_change = DateTimeField()
+    # Time (in seconds since Epoch) ephid was last changed
+    last_ephid_change = BigIntegerField()
+
 
 class Singleton(type):
     """Ensure single object creation
     See: https://stackoverflow.com/a/6798042/20520
     """
+
     _instances = {}
+
     def __call__(cls, *args, **kwargs):
         if cls not in cls._instances:
             cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
         return cls._instances[cls]
+
 
 class ClientDatabase(metaclass=Singleton):
     """Simple reference implementation of the client database."""
@@ -59,9 +66,8 @@ class ClientDatabase(metaclass=Singleton):
         db.create_tables([State])
         query = State.select().where(State.singleton == 0)
         if not query.exists():
-            State.create(last_ephid_change=datetime(1970, 1, 1, 0, 0))
+            State.create(last_ephid_change=EPOCH_START)
 
     def last_ephid_change(self):
         """Return the last time the ephemeral id was changed."""
-        return State.select(State.last_ephid_change).where(
-            State.singleton == 0)
+        return State.select(State.last_ephid_change).where(State.singleton == 0)
