@@ -38,7 +38,7 @@ class BaseModel(Model):
 
 
 class State(BaseModel):
-    singleton = IntegerField(default=0, unique=True)
+    singleton = IntegerField(default=1, unique=True)
     # Time (in seconds since Epoch) ephid was last changed
     last_ephid_change = BigIntegerField()
 
@@ -66,7 +66,7 @@ class ClientDatabase(metaclass=Singleton):
         db.create_tables([State])
         query = State.select().where(State.singleton == 0)
         if not query.exists():
-            State.create(last_ephid_change=EPOCH_START)
+            State.create(singleton=0, last_ephid_change=EPOCH_START)
 
     def last_ephid_change(self):
         """Return the last time the ephemeral id was changed."""
