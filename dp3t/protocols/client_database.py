@@ -20,6 +20,7 @@ __copyright__ = """
 __license__ = "Apache 2.0"
 
 from peewee import BigIntegerField, IntegerField, Model, SqliteDatabase
+from time import time
 
 #################################
 ### GLOBAL PROTOCOL CONSTANTS ###
@@ -64,10 +65,15 @@ class ClientDatabase(metaclass=Singleton):
 
         db.init(db_path)
         db.create_tables([State])
-        query = State.select().where(State.singleton == 0)
-        if not query.exists():
-            State.create(singleton=0, last_ephid_change=EPOCH_START)
+        self.state, created = State.get_or_create(
+            singleton=0, last_ephid_change=EPOCH_START
+        )
 
-    def last_ephid_change(self):
+    def get_last_ephid_change(self):
         """Return the last time the ephemeral id was changed."""
-        return State.select(State.last_ephid_change).where(State.singleton == 0)
+        return self.state.last_ephid_change
+
+    def set_last_ephid_change(self, t=time()):
+        """Set ephid change time to the specified (default current) time."""
+        self.state.last_ephid_change = t
+        self.state.save()

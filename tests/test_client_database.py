@@ -16,6 +16,7 @@ __copyright__ = """
 __license__ = "Apache 2.0"
 
 from dp3t.protocols.client_database import ClientDatabase, EPOCH_START
+from time import time
 
 
 ############################
@@ -25,5 +26,24 @@ from dp3t.protocols.client_database import ClientDatabase, EPOCH_START
 
 def test_database_initialization():
     d = ClientDatabase(":memory:")
-    print(d.last_ephid_change())
-    assert d.last_ephid_change() == EPOCH_START
+    assert d.get_last_ephid_change() == EPOCH_START
+
+
+def test_last_ephid_change_explicit():
+    d = ClientDatabase(":memory:")
+    d.set_last_ephid_change(42)
+    assert d.get_last_ephid_change() == 42
+
+
+def test_last_ephid_change_multiple():
+    d = ClientDatabase(":memory:")
+    d.set_last_ephid_change(42)
+    assert d.get_last_ephid_change() == 42
+    d.set_last_ephid_change(80)
+    assert d.get_last_ephid_change() == 80
+
+
+def test_last_ephid_change_default():
+    d = ClientDatabase(":memory:")
+    d.set_last_ephid_change()
+    assert abs(time() - d.get_last_ephid_change()) < 10
