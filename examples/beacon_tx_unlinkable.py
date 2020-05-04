@@ -123,8 +123,8 @@ def main():
         log_handler = logging.StreamHandler(sys.stderr)
     else:
         log_handler = logging.FileHandler("/var/log/beacon_tx")
-        formatter = logging.Formatter("%(asctime)s: %(message)s")
-        log_handler.setFormatter(formatter)
+    formatter = logging.Formatter("%(asctime)s: %(message)s")
+    log_handler.setFormatter(formatter)
 
     logger.addHandler(log_handler)
 
@@ -148,7 +148,7 @@ def main():
         if ephid != current_ephid:
             set_transmit(args.iface, ephid, args.rssi)
             current_ephid = ephid
-            logger.debug(f"At {format(now)} change ephid to {ephid.hex()}")
+            logger.debug(f"Change ephid to {ephid.hex()}")
         # Wait for the current epoch (e.g. 15 minutes) to pass
         # Sample every minute
         time.sleep(EPOCH_LENGTH / 60)
