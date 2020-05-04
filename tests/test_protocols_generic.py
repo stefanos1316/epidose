@@ -20,10 +20,17 @@ import pytest
 
 import dp3t.protocols.lowcost as lowcost
 import dp3t.protocols.unlinkable as unlinkable
+import dp3t.protocols.unlinkable_db as unlinkable_db
 import dp3t.config as config
 
 
-@pytest.fixture(params=[lowcost.ContactTracer, unlinkable.ContactTracer])
+@pytest.fixture(
+    params=[
+        lowcost.ContactTracer,
+        unlinkable.ContactTracer,
+        unlinkable_db.ContactTracer,
+    ]
+)
 def contact_tracer(request):
     return request.param
 
