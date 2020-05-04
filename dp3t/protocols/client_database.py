@@ -103,6 +103,14 @@ class ClientDatabase:
         )
         return [rec.seed for rec in query]
 
+    def get_epoch_ephid(self, epoch):
+        """Return the ephID for the specified epoch."""
+        rec = EpochIds.get_or_none(EpochIds.epoch == epoch)
+        if rec:
+            return rec.ephid
+        else:
+            return None
+
     def delete_past_epoch_ids(self, last_retained_epoch):
         """Delete identifiers associated with past epochs."""
         query = EpochIds.delete().where(EpochIds.epoch < last_retained_epoch)

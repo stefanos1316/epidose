@@ -63,6 +63,13 @@ def test_add_get_epoch_ids(db_connection):
     assert b"S7" not in seeds
 
 
+def test_get_epoch_ephid(db_connection):
+    for i in range(1, 10):
+        db_connection.add_epoch_ids(i, f"S{i}", f"E{i}")
+    assert db_connection.get_epoch_ephid(5) == b"E5"
+    assert not db_connection.get_epoch_ephid(42)
+
+
 def test_delete_past_epochs(db_connection):
     for i in range(1, 10):
         db_connection.add_epoch_ids(i, f"S{i}", f"E{i}")
