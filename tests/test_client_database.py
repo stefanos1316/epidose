@@ -56,7 +56,7 @@ def test_last_ephid_change_default(db_connection):
 def test_add_get_epoch_ids(db_connection):
     for i in range(1, 10):
         db_connection.add_epoch_ids(i, f"S{i}", f"E{i}")
-    seeds = db_connection.get_epoch_seeds(5, 6)
+    seeds = db_connection.get_epoch_seeds(5, 7)
     assert b"S4" not in seeds
     assert b"S5" in seeds
     assert b"S6" in seeds
@@ -77,6 +77,16 @@ def test_delete_past_epochs(db_connection):
     seeds = db_connection.get_epoch_seeds(2, 6)
     assert b"S4" not in seeds
     assert b"S5" in seeds
+
+
+def test_delete_past_epochs_empty(db_connection):
+    for i in range(5, 10):
+        db_connection.add_epoch_ids(i, f"S{i}", f"E{i}")
+    db_connection.delete_past_epoch_ids(5)
+    seeds = db_connection.get_epoch_seeds(10, 22)
+    assert len(seeds) == 0
+    seeds = db_connection.get_epoch_seeds(1, 5)
+    assert len(seeds) == 0
 
 
 def test_add_observation(db_connection):

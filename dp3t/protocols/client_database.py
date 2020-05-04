@@ -26,8 +26,6 @@ from time import time
 ### GLOBAL PROTOCOL CONSTANTS ###
 #################################
 
-DATABASE_PATH = "/var/lib/dp3t/database.db"
-
 EPOCH_START = 0
 
 
@@ -69,7 +67,7 @@ MODELS = [State, EpochIds, DailyObservations]
 class ClientDatabase:
     """Simple reference implementation of the client database."""
 
-    def __init__(self, db_path=DATABASE_PATH):
+    def __init__(self, db_path=":memory:"):
         """Setup the database access and schema."""
 
         db.init(db_path)
@@ -99,7 +97,7 @@ class ClientDatabase:
     def get_epoch_seeds(self, start_epoch, end_epoch):
         """Return the seeds for the specified epoch range."""
         query = EpochIds.select(EpochIds.seed).where(
-            EpochIds.epoch.between(start_epoch, end_epoch)
+            EpochIds.epoch.between(start_epoch, end_epoch - 1)
         )
         return [rec.seed for rec in query]
 
