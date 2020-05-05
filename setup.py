@@ -19,6 +19,7 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     python_requires=">=3.6",
-    install_requires=["pycryptodomex", "peewee", "scalable-cuckoo-filter"],
+    install_requires=["pybluez", "pycryptodomex", "peewee",
+                      "scalable-cuckoo-filter"],
     extras_require={"dev": ["black", "flake8", "pre-commit"], "test": ["pytest"]},
 )

@@ -96,13 +96,14 @@ def main():
     parser.add_argument(
         "-i",
         "--iface",
-        help="Transmit on the specified interface, not hci0",
-        default="hci0",
+        help="Transmit on the specified interface, not [hci]0",
+        type=int,
+        default=0,
     )
     parser.add_argument(
         "-n",
         "--dry-run",
-        help="Do not execute the required command",
+        help="Do not execute the required command(s)",
         action="store_true",
     )
     parser.add_argument(
@@ -146,7 +147,7 @@ def main():
         now = datetime.now()
         ephid = transmitter.get_ephid_for_time(now)
         if ephid != current_ephid:
-            set_transmit(args.iface, ephid, args.rssi)
+            set_transmit(f"hci{args.iface}", ephid, args.rssi)
             current_ephid = ephid
             logger.debug(f"Change ephid to {ephid.hex()}")
         # Wait for the current epoch (e.g. 15 minutes) to pass
