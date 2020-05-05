@@ -19,7 +19,14 @@ __copyright__ = """
 """
 __license__ = "Apache 2.0"
 
-from peewee import BigIntegerField, BlobField, IntegerField, Model, SqliteDatabase
+from peewee import (
+    BigIntegerField,
+    BlobField,
+    IntegerField,
+    Model,
+    SqliteDatabase,
+    CompositeKey,
+)
 from time import time
 
 #################################
@@ -38,7 +45,7 @@ class BaseModel(Model):
 
 
 class State(BaseModel):
-    singleton = IntegerField(default=1, unique=True)
+    singleton = IntegerField(default=1, primary_key=True)
     # Time (in seconds since Unix Epoch) ephid was last changed
     last_ephid_change = BigIntegerField()
 
@@ -46,7 +53,7 @@ class State(BaseModel):
 class EpochIds(BaseModel):
     """Pairs of seeds and ephids employed per epoch by this device."""
 
-    epoch = BigIntegerField(unique=True, primary_key=True, index=True)
+    epoch = BigIntegerField(primary_key=True)
     seed = BlobField()
     ephid = BlobField()
 
@@ -56,8 +63,16 @@ class DailyObservations(BaseModel):
 
     # Represented as seconds since Unix Epoch to day's beginning
     day = BigIntegerField(index=True)
+
     # Hashed observation
     observation = BlobField()
+
+    # Number of observations
+    ocount = IntegerField(default=1)
+
+    # Composite indexes
+    class Meta:
+        primary_key = CompositeKey("day", "observation")
 
 
 # Available tables
@@ -116,7 +131,12 @@ class ClientDatabase:
 
     def add_observation(self, add_day, add_observation):
         """Add a hashed observation for the specified day."""
-        DailyObservations.create(day=add_day, observation=add_observation)
+        observation, created = DailyObservations.get_or_create(
+            day=add_day, observation=add_observation
+        )
+        if not created:
+            observation.ocount += 1
+            observation.save()
 
     def get_observations(self):
         """Return as an iterable all past observations."""
