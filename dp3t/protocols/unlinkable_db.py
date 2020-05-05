@@ -19,7 +19,7 @@ __copyright__ = """
 """
 __license__ = "Apache 2.0"
 
-import datetime
+from datetime import datetime
 
 from dp3t.config import RETENTION_PERIOD, NUM_EPOCHS_PER_DAY
 
@@ -72,7 +72,7 @@ class ContactTracer:
         self.db = ClientDatabase(db_path)
 
         if start_time is None:
-            start_time = datetime.datetime.now()
+            start_time = datetime.now()
             start_time = start_time.replace(hour=0, minute=0, second=0, microsecond=0)
 
         self.start_of_today = start_time
@@ -158,7 +158,9 @@ class ContactTracer:
 
         epoch = epoch_from_time(time)
         hashed_observation = hashed_observation_from_ephid(ephid, epoch)
-        self.db.add_observation(self.today, hashed_observation)
+        timestamp = int(datetime.combine(self.today, datetime.min.time()
+                                         ).timestamp())
+        self.db.add_observation(timestamp, hashed_observation)
 
     def get_tracing_seeds_for_epochs(self, reported_epochs):
         """Return the seeds corresponding to the requested epochs

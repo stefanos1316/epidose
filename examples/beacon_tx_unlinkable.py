@@ -118,6 +118,7 @@ def main():
     )
     args = parser.parse_args()
 
+    # Setup logging
     global logger
     logger = logging.getLogger("beacon_tx")
     if args.debug:
@@ -141,11 +142,11 @@ def main():
 
     logger.info("Starting up")
 
+    # Transmit and store beacon packets
     current_ephid = None
     transmitter = ContactTracer(None, args.database)
     while True:
-        now = datetime.now()
-        ephid = transmitter.get_ephid_for_time(now)
+        ephid = transmitter.get_ephid_for_time(datetime.now())
         if ephid != current_ephid:
             set_transmit(f"hci{args.iface}", ephid, args.rssi)
             current_ephid = ephid

@@ -67,6 +67,7 @@ def process_packet(socket):
     ephid = packet[27:43]
     rssi, = unpack_byte(packet[-1])
     logger.info(f"Got ephid {ephid.hex()} RSSI {rssi}")
+    receiver.add_observation(ephid, datetime.now())
 
 
 def main():
@@ -92,6 +93,7 @@ def main():
     )
     args = parser.parse_args()
 
+    # Setup logging
     global logger
     logger = logging.getLogger("beacon_rx")
     if args.debug:
@@ -112,13 +114,13 @@ def main():
 
     logger.info("Starting up")
 
-    try:
-        socket = bluez.hci_open_dev(args.iface)
-        set_receive(socket)
-        while True:
-            process_packet(socket)
-    except Exception as e:
-        logger.error("Error accessing Bluetooth: " + e)
+    # Receive and process beacon packets
+    global receiver
+    receiver = ContactTracer(None, args.database)
+    socket = bluez.hci_open_dev(args.iface)
+    set_receive(socket)
+    while True:
+        process_packet(socket)
 
 if __name__ == "__main__":
     main()
