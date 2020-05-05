@@ -113,10 +113,16 @@ def main():
         type=int,
         default=0xC0,
     )
+    parser.add_argument("-t", "--test", help="Test script", action="store_true")
     parser.add_argument(
         "-v", "--verbose", help="Set verbose logging", action="store_true"
     )
     args = parser.parse_args()
+
+    if args.test:
+        args.debug = True
+        args.dry_run = True
+        args.database = ":memory:"
 
     # Setup logging
     global logger
@@ -154,6 +160,8 @@ def main():
         # Wait for the current epoch (e.g. 15 minutes) to pass
         # Sample every minute
         time.sleep(EPOCH_LENGTH / 60)
+        if args.test:
+            break
 
 
 if __name__ == "__main__":

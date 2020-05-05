@@ -90,10 +90,15 @@ def main():
         type=int,
         default=0,
     )
+    parser.add_argument("-t", "--test", help="Test script", action="store_true")
     parser.add_argument(
         "-v", "--verbose", help="Set verbose logging", action="store_true"
     )
     args = parser.parse_args()
+
+    if args.test:
+        args.debug = True
+        args.database = ":memory:"
 
     # Setup logging
     global logger
@@ -119,6 +124,8 @@ def main():
     # Receive and process beacon packets
     global receiver
     receiver = ContactTracer(None, args.database)
+    if args.test:
+        sys.exit(0)
     socket = bluez.hci_open_dev(args.iface)
     set_receive(socket)
     while True:
