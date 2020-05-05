@@ -29,6 +29,23 @@ import sys
 import time
 
 
+def run_command(cmd):
+    """Run (or simulate the running of) the specified command.
+    Log the command to be run.
+    Do not run the command if dry_run is set.
+    Log operating system and command errors.
+    """
+    logger.debug(" ".join(cmd))
+    if dry_run:
+        return
+    try:
+        subprocess.run(cmd, check=True, capture_output=True)
+    except subprocess.CalledProcessError as e:
+        logger.error(f"{cmd[0]} failed with code {e.returncode}: {e.stderr}")
+    except OSError as e:
+        logger.error(f"Failed to run {cmd[0]}: {e.strerror}")
+
+
 def set_transmit(interface, ephid, rssi):
     """Set the Bluetooth low energy beacon to transmit on the specified
     interface the given 16-byte ephid with the given received signal
@@ -44,7 +61,7 @@ def set_transmit(interface, ephid, rssi):
     cmd = [
         "hcitool",
         "-i",
-        f"{interface}",
+        interface,
         "cmd",
         "0x08",
         "0x0008",
@@ -71,15 +88,7 @@ def set_transmit(interface, ephid, rssi):
 
     cmd.append(format(rssi, "x"))  # Reference RSSI
     cmd.append("01")  # Manufacturer reserved
-    logger.debug(" ".join(cmd))
-    if dry_run:
-        return
-    try:
-        subprocess.run(cmd, check=True, capture_output=True)
-    except subprocess.CalledProcessError as e:
-        logger.error(f"{cmd[0]} failed with code {e.returncode}: {e.stderr}")
-    except OSError as e:
-        logger.error(f"Failed to run {cmd[0]}: {e.strerror}")
+    run_command(cmd)
 
 
 def main():
@@ -148,13 +157,21 @@ def main():
 
     logger.info("Starting up")
 
+    interface = f"hci{args.iface}"
+
+    # Enable the Bluetooth interface
+    run_command(["hciconfig", interface, "up"])
+
+    # Enable non connectable undirected LE advertising
+    run_command(["hciconfig", interface, "leadv", "3"])
+
     # Transmit and store beacon packets
     current_ephid = None
     transmitter = ContactTracer(None, args.database)
     while True:
         ephid = transmitter.get_ephid_for_time(datetime.now())
         if ephid != current_ephid:
-            set_transmit(f"hci{args.iface}", ephid, args.rssi)
+            set_transmit(interface, ephid, args.rssi)
             current_ephid = ephid
             logger.debug(f"Change ephid to {ephid.hex()}")
         # Wait for the current epoch (e.g. 15 minutes) to pass
