@@ -21,27 +21,25 @@ __license__ = "Apache 2.0"
 
 import argparse
 import bluetooth._bluetooth as bluez
-from dp3t.config import EPOCH_LENGTH
 from datetime import datetime
 from dp3t.protocols.unlinkable_db import ContactTracer
 import logging
-import subprocess
 import struct
 import sys
-import time
+
 
 OGF_LE_CTL = 0x08
 OCF_LE_SET_SCAN_ENABLE = 0x000C
+
 
 def set_receive(socket):
     """Setup to receive contact tracing packets."""
     # Enable scanning
     enable_scanning = struct.pack("<BB", 0x01, 0x00)
-    bluez.hci_send_cmd(socket, OGF_LE_CTL, OCF_LE_SET_SCAN_ENABLE,
-                       enable_scanning)
+    bluez.hci_send_cmd(socket, OGF_LE_CTL, OCF_LE_SET_SCAN_ENABLE, enable_scanning)
 
     # Obtain Bluetooth advertisement packets
-    old_filter = socket.getsockopt(bluez.SOL_HCI, bluez.HCI_FILTER, 14)
+    socket.getsockopt(bluez.SOL_HCI, bluez.HCI_FILTER, 14)
     listen_filter = bluez.hci_filter_new()
     bluez.hci_filter_all_events(listen_filter)
     bluez.hci_filter_set_ptype(listen_filter, bluez.HCI_EVENT_PKT)
@@ -52,20 +50,24 @@ def unpack_byte(b):
     """Return b unpacked from a byte value"""
     return struct.unpack("b", bytes([b]))
 
+
 def process_packet(socket):
     """Read and process a single broadcast packet."""
     packet = socket.recv(255)
-    packet_length, = unpack_byte(packet[2])
-    if (packet_length != 42 or
-            packet[17:18] != bytes([0x1b]) or
-            packet[21:23] != bytes([0xbe, 0xac]) or
-            packet[23:25] != bytes([0xed, 0x05]) or
-            packet[25:26] != bytes([1]) or
-            packet[26:27] != bytes([1])):
+
+    # Early exit for other packets
+    (packet_length,) = unpack_byte(packet[2])
+    if packet_length != 42:
         return
+    if packet[17:18] != bytes([0x1B]):
+        return
+    # Ensure the packet is     AltBeacon,  cntct-trc,  v1,   app 1
+    if packet[21:27] != bytes([0xBE, 0xAC, 0xED, 0x05, 0x01, 0x01]):
+        return
+
     # This is a contact tracing packet
     ephid = packet[27:43]
-    rssi, = unpack_byte(packet[-1])
+    (rssi,) = unpack_byte(packet[-1])
     logger.info(f"Got ephid {ephid.hex()} RSSI {rssi}")
     receiver.add_observation(ephid, datetime.now())
 
@@ -121,6 +123,7 @@ def main():
     set_receive(socket)
     while True:
         process_packet(socket)
+
 
 if __name__ == "__main__":
     main()
