@@ -123,7 +123,7 @@ def main():
 
     # Receive and process beacon packets
     global receiver
-    receiver = ContactTracer(None, args.database, receiver=True)
+    receiver = ContactTracer(None, args.database, transmitter=False)
     if args.test:
         sys.exit(0)
     socket = bluez.hci_open_dev(args.iface)

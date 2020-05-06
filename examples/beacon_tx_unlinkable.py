@@ -167,7 +167,7 @@ def main():
 
     # Transmit and store beacon packets
     current_ephid = None
-    transmitter = ContactTracer(None, args.database, transmitter=True)
+    transmitter = ContactTracer(None, args.database, receiver=False)
     while True:
         transmitter.check_advance_day()
         ephid = transmitter.get_ephid_for_time(datetime.now())
