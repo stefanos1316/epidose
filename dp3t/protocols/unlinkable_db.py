@@ -175,12 +175,13 @@ class ContactTracer:
 
         return ephid
 
-    def add_observation(self, ephid, time):
+    def add_observation(self, ephid, time, rssi=0):
         """Add ephID to list of observations. Time must correspond to the current day
 
         Args:
             ephID (byte array): the observed ephID
             time (:obj:`datatime.datetime`): time of observation
+            rssi: the observation's received signal strength indicator
 
         Raises:
             ValueError: If time does not correspond to the current day
@@ -191,7 +192,7 @@ class ContactTracer:
 
         epoch = epoch_from_time(time)
         hashed_observation = hashed_observation_from_ephid(ephid, epoch)
-        self.db.add_observation(day_timestamp(self.today), hashed_observation)
+        self.db.add_observation(day_timestamp(self.today), hashed_observation, rssi)
 
     def get_tracing_seeds_for_epochs(self, reported_epochs):
         """Return the seeds corresponding to the requested epochs

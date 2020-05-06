@@ -69,7 +69,7 @@ def process_packet(socket):
     ephid = packet[27:43]
     (rssi,) = unpack_byte(packet[-1])
     logger.info(f"Got ephid {ephid.hex()} RSSI {rssi}")
-    receiver.add_observation(ephid, datetime.now())
+    receiver.add_observation(ephid, datetime.now(), rssi)
 
 
 def main():

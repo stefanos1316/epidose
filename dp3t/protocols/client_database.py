@@ -22,6 +22,7 @@ __license__ = "Apache 2.0"
 from peewee import (
     BigIntegerField,
     BlobField,
+    DoesNotExist,
     IntegerField,
     Model,
     SqliteDatabase,
@@ -64,15 +65,18 @@ class DailyObservations(BaseModel):
     # Represented as seconds since Unix Epoch to day's beginning
     day = BigIntegerField(index=True)
 
-    # Hashed observation
-    observation = BlobField()
+    # Hash of observed ephid
+    ephid_hash = BlobField()
 
-    # Number of observations
+    # Number of observations for the given ephid hash
     ocount = IntegerField(default=1)
+
+    # Sum of received signal strength indication values
+    srssi = BigIntegerField()
 
     # Composite indexes
     class Meta:
-        primary_key = CompositeKey("day", "observation")
+        primary_key = CompositeKey("day", "ephid_hash")
 
 
 # Available tables
@@ -129,19 +133,29 @@ class ClientDatabase:
         query = EpochIds.delete().where(EpochIds.epoch < last_retained_epoch)
         query.execute()
 
-    def add_observation(self, add_day, add_observation):
-        """Add a hashed observation for the specified day."""
-        observation, created = DailyObservations.get_or_create(
-            day=add_day, observation=add_observation
-        )
-        if not created:
-            observation.ocount += 1
-            observation.save()
+    def add_observation(self, day, ephid_hash, rssi):
+        """Add an observed ephid hash and its RSSI for the specified day."""
+        try:
+            rec = DailyObservations.get(
+                DailyObservations.day == day, DailyObservations.ephid_hash == ephid_hash
+            )
+            rec.ocount += 1
+            rec.srssi += rssi
+            rec.save()
+        except DoesNotExist:
+            DailyObservations.create(
+                day=day, ephid_hash=ephid_hash, ocount=1, srssi=rssi
+            )
 
     def get_observations(self):
-        """Return as an iterable all past observations."""
-        query = DailyObservations.select(DailyObservations.observation)
-        return map(lambda rec: rec.observation, query)
+        """Return as an iterable the ephids of all past observations."""
+        query = DailyObservations.select(DailyObservations.ephid_hash)
+        return map(lambda rec: rec.ephid_hash, query)
+
+    def get_observation_details(self, ephid_hash):
+        """Return the observation count and average RSSI for the specified ephid hash."""
+        rec = DailyObservations.get(DailyObservations.ephid_hash == ephid_hash)
+        return rec.ocount, rec.srssi / rec.ocount
 
     def delete_past_observations(self, last_retained_day):
         """Delete observations of past days."""

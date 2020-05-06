@@ -91,15 +91,25 @@ def test_delete_past_epochs_empty(db_connection):
 
 def test_add_observation(db_connection):
     for i in range(1, 10):
-        db_connection.add_observation(i, f"H{i}")
+        db_connection.add_observation(i, f"H{i}", i)
     observations = list(db_connection.get_observations())
     assert b"H4" in observations
     assert b"X" not in observations
 
 
+def test_observation_details(db_connection):
+    s = 0
+    for i in range(1, 4):
+        db_connection.add_observation(1, "ephid_hash", i * 10)
+        s += i * 10
+    count, average_rssi = db_connection.get_observation_details("ephid_hash")
+    assert count == 3
+    assert average_rssi == s / 3
+
+
 def test_delete_past_observations(db_connection):
     for i in range(1, 10):
-        db_connection.add_observation(i, f"H{i}")
+        db_connection.add_observation(i, f"H{i}", i)
     db_connection.delete_past_observations(5)
     observations = list(db_connection.get_observations())
     assert b"H5" in observations
