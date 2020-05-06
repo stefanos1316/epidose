@@ -105,6 +105,7 @@ class ContactTracer:
         """Compute a new set of seeds and ephids for a new day"""
 
         # The ephids are required by the transmitter
+        print(self.transmitter)
         if not self.transmitter:
             return
 
@@ -115,17 +116,18 @@ class ContactTracer:
         # Convert to epoch numbers
         first_epoch = epoch_from_time(self.start_of_today)
 
-        # Verify the ids have not been already been created
-        if self.db.get_epoch_seeds(first_epoch, first_epoch + 1):
-            return
+        with self.db.atomic():
+            # Verify the ids have not been already been created
+            if self.db.get_epoch_seeds(first_epoch, first_epoch + 1):
+                return
 
-        # Store seeds and compute EphIDs
-        for relative_epoch in range(0, NUM_EPOCHS_PER_DAY):
-            self.db.add_epoch_ids(
-                first_epoch + relative_epoch,
-                seeds[relative_epoch],
-                ephids[relative_epoch],
-            )
+            # Store seeds and compute EphIDs
+            for relative_epoch in range(0, NUM_EPOCHS_PER_DAY):
+                self.db.add_epoch_ids(
+                    first_epoch + relative_epoch,
+                    seeds[relative_epoch],
+                    ephids[relative_epoch],
+                )
 
     def check_advance_day(self):
         """ Check and advance the current day, if needed."""

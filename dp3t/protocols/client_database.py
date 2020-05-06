@@ -100,6 +100,10 @@ class ClientDatabase:
         db.drop_tables(MODELS)
         db.close()
 
+    def atomic(self):
+        """Context manager that ensures atomic operations (database transactions)."""
+        return db.atomic()
+
     def get_last_ephid_change(self):
         """Return the last time the ephemeral id was changed."""
         return self.state.last_ephid_change
