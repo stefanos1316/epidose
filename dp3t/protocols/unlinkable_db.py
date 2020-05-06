@@ -19,7 +19,7 @@ __copyright__ = """
 """
 __license__ = "Apache 2.0"
 
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from dp3t.config import RETENTION_PERIOD, NUM_EPOCHS_PER_DAY
 
@@ -35,6 +35,12 @@ from dp3t.protocols.unlinkable import (
 #############################################################
 ### TYING CRYPTO FUNCTIONS TOGETHER FOR TRACING/RECORDING ###
 #############################################################
+
+
+def day_timestamp(date):
+    """Return a Unix timestamp for the day associated with the given date.
+    We define this as the time at which the day begins."""
+    return int(datetime.combine(date, datetime.min.time()).timestamp())
 
 
 class ContactTracer:
@@ -60,12 +66,20 @@ class ContactTracer:
     All external facing interfaces use datetime.datetime objects.
     """
 
-    def __init__(self, start_time=None, db_path=":memory:"):
+    def __init__(
+        self, start_time=None, db_path=":memory:", receiver=True, transmitter=True
+    ):
         """Create an new App object and initialize
 
         Args:
             start_time (:obj:`datetime.datetime`, optional): Start of the first day
                 The default value is the start of the current day.
+            db_path: Path where the SQLite database will be stored, or ":memory:"
+                for a transient in-memory database (the default)
+            receiver: If true (the default) the tracing will handle handle the
+                receiver-end housekeeping
+            transmitter: If true (the default) the tracing will handle handle the
+                transmitter-end housekeeping
         """
 
         # Database where seeds EphIDs and other data are stored
@@ -76,11 +90,11 @@ class ContactTracer:
             start_time = start_time.replace(hour=0, minute=0, second=0, microsecond=0)
 
         self.start_of_today = start_time
+        self.receiver = receiver
+        self.transmitter = transmitter
 
-        # Create new ephids and seeds, if needed
-        epoch = epoch_from_time(self.start_of_today)
-        if not self.db.get_epoch_seeds(epoch, epoch + 1):
-            self._create_new_day_ephids()
+        # Create new ephids and seeds
+        self._create_new_day_ephids()
 
     @property
     def today(self):
@@ -90,12 +104,20 @@ class ContactTracer:
     def _create_new_day_ephids(self):
         """Compute a new set of seeds and ephids for a new day"""
 
+        # The ephids are required by the transmitter
+        if not self.transmitter:
+            return
+
         # Generate fresh seeds and store them
         seeds = [generate_new_seed() for _ in range(NUM_EPOCHS_PER_DAY)]
         ephids = [ephid_from_seed(seed) for seed in seeds]
 
         # Convert to epoch numbers
         first_epoch = epoch_from_time(self.start_of_today)
+
+        # Verify the ids have not been already been created
+        if self.db.get_epoch_seeds(first_epoch, first_epoch + 1):
+            return
 
         # Store seeds and compute EphIDs
         for relative_epoch in range(0, NUM_EPOCHS_PER_DAY):
@@ -105,24 +127,35 @@ class ContactTracer:
                 ephids[relative_epoch],
             )
 
+    def check_advance_day(self):
+        """ Check and advance the current day, if needed."""
+
+        # Be proactive to avoid race conditions: will time move to the next day
+        # in the next hour?
+        date_in_one_hour = (datetime.now() + timedelta(hours=1)).date()
+        if date_in_one_hour > self.today:
+            self.next_day()
+
     def next_day(self):
         """Setup seeds and EphIDs for the next day, and do housekeeping"""
 
         # Update current day
-        self.start_of_today = self.start_of_today + datetime.timedelta(days=1)
+        self.start_of_today = self.start_of_today + timedelta(days=1)
 
         # Generate new EphIDs for new day
         self._create_new_day_ephids()
 
         # Remove old observations
-        last_retained_day = self.today - datetime.timedelta(days=RETENTION_PERIOD)
-        self.db.delete_past_observations(last_retained_day)
+        if self.receiver:
+            last_retained_day = self.today - timedelta(days=RETENTION_PERIOD)
+            self.db.delete_past_observations(day_timestamp(last_retained_day))
 
         # Remove old seeds and ephids
-        days_back = datetime.timedelta(days=RETENTION_PERIOD)
-        last_valid_time = self.start_of_today - days_back
-        last_retained_epoch = epoch_from_time(last_valid_time)
-        self.db.delete_past_epoch_ids(last_retained_epoch)
+        if self.transmitter:
+            days_back = timedelta(days=RETENTION_PERIOD)
+            last_valid_time = self.start_of_today - days_back
+            last_retained_epoch = epoch_from_time(last_valid_time)
+            self.db.delete_past_epoch_ids(last_retained_epoch)
 
     def get_ephid_for_time(self, time):
         """Return the EphID corresponding to the requested time
@@ -158,9 +191,7 @@ class ContactTracer:
 
         epoch = epoch_from_time(time)
         hashed_observation = hashed_observation_from_ephid(ephid, epoch)
-        timestamp = int(datetime.combine(self.today, datetime.min.time()
-                                         ).timestamp())
-        self.db.add_observation(timestamp, hashed_observation)
+        self.db.add_observation(day_timestamp(self.today), hashed_observation)
 
     def get_tracing_seeds_for_epochs(self, reported_epochs):
         """Return the seeds corresponding to the requested epochs

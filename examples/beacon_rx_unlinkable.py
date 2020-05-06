@@ -123,12 +123,16 @@ def main():
 
     # Receive and process beacon packets
     global receiver
-    receiver = ContactTracer(None, args.database)
+    receiver = ContactTracer(None, args.database, receiver=True)
     if args.test:
         sys.exit(0)
     socket = bluez.hci_open_dev(args.iface)
     set_receive(socket)
     while True:
+        # TODO: This is both too frequent (it triggers for every packet) and
+        # can also be too infrequent (if no packets are received)
+        receiver.check_advance_day()
+
         process_packet(socket)
 
 
