@@ -55,6 +55,11 @@ def process_packet(socket):
     """Read and process a single broadcast packet."""
     packet = socket.recv(255)
 
+    # TODO: This is both too frequent (it triggers for every packet) and
+    # can also be too infrequent (if no packets are received)
+    now = datetime.now()
+    receiver.check_advance_day(now)
+
     # Early exit for other packets
     (packet_length,) = unpack_byte(packet[2])
     if packet_length != 42:
@@ -69,7 +74,8 @@ def process_packet(socket):
     ephid = packet[27:43]
     (rssi,) = unpack_byte(packet[-1])
     logger.info(f"Got ephid {ephid.hex()} RSSI {rssi}")
-    receiver.add_observation(ephid, datetime.now(), rssi)
+
+    receiver.add_observation(ephid, now, rssi)
 
 
 def main():
@@ -129,10 +135,6 @@ def main():
     socket = bluez.hci_open_dev(args.iface)
     set_receive(socket)
     while True:
-        # TODO: This is both too frequent (it triggers for every packet) and
-        # can also be too infrequent (if no packets are received)
-        receiver.check_advance_day()
-
         process_packet(socket)
 
 

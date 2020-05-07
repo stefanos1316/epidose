@@ -169,8 +169,9 @@ def main():
     current_ephid = None
     transmitter = ContactTracer(None, args.database, receiver=False)
     while True:
-        transmitter.check_advance_day()
-        ephid = transmitter.get_ephid_for_time(datetime.now())
+        now = datetime.now()
+        transmitter.check_advance_day(now)
+        ephid = transmitter.get_ephid_for_time(now)
         if ephid != current_ephid:
             set_transmit(interface, ephid, args.rssi)
             current_ephid = ephid

@@ -105,7 +105,6 @@ class ContactTracer:
         """Compute a new set of seeds and ephids for a new day"""
 
         # The ephids are required by the transmitter
-        print(self.transmitter)
         if not self.transmitter:
             return
 
@@ -129,13 +128,10 @@ class ContactTracer:
                     ephids[relative_epoch],
                 )
 
-    def check_advance_day(self):
-        """ Check and advance the current day, if needed."""
+    def check_advance_day(self, time):
+        """ Check and advance the current day based on the passed time, if needed."""
 
-        # Be proactive to avoid race conditions: will time move to the next day
-        # in the next hour?
-        date_in_one_hour = (datetime.now() + timedelta(hours=1)).date()
-        if date_in_one_hour > self.today:
+        if time.date() > self.today:
             self.next_day()
 
     def next_day(self):

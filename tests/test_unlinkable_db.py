@@ -22,7 +22,15 @@ from testfixtures import Replace, test_datetime
 from dp3t.protocols.unlinkable_db import ContactTracer
 from dp3t.protocols.unlinkable import epoch_from_time
 
+from tests.test_protocols_generic import EPHID
+
 START_TIME = datetime(2020, 4, 25, 22, 10, tzinfo=timezone.utc)
+
+START_TIME_ENDING = datetime(2020, 4, 25, 23, 55, tzinfo=timezone.utc)
+TEST_START_TIME_ENDING = test_datetime(2020, 4, 25, 23, 55, tzinfo=timezone.utc)
+
+START_TIME_TOMORROW = datetime(2020, 4, 26, 0, 0, 1, tzinfo=timezone.utc)
+TEST_START_TIME_TOMORROW = test_datetime(2020, 4, 26, 0, 0, 1, tzinfo=timezone.utc)
 
 
 @pytest.fixture(scope="function")
@@ -53,19 +61,23 @@ def test_check_next_day_empty(contact_tracer):
 
 
 def test_check_advance_day_not_firing(contact_tracer):
-    with Replace("dp3t.protocols.unlinkable_db.datetime", test_datetime(START_TIME)):
-        contact_tracer.check_advance_day()
+    with Replace("dp3t.protocols.unlinkable_db.datetime", TEST_START_TIME_ENDING):
+        contact_tracer.check_advance_day(START_TIME_ENDING)
     epoch = epoch_from_time(START_TIME + timedelta(days=1))
     seeds = contact_tracer.db.get_epoch_seeds(epoch, epoch + 1)
     assert len(seeds) == 0
 
 
 def test_check_advance_day_firing(contact_tracer):
-    close_to_day_end = START_TIME + timedelta(days=1, minutes=-30)
-    with Replace(
-        "dp3t.protocols.unlinkable_db.datetime", test_datetime(close_to_day_end)
-    ):
-        contact_tracer.check_advance_day()
-    epoch = epoch_from_time(START_TIME)
+    with Replace("dp3t.protocols.unlinkable_db.datetime", TEST_START_TIME_TOMORROW):
+        contact_tracer.check_advance_day(START_TIME_TOMORROW)
+    epoch = epoch_from_time(START_TIME_TOMORROW)
     seeds = contact_tracer.db.get_epoch_seeds(epoch, epoch + 1)
     assert len(seeds) == 1
+
+
+def test_check_add_observation_midnight_race(contact_tracer):
+    with Replace("dp3t.protocols.unlinkable_db.datetime", TEST_START_TIME_ENDING):
+        contact_tracer.check_advance_day(START_TIME_TOMORROW)
+    with Replace("dp3t.protocols.unlinkable_db.datetime", TEST_START_TIME_TOMORROW):
+        contact_tracer.add_observation(EPHID, START_TIME_TOMORROW)
