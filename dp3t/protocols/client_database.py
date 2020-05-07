@@ -118,7 +118,10 @@ class ClientDatabase:
         EpochIds.create(epoch=add_epoch, seed=add_seed, ephid=add_ephid)
 
     def get_epoch_seeds(self, start_epoch, end_epoch):
-        """Return the seeds for the specified epoch range."""
+        """Return the seeds for the specified (first inclusive, last exclusive) epoch range."""
+        # Handle empty range
+        if start_epoch == end_epoch:
+            return []
         query = EpochIds.select(EpochIds.seed).where(
             EpochIds.epoch.between(start_epoch, end_epoch - 1)
         )

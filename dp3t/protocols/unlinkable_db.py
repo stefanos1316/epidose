@@ -21,16 +21,21 @@ __license__ = "Apache 2.0"
 
 from datetime import datetime, timedelta
 
+from cuckoo.filter import BCuckooFilter
+
 from dp3t.config import RETENTION_PERIOD, NUM_EPOCHS_PER_DAY
 
 from dp3t.protocols.client_database import ClientDatabase
 
 from dp3t.protocols.unlinkable import (
+    CUCKOO_FPR,
     ephid_from_seed,
     epoch_from_time,
     generate_new_seed,
     hashed_observation_from_ephid,
+    hashed_observation_from_seed,
 )
+
 
 #############################################################
 ### TYING CRYPTO FUNCTIONS TOGETHER FOR TRACING/RECORDING ###
@@ -41,6 +46,43 @@ def day_timestamp(date):
     """Return a Unix timestamp for the day associated with the given date.
     We define this as the time at which the day begins."""
     return int(datetime.combine(date, datetime.min.time()).timestamp())
+
+
+class TracingDataBatch:
+    """
+    Simple representation of a batch of keys that is downloaded from
+    the backend server to the phone at regular intervals.
+
+    Contrary to the low-cost design, the release time is not needed to prevent
+    replay attacks.
+
+    *Example only.* This data structure uses a simple Python cuckoo filter to
+    hold the hashed observations. We did not thoroughly check this library.
+    Final implementations must at the very least use a portable and
+    well-specified version of such a cuckoo filter.
+    """
+
+    def __init__(self, tracing_seeds, release_time=None):
+        """Create a published batch of tracing keys
+
+        Args:
+            tracing_seeds ([(reported_epochs, seeds)]): A list of reported epochs/seeds
+                per infected user
+            release_time (optional): Release time of this batch
+        """
+
+        # Compute size of filter and ensure we have enough capacity
+        nr_items = sum([len(epochs) for (epochs, _) in tracing_seeds])
+        capacity = int(nr_items * 1.2)
+
+        self.infected_observations = BCuckooFilter(capacity, error_rate=CUCKOO_FPR)
+        for (epochs, seeds) in tracing_seeds:
+            for (epoch, seed) in zip(epochs, seeds):
+                self.infected_observations.insert(
+                    hashed_observation_from_seed(seed, epoch)
+                )
+
+        self.release_time = release_time
 
 
 class ContactTracer:
@@ -202,8 +244,8 @@ class ContactTracer:
         Raises:
             ValueError: If a requested epoch is unavailable
         """
-        seeds = self.db.get_epoch_seeds(reported_epochs[0], reported_epochs[-1])
-        if len(seeds) == 0:
+        seeds = self.db.get_epoch_seeds(reported_epochs[0], reported_epochs[-1] + 1)
+        if len(seeds) != len(reported_epochs):
             raise ValueError("A requested epoch is not available")
 
         return seeds

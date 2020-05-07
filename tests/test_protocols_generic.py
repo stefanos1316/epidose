@@ -35,7 +35,7 @@ def contact_tracer(request):
     return request.param
 
 
-@pytest.fixture(params=[lowcost, unlinkable])
+@pytest.fixture(params=[lowcost, unlinkable, unlinkable_db])
 def protocol(request):
     return request.param
 
