@@ -87,7 +87,7 @@ def main():
         "-D",
         "--database",
         help="Specify the database location",
-        default="/var/lib/dp3t/client-database.db",
+        default="/var/lib/epidose/client-database.db",
     )
     parser.add_argument(
         "-i",

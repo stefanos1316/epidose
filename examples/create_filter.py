@@ -50,7 +50,7 @@ def main():
         "-D",
         "--database",
         help="Specify the database location",
-        default="/var/lib/dp3t/server-database.db",
+        default="/var/epidose/dp3t/server-database.db",
     )
     parser.add_argument("-s", "--seeds-file", help="File containing epochs and seeds")
     parser.add_argument(
