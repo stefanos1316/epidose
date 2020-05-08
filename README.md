@@ -58,7 +58,7 @@ of phone apps.
 By extension, its existence will also increase the acceptance
 of comparable phone apps.
 
-## Overview and Use #
+## Overview and Use
 
 <img width="300" alt="Epidemic dosimeter concept drawing" src="https://raw.githubusercontent.com/dspinellis/epidose/master/hardware/concept.png">
 
@@ -141,6 +141,11 @@ as depicted in the diagram at the end of this section.
   software updates.
 * `ha_server.py`: The health authority's server, which receives
   lists of infected person's contacts and provides filter updates.
+* A device running in testing centers acts as a user interface and
+  source of trust.  It allows health professionals, in coordination
+  with the epidemic dosimeter's user, handle the uploading of its
+  contacts (at that point, or when the test results are out),
+  providing a single-use key to authorize and authenticate the upload.
 
 ![Software architecture](https://raw.githubusercontent.com/dspinellis/epidose/master/doc/software-architecture.png)
 
@@ -187,8 +192,11 @@ In some places the code takes shortcuts or makes simplifications (e.g.
 not using the number of messages and their strength (RSSI) for estimating
 the infection risk.)  These are marked in the code with `TODO` comments.
 
-Also missing is the circuit diagram and PCB layout diagram for
-the support electronics and the design for 3D-printing the enclosure.
+Also missing are the following.
+
+* The health authority user interface
+* The circuit diagram and PCB layout diagram for the support electronics
+* The design for 3D-printing the enclosure
 
 ## Installing the reference implementation
 
