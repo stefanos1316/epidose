@@ -2,7 +2,8 @@
 
 This repository provides an open source software
 reference implementation for an *epidemic dosimeter*.
-Just as a radiation dosimeter measures dose uptake of external ionizing
+Just as a [radiation dosimeter](https://en.wikipedia.org/wiki/Dosimeter)
+measures dose uptake of external ionizing
 radiation, the epidemic dosimeter tracks potential exposure to viruses
 or bacteria associated with an epidemic.
 The dosimeter measures a person's exposure to an epidemic, such as COVID-19,
