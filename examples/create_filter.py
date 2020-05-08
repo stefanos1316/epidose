@@ -54,14 +54,9 @@ def main():
     )
     parser.add_argument("-s", "--seeds-file", help="File containing epochs and seeds")
     parser.add_argument(
-        "-o",
-        "--output-file",
-        help="File where output will be stored",
-        default="cuckoo-filter.bin",
-    )
-    parser.add_argument(
         "-v", "--verbose", help="Set verbose logging", action="store_true"
     )
+    parser.add_argument("output", help="File where output will be stored")
     args = parser.parse_args()
 
     # Setup logging
@@ -94,7 +89,7 @@ def main():
 
     # Create and save filter
     cuckoo_filter = TracingDataBatch(tracing_seeds)
-    with open(args.output_file, "wb") as f:
+    with open(args.output, "wb") as f:
         cuckoo_filter.tofile(f)
     print(cuckoo_filter.capacity)
 
