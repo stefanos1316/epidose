@@ -56,7 +56,7 @@ def main():
     parser.add_argument(
         "-v", "--verbose", help="Set verbose logging", action="store_true"
     )
-    parser.add_argument("output", help="File where output will be stored")
+    parser.add_argument("filter", help="File where filter will be stored")
     args = parser.parse_args()
 
     # Setup logging
@@ -89,7 +89,7 @@ def main():
 
     # Create and save filter
     cuckoo_filter = TracingDataBatch(tracing_seeds)
-    with open(args.output, "wb") as f:
+    with open(args.filter, "wb") as f:
         cuckoo_filter.tofile(f)
     print(cuckoo_filter.capacity)
 
