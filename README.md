@@ -9,7 +9,7 @@ The dosimeter measures a person's exposure to an epidemic, such as COVID-19,
 based on exposure to contacts that have been tested positive.
 The epidemic dosimeter is designed to be widely accessible
 and to safeguard privacy.
-Specifically, it designed to run on the $10 open-hardware
+Specifically, it is designed to run on the $10 open-hardware
 [Raspberry Pi Zero-W](https://www.raspberrypi.org/products/raspberry-pi-zero-w/)
 computer, with a minimal user interface, comprising LED indicators
 regarding operation and exposure risk
@@ -95,7 +95,7 @@ and as a corresponding beacon receiver to track individuals carrying
 a dosimeter located in the vicinity.
 By basing its code on the DP3T reference implementation it should also
 interoperate with the corresponding smartphone applications.
-The dosimeter's design calls for it to be is pre-configured to
+The dosimeter's design calls for it to be pre-configured to
 obtain possibly infected contacts and software updates through a
 global WiFi sharing network, such as that offered by [fon](https://fon.com/).
 
@@ -200,7 +200,7 @@ Also missing are the following.
 ## Installing the reference implementation
 
 You'll need to install the required libraries and project.
-HEre is how you can do it under the Ubuntu GNU/Linux distribution.
+Here is how you can do it under the Ubuntu GNU/Linux distribution.
 
 ```bash
 sudo apt-get install libbluetooth-dev virtualenv libglib2.0-dev python3-setuptools sqlite3
