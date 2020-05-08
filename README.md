@@ -1,103 +1,260 @@
-# Cryptographic Reference Implementation of DP3T designs
+# Epidose: A privacy-preserving epidemic dosimeter based on contact tracing
 
-The full set of documents for DP3T is at <https://github.com/DP-3T/documents>.
-Please refer to the technical documents and whitepapers for the descriptions
-of the implementation.
+This repository provides an open source software
+reference implementation for an *epidemic dosimeter*.
+Just as a radiation dosimeter measures dose uptake of external ionizing
+radiation, the epidemic dosimeter tracks potential exposure to viruses
+or bacteria associated with an epidemic.
+The dosimeter measures a person's exposure to an epidemic, such as COVID-19,
+based on exposure to contacts that have been tested positive.
+The epidemic dosimeter is designed to be widely accessible
+and to safeguard privacy.
+Specifically, it designed to run on the $10 open-hardware
+[Raspberry Pi Zero-W](https://www.raspberrypi.org/products/raspberry-pi-zero-w/)
+computer, with a minimal user interface, comprising LED indicators
+regarding operation and exposure risk
+and a physical interlock switch to allow the release of contact data.
+The software is based on the [DP3T](https://github.com/DP-3T/documents)
+contact tracing "unlinkable" design and corresponding reference implementation
+code, and gratefully acknowledges the team's amazing work.
 
-*This repository implements both proximity tracing designs from the
-white-paper.* In both designs, smartphones broadcast ephemeral Bluetooth
-identifiers (`EphID`s), and store the identifiers received from other devices.
-The designs differ in how they generate these `EphID`s and how they do proximity
-tracing:
+## Rationale
+Contact tracing via smartphone apps has been widely touted as an important
+way to control and limit the spread of the COVID-19 epidemic.
+However, basing contact-tracing on phone apps has several limitations.
+[According to market reports](https://en.wikipedia.org/wiki/List_of_countries_by_smartphone_penetration),
 
- * *Low-cost design*. In this design, `EphID`s are generated from a rotating
-   seed `SKt` for efficiency. When an app owner is diagnosed with SARS-CoV-2,
-   their app uploads the corresponding seed `SKt`. Other apps use this seed to
-   regenerate the ephemeral Bluetooth identifiers, and check if they have seen
-   an identifier corresponding to an infected person.
- * *Unlinkable design*. In this design, `EphID`s are generated independently
-   from random seeds. When an app owner is diagnosed with SARS-CoV-2, their app
-   uploads the corresponding seeds for each `EphID` broadcast in a compact
-   representation. Other apps use this compact representation to check if they
-   have seen an identifier corresponding to an infected person.
- 
-*Difference with respect to the Android/iOS SDKs and backend implementations.*
-The DP-3T project has also published
-[Android](https://github.com/DP-3T/dp3t-sdk-android) and
-[iOS](https://github.com/DP-3T/dp3t-sdk-ios) implementations and a [backend
-SDK](https://github.com/DP-3T/dp3t-sdk-backend) for use in production apps and
-backends. This reference implementation serves to provide a simple
-implementation that complements the white paper. We try to avoid differences
-between this Python reference implementations and the other implementations, but
-small differences are unavoidable due to the speed at which this project
-progresses.
+While in higher income countries smartphone penetration is over 60%, in
+lower income ones it drops significantly, even to less than 20%.
+Even in higher income countries, smartphone penetration declines significantly
+with [increased age](https://doi.org/10.1109/MCE.2016.2614524)
+and reduced income.
+Also, Bluetooth-based contact tracing apps may not be able to run on
+older smartphone models, and many fear compromised privacy when running
+such an app on their phone.
+Contact tracing app solutions benefit only those using them by flagging
+at an early stage one at risk.
+Therefore, older people who are usually less accustomed to technology
+(and also run greater risks) and less privileged society members are
+at a disadvantage.
 
-*Example implementations of App and Backend.* We plan to soon extend this
-repository with example implementations of the App and Backend server. The App
-implementation will show how smartphones interact with the backend server's API
-to upload tracing information, to retrieve tracing information, and to do
-contact tracing.
+Exposure tracking solutions can only be successful if adopted by a
+significant percentage of the population.
+In lower income regions and countries
+(which could be
+[devastated by COVID-19](https://www.economist.com/leaders/2020/03/26/the-coronavirus-could-devastate-poor-countries)),
+smartphone-based solutions are unlikely to be effective due to a lack
+of critical mass.
+The proposed epidemic dosimeter addresses the above limitations.
 
-## The code
+Given its low cost and simplicity (a single LED indicator),
+the epidemic dosimeter can be easily and affordably deployed to
+lower income countries and marginalized parts of a population
+serving billions.
+Its resemblance to existing diagnostic devices,
+and the ability to distribute it without exchanging documentation
+can also allay the fears of those who worry about the privacy implications
+of phone apps.
+By extension, its existence will also increase the acceptance
+of comparable phone apps.
 
-This reference implementation is deliberately simple. It aims to provide a clear
-and simple implementation of the cryptographic concepts from the whitepaper and
-to show how these tie together.
+## Overview and Use #
+![Epidemic dosimeter concept drawing](https://raw.githubusercontent.com/dspinellis/epidose/master/hardware/concept.png)
 
-The package `dp3t.config` contains global configuration parameters shared
-between all designs. The package `dp3t.protocols` contains the reference
-implementations `lowcost` and `unlinkable` for the low-cost and unlinkable
-designs. These files follow a similar structure:
+The epidemic dosimeter is a lightweight (<100g), low-cost
+(mass-produced <40€), self-contained device, housed in a package with a
+three-color LED.
+One simply picks it up from a distribution point without
+providing any personal data, charges it, and carries it around.
+When health authorities test people, they associate its contacts with the
+test results by attaching the dosimeter to a special beacon.
 
- 1. They introduce design-specific parameters such as the length of a batch.
- 2. They define utility functions to convert time to internal representations
- 2. They define simple cryptographic functions used to generate seeds and `EphIDs`
- 3. The class `TracingDataBatch` represents the information downloaded from the
-    server. Both designs use the same interface for this class.
- 3. The class `ContactTracer` ties these functions together and sketches the
-    core contact tracing functionality that would be used by a smartphone
-    contact tracing app. The class takes care of rotating keys (`next_day`),
-    generating `EphID`s to broadcast, to output `EphID` given a specific time
-    (`get_ephid_for_time`), to process an observation (`add_obseration`), to
-    output tracing information (`get_tracing_information`), and to process a
-    batch of tracing information to determine the number of contacts with
-    infected people (`matches_with_batch`). Both designs use the same interface
-    for this class
+A single LED indicates the dosimeter’s status.
 
-This code includes a simple implementation of a Bluetooth transmitter
-and receiver process of the unlinkable protocol (beacon_tx_unlinkable and
-beacon_rx_unlinkable).  These record data into a SQLite database.  They can
-be combined with a backend service and a corresponding client to offer a
-full functioning prototype of a complete system.  Both programs can be
-run with a *--help* argument in order to obtain usage information.
+* Flashing green: Normal operation
+* Slow flashing red: User may have been exposed and should contact a
+  health provider.
+* Rapidly flashing red: User has been tested positive and needs to self
+  quarantine. (To be used in areas lacking better means to contact people.)
+* Orange: Charging is required.
+  It is estimated that the dosimeter would last a full working day without
+  charging.
+
+As a possible extension the LED indicator can be extended to more
+LEDs to indicate:
+
+* the level of exposure, and
+* by tracking other encountered Bluetooth devices, the effectiveness
+  of the user's social distancing measures.
+
+## Technology
+The epidemic dosimeter works by acting as a
+[Bluetooth Low Energy](https://en.wikipedia.org/wiki/Bluetooth_Low_Energy)
+(BLE) beacon to transmit periodically-changing random identifiers,
+and as a corresponding beacon receiver to track individuals carrying
+a dosimeter located in the vicinity.
+By basing its code on the DP3T reference implementation it should also
+interoperate with the corresponding smartphone applications.
+The dosimeter's design calls for it to be is pre-configured to
+obtain possibly infected contacts and software updates through a
+global WiFi sharing network, such as that offered by [fon](https://fon.com/).
+
+## Software architecture
+The dosimeter's software is designed around the following components.
+
+* `beacon_tx_unlinkable.py`: Continuously running transmitter of ephemeral
+  identifiers.
+  Each day a new set of identifiers are created, stored in a database,
+  and transmitted.  Every 15 minutes the transmitted identifier changes.
+  Each day the transmitter also purges from the database ephemeral
+  identifiers that no longer need to be retained.
+* `beacon_rx_unlinkable.py`: Continuously running receiver of
+  identifiers transmitted by other devices.
+  These are again stored in a database in hashed format to allow
+  the identification of contacts with infected persons.
+  Each day the received also purges from the database received hashes
+  that no longer need to be retained.
+* `create_filter.py`: A program that is run on the server.
+  It takes as input epoch identifiers and ephemeral identification hashes
+  and produces a [Cuckoo filter](https://en.wikipedia.org/wiki/Cuckoo_filter)
+  that can be used to check for possible contacts with infected persons.
+* `check_infection_risk.py`: A program that is run on the
+  epidemic dosimeter.
+  It takes as input the Cuckoo filter, and calculates
+  the number of infected contacts found in the database.
+  The application updates the indicator LED according to the result.
+* [SQLite](https://www.sqlite.org/index.html) database for storing the
+  created and received ephemeral identifiers.
+* `download_infected.sh`: A script that downloads from the server the
+  Cockoo filter for the identifiers of infected contacts.
+* `upload_contacts.py`: Subject to an agreement between the user and
+  the health authority, implemented through a physical interlock and
+  a suitable protocol, this uploads to a health authority's server the
+  contacts of a user found to be infected.
+* `watchdog.sh`: Monitors the correct operation of all components and
+  flashes the green LED to indicate correct operation.
+  It also resets the device in case of a failure.
+* `update_client.sh`: Runs periodically to download an updated filter,
+  check for contacts with infected persons, and perform any required
+  software updates.
+* `ha_server.py`: The health authority's server, which receives
+  lists of infected person's contacts and provides filter updates.
+
+## Hardware parts list
+* Raspberry Pi Zero-W
+* Li-on rechargeable battery 3.7V / 3400mAh
+* Enclosure (3D printed)
+* Battery holder
+* [Li-on battery charging module with step up boost converter](https://grobotronics.com/lithium-charging-module-with-step-up-boost-converter-3.7v-9v-5v-2a.html)
+* I/O PCB
+  * RGB LED
+  * 330 Ohm current-limiting resistor
+  * Physical interlock micro-switch
+  * 40-pin connector (receptacle for prototyping, soldered for mass production)
+* 8GB microSDHC Class 10 card
+* 5V USB charger
+
+## What is implemented
+Currently all the device-end functionality has been implemented and
+tested, with a device reporting an *infected* status after (manually)
+downloading a filter constructed from identifiers actually transmitted
+and received over Bluetooth.
+
+The following programs are available in the `examples` directory.
+
+* `beacon_tx_unlinkable.py`
+* `beacon_rx_unlinkable.py`
+* `create_filter.py`
+* `check_infection_risk.py`
+
+All programs can be run with a *--help* argument to obtain usage information.
+
+## What is missing
+The server and the device automation and configuration are under construction.
+In the following days expect to see code for the following components.
+
+* `download_infected.sh`
+* `upload_contacts.py`
+* `watchdog.sh`
+* `update_client.sh`
+* `ha_server.py`
+
+In some places the code takes shortcuts or makes simplifications (e.g.
+not using the number of messages and their strength (RSSI) for estimating
+the infection risk.)  These are marked in the code with `TODO` comments.
+
+Also missing is the circuit diagram and PCB layout diagram for
+the support electronics and the design for 3D-printing the enclosure.
 
 ## Installing the reference implementation
 
-You'll need to install the project. For example as follows:
+You'll need to install the required libraries and project.
+HEre is how you can do it under the Ubuntu GNU/Linux distribution.
 
 ```bash
-python3 -m venv venv
-source venv/bin/activate
+sudo apt-get install libbluetooth-dev virtualenv libglib2.0-dev python3-setuptools sqlite3
+git clone https://github.com/dspinellis/epidose
+cd epidose
+virtualenv venv -p /usr/bin/python3
+. venv/bin/activate
 pip3 install -e .
 ```
 
-## Running the example
+## Running the client code
 
-After installing the project you can run the examples:
+After installing the project you can run the client code on a Raspberry-Pi Zero-W as follows.
 
-```bash
-examples/run_lowcost.py
-examples/run_unlinkable.py
+```sh
+sudo mkdir -p /var/lib/epidose
+nohup sudo venv/bin/python examples/beacon_tx_unlinkable.py -v &
+nohup sudo venv/bin/python examples/beacon_rx_unlinkable.py -v &
 ```
 
-## Obtaining test vectors
+You can then monitor the device's operation with
+`tail -f /var/log/beacon_tx` and `tail -f /var/log/beacon_rx`.
 
-After installing the project you can obtain test vectors by running:
+You can also obtain a report of what has been stored in the device's
+database by running `utils/client-db-report.sh`.
 
-```bash
-utils/testvectors_lowcost.py
-utils/testvectors_unlinkable.py
+### Database report example
 ```
+Received (and retained) ephemeral id hashes
+
+Day         Ephid Hash  Count       RSSI
+----------  ----------  ----------  ----------
+2020-05-07  EEF9237FCB  306         -50
+2020-05-07  38EBD1F502  287         -50
+2020-05-07  5B487CFBD3  131         -48
+2020-05-07  EBEA03EC12  585         -48
+2020-05-07  7940535B20  595         -51
+2020-05-07  1C807D7D6E  1           -52
+2020-05-07  43DFA3FEDB  600         -50
+2020-05-07  E3618D8B33  371         -51
+[...]
+
+
+Stored (and retained) sent ephemeral ids
+
+Timestamp            Epoch       Seed        Ephid
+-------------------  ----------  ----------  ----------
+2020-05-07 21:00:00  1765428     504AE4E8AF  F826011CC6
+2020-05-07 21:15:00  1765429     8540B29ADD  F3406EBCD8
+2020-05-07 21:30:00  1765430     133652DF10  CB4F3126EF
+2020-05-07 21:45:00  1765431     3C3C914494  9A93E9BBFC
+2020-05-07 22:00:00  1765432     D057DA48EE  71E6980B2A
+2020-05-07 22:15:00  1765433     0F9133C578  F1D72EAC4A
+2020-05-07 22:30:00  1765434     07A56ABD78  675C1E552A
+2020-05-07 22:45:00  1765435     710ACBD99C  7FCBF944A5
+[...]
+```
+
+To test contact tracing you currently need to follow these steps.
+
+* Obtain a list of contacts.
+* Store them into a file.
+* Create a Cuckoo filter by running `create_filter.py` on that file.
+* Copy the Cuckoo filter on another device.
+* Check against contacts by running `check_infection_risk.py`.
 
 ## Development
 
@@ -115,11 +272,20 @@ pip install pre-commit
 pre-commit install
 ```
 
+Finally, it's a good idea to clone and regularly integrate the DP-3T
+reference implementation, which is the base of this code's cryptographic
+protocol.
+
+```sh
+git remote add dp3t https://github.com/DP-3T/reference_implementation.git
+git fetch
+```
+
 ### Running the tests
 
 To run the tests, simply call
 
-```bash
+```sh
 pytest
 ```
 
