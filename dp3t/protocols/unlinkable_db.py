@@ -78,9 +78,11 @@ class TracingDataBatch:
         if tracing_seeds:
             # Compute size of filter and ensure we have enough capacity
             nr_items = sum([len(epochs) for (epochs, _) in tracing_seeds])
-            capacity = int(nr_items * 1.2)
+            self.capacity = int(nr_items * 1.2)
 
-            self.infected_observations = BCuckooFilter(capacity, error_rate=CUCKOO_FPR)
+            self.infected_observations = BCuckooFilter(
+                self.capacity, error_rate=CUCKOO_FPR
+            )
             for (epochs, seeds) in tracing_seeds:
                 for (epoch, seed) in zip(epochs, seeds):
                     self.infected_observations.insert(

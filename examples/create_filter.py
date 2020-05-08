@@ -93,9 +93,10 @@ def main():
         tracing_seeds = ([], [])
 
     # Create and save filter
-    filter = TracingDataBatch(tracing_seeds)
+    cuckoo_filter = TracingDataBatch(tracing_seeds)
     with open(args.output_file, "wb") as f:
-        filter.tofile(f)
+        cuckoo_filter.tofile(f)
+    print(cuckoo_filter.capacity)
 
 
 if __name__ == "__main__":
