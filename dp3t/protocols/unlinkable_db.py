@@ -21,6 +21,8 @@ __license__ = "Apache 2.0"
 
 from datetime import datetime, timedelta
 
+from bitarray import bitarray
+
 from cuckoo.filter import BCuckooFilter
 
 from dp3t.config import RETENTION_PERIOD, NUM_EPOCHS_PER_DAY
@@ -35,8 +37,6 @@ from dp3t.protocols.unlinkable import (
     hashed_observation_from_ephid,
     hashed_observation_from_seed,
 )
-
-from os import path
 
 #############################################################
 ### TYING CRYPTO FUNCTIONS TOGETHER FOR TRACING/RECORDING ###
@@ -63,37 +63,48 @@ class TracingDataBatch:
     well-specified version of such a cuckoo filter.
     """
 
-    def __init__(self, tracing_seeds=None, release_time=None, file_path=None):
+    def __init__(self, tracing_seeds=None, release_time=None, fh=None, capacity=None):
         """Create a published batch of tracing keys
 
         Args:
-            tracing_seeds ([(reported_epochs, seeds)]): A list of reported epochs/seeds
-                per infected user
+            tracing_seeds ([(reported_epochs, seeds)]) (optional): A list of
+                reported epochs/seeds per infected user
             release_time (optional): Release time of this batch
+            fh (optional): A file object from which to read the filter
+            capacity (optional): The filter's capacity when read from file
+
+            Either tracing seeds or a file object and its capacity must be
+            specified.
         """
 
-        if tracing_seeds and file_path:
-            raise ValueError("Must specify only one of tracing_seeds or file_path")
+        if tracing_seeds and fh:
+            raise ValueError("Must specify only one of tracing_seeds or file")
 
         if tracing_seeds:
             # Compute size of filter and ensure we have enough capacity
             nr_items = sum([len(epochs) for (epochs, _) in tracing_seeds])
-            self.capacity = int(nr_items * 1.2)
+            # Make capacity a multiple of 8 to make loaded size equal to saved
+            self.capacity = (int(nr_items * 1.2) // 8 + 1) * 8
 
             self.infected_observations = BCuckooFilter(
                 self.capacity, error_rate=CUCKOO_FPR
             )
             for (epochs, seeds) in tracing_seeds:
                 for (epoch, seed) in zip(epochs, seeds):
-                    self.infected_observations.insert(
-                        hashed_observation_from_seed(seed, epoch)
-                    )
-        elif file_path:
-            self.file_size = path.getsize(file_path)
-            # TODO Create filter from file
-            pass
+                    ho = hashed_observation_from_seed(seed, epoch)
+                    self.infected_observations.insert(ho)
+        elif fh:
+            if not capacity:
+                raise ValueError("Must specify capacity associated with the file")
+            self.infected_observations = BCuckooFilter(capacity, error_rate=CUCKOO_FPR)
+            read_filter = bitarray(0)
+            read_filter.fromfile(fh)
+            # Replace existing buckets with the bit array read from disk
+            # This is based on the current implementation of CBucketFile
+            # TODO: Submit a pull request to make this part of its API
+            self.infected_observations.buckets = read_filter
         else:
-            raise ValueError("Must specify at least one of tracing_seeds or file_path")
+            raise ValueError("Must specify at least one of tracing_seeds or file")
 
         self.release_time = release_time
 
@@ -320,6 +331,7 @@ class ContactTracer:
 
         seen_infected_ephids = 0
 
+        # TODO: Take into account RSSI and count
         for hashed_observation in self.db.get_observations():
             if hashed_observation in batch.infected_observations:
                 seen_infected_ephids += 1

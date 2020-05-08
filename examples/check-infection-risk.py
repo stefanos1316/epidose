@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-""" Create Cuckoo filter with reported infections """
+""" Read the Cuckoo filter and check infection risk based on contacts. """
 
 __copyright__ = """
     Copyright 2020 Diomidis Spinellis
@@ -20,28 +20,14 @@ __copyright__ = """
 __license__ = "Apache 2.0"
 
 import argparse
-from dp3t.protocols.unlinkable_db import TracingDataBatch
+from dp3t.protocols.unlinkable_db import TracingDataBatch, ContactTracer
 import logging
 import sys
 
 
-def read_seeds(file_path):
-    """Return an array containing a pair containing a list of epochs and a
-    list of corresponding seeds read from the specified file path."""
-
-    epochs = []
-    seeds = []
-    with open(file_path, "r") as f:
-        for line in f:
-            epoch, seed = line.split()
-            epochs.append(int(epoch))
-            seeds.append(bytearray.fromhex(seed))
-    return [(epochs, seeds)]
-
-
 def main():
     parser = argparse.ArgumentParser(
-        description="Create Cuckoo filter with reported infections"
+        description="Read Cuckoo filter and check against contacts"
     )
     parser.add_argument(
         "-d", "--debug", help="Run in debug mode logging to stderr", action="store_true"
@@ -50,22 +36,23 @@ def main():
         "-D",
         "--database",
         help="Specify the database location",
-        default="/var/lib/dp3t/server-database.db",
+        default="/var/lib/dp3t/client-database.db",
     )
-    parser.add_argument("-s", "--seeds-file", help="File containing epochs and seeds")
+    parser.add_argument("-o", "--observation", help="Observation hash to check")
     parser.add_argument(
         "-v", "--verbose", help="Set verbose logging", action="store_true"
     )
-    parser.add_argument("filter", help="File where filter will be stored")
+    parser.add_argument("filter", help="Cuckoo filter file")
+    parser.add_argument("capacity", type=int, help="Cuckoo filter file capacity")
     args = parser.parse_args()
 
     # Setup logging
     global logger
-    logger = logging.getLogger("create_filter")
+    logger = logging.getLogger("check_infection")
     if args.debug:
         log_handler = logging.StreamHandler(sys.stderr)
     else:
-        log_handler = logging.FileHandler("/var/log/create_filter")
+        log_handler = logging.FileHandler("/var/log/check_infection")
     formatter = logging.Formatter("%(asctime)s: %(message)s")
     log_handler.setFormatter(formatter)
 
@@ -79,19 +66,24 @@ def main():
     log_handler.setLevel(log_level)
 
     logger.debug("Starting up")
+    with open(args.filter, "rb") as f:
+        cuckoo_filter = TracingDataBatch(fh=f, capacity=args.capacity)
 
-    # Obtain seeds
-    if args.seeds_file:
-        tracing_seeds = read_seeds(args.seeds_file)
+    if args.observation:
+        if (
+            bytes(bytearray.fromhex(args.observation))
+            in cuckoo_filter.infected_observations
+        ):
+            print("Found")
+            sys.exit(0)
+        else:
+            print("Not found")
+            sys.exit(1)
     else:
-        # TODO Obtain tracing seeds from the server database
-        tracing_seeds = ([], [])
-
-    # Create and save filter
-    cuckoo_filter = TracingDataBatch(tracing_seeds)
-    with open(args.filter, "wb") as f:
-        cuckoo_filter.tofile(f)
-    print(cuckoo_filter.capacity)
+        ct = ContactTracer(None, args.database, transmitter=False, receiver=False)
+        matches = ct.matches_with_batch(cuckoo_filter)
+        print(matches)
+        sys.exit(0 if matches == 0 else 1)
 
 
 if __name__ == "__main__":

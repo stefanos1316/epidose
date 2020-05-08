@@ -155,7 +155,7 @@ class ClientDatabase:
             )
 
     def get_observations(self):
-        """Return as an iterable the ephids of all past observations."""
+        """Return as an iterable the ephid hashes of all past observations."""
         query = DailyObservations.select(DailyObservations.ephid_hash)
         return map(lambda rec: rec.ephid_hash, query)
 
