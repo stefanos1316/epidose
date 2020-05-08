@@ -36,6 +36,7 @@ from dp3t.protocols.unlinkable import (
     hashed_observation_from_seed,
 )
 
+from os import path
 
 #############################################################
 ### TYING CRYPTO FUNCTIONS TOGETHER FOR TRACING/RECORDING ###
@@ -62,7 +63,7 @@ class TracingDataBatch:
     well-specified version of such a cuckoo filter.
     """
 
-    def __init__(self, tracing_seeds, release_time=None):
+    def __init__(self, tracing_seeds=None, release_time=None, file_path=None):
         """Create a published batch of tracing keys
 
         Args:
@@ -71,16 +72,26 @@ class TracingDataBatch:
             release_time (optional): Release time of this batch
         """
 
-        # Compute size of filter and ensure we have enough capacity
-        nr_items = sum([len(epochs) for (epochs, _) in tracing_seeds])
-        capacity = int(nr_items * 1.2)
+        if tracing_seeds and file_path:
+            raise ValueError("Must specify only one of tracing_seeds or file_path")
 
-        self.infected_observations = BCuckooFilter(capacity, error_rate=CUCKOO_FPR)
-        for (epochs, seeds) in tracing_seeds:
-            for (epoch, seed) in zip(epochs, seeds):
-                self.infected_observations.insert(
-                    hashed_observation_from_seed(seed, epoch)
-                )
+        if tracing_seeds:
+            # Compute size of filter and ensure we have enough capacity
+            nr_items = sum([len(epochs) for (epochs, _) in tracing_seeds])
+            capacity = int(nr_items * 1.2)
+
+            self.infected_observations = BCuckooFilter(capacity, error_rate=CUCKOO_FPR)
+            for (epochs, seeds) in tracing_seeds:
+                for (epoch, seed) in zip(epochs, seeds):
+                    self.infected_observations.insert(
+                        hashed_observation_from_seed(seed, epoch)
+                    )
+        elif file_path:
+            self.file_size = path.getsize(file_path)
+            # TODO Create filter from file
+            pass
+        else:
+            raise ValueError("Must specify tracing_seeds or file_path")
 
         self.release_time = release_time
 
