@@ -304,6 +304,10 @@ If you just installed the test dependencies, you may need to reload the `venv`
 (`deactivate` followed by `source venv/bin/ativate`) to ensure that the paths
 are picked up correctly.
 
+## More information
+* [Decentralized Privacy-Preserving Proximity Tracing](https://github.com/DP-3T/documents)
+* [ACM Europe TPC Statement on Principles, Practices for COVID-19 Contact Tracing Applications](https://www.acm.org/binaries/content/assets/public-policy/europe-tpc-contact-tracing-statement.pdf)
+
 ## License
 
 This code is licensed under the Apache 2.0 license, as found in the LICENSE
