@@ -18,6 +18,21 @@ The software is based on the [DP3T](https://github.com/DP-3T/documents)
 contact tracing "unlinkable" design and corresponding reference implementation
 code, gratefully acknowledging the team's amazing work.
 
+## Contents
+- [Rationale](#rationale)
+- [Overview and Use](#overview-and-use)
+- [Technology](#technology)
+- [Software architecture](#software-architecture)
+- [Hardware parts list](#hardware-parts-list)
+- [What is implemented](#what-is-implemented)
+- [What is missing](#what-is-missing)
+- [Installing the reference implementation](#installing-the-reference-implementation)
+- [Running the client code](#running-the-client-code)
+- [Development](#development)
+- [More information](#more-information)
+- [License](#license)
+
+
 ## Rationale
 Contact tracing via smartphone apps has been widely touted as an important
 way to control and limit the spread of the COVID-19 epidemic.
