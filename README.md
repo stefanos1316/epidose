@@ -60,7 +60,7 @@ of comparable phone apps.
 
 ## Overview and Use #
 
- <img width="300" alt="Epidemic dosimeter concept drawing" src="https://raw.githubusercontent.com/dspinellis/epidose/master/hardware/concept.png">
+<img width="300" alt="Epidemic dosimeter concept drawing" src="https://raw.githubusercontent.com/dspinellis/epidose/master/hardware/concept.png">
 
 The epidemic dosimeter is a lightweight (<100g), low-cost
 (mass-produced <40€), self-contained device, housed in a package with a
@@ -102,6 +102,7 @@ global WiFi sharing network, such as that offered by [fon](https://fon.com/).
 
 ## Software architecture
 The dosimeter's software is designed around the following components.
+as depicted in the diagram at the end of this section.
 
 * `beacon_tx_unlinkable.py`: Continuously running transmitter of ephemeral
   identifiers.
@@ -140,6 +141,8 @@ The dosimeter's software is designed around the following components.
   software updates.
 * `ha_server.py`: The health authority's server, which receives
   lists of infected person's contacts and provides filter updates.
+
+![Software architecture](https://raw.githubusercontent.com/dspinellis/epidose/master/doc/software-arcitecture.png)
 
 ## Hardware parts list
 * Raspberry Pi Zero-W
