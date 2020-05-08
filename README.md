@@ -101,7 +101,7 @@ obtain possibly infected contacts and software updates through a
 global WiFi sharing network, such as that offered by [fon](https://fon.com/).
 
 ## Software architecture
-The dosimeter's software is designed around the following components.
+The dosimeter's software is designed around the following components,
 as depicted in the diagram at the end of this section.
 
 * `beacon_tx_unlinkable.py`: Continuously running transmitter of ephemeral
@@ -142,7 +142,7 @@ as depicted in the diagram at the end of this section.
 * `ha_server.py`: The health authority's server, which receives
   lists of infected person's contacts and provides filter updates.
 
-![Software architecture](https://raw.githubusercontent.com/dspinellis/epidose/master/doc/software-arcitecture.png)
+![Software architecture](https://raw.githubusercontent.com/dspinellis/epidose/master/doc/software-architecture.png)
 
 ## Hardware parts list
 * Raspberry Pi Zero-W
