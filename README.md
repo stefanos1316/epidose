@@ -16,15 +16,14 @@ regarding operation and exposure risk
 and a physical interlock switch to allow the release of contact data.
 The software is based on the [DP3T](https://github.com/DP-3T/documents)
 contact tracing "unlinkable" design and corresponding reference implementation
-code, and gratefully acknowledges the team's amazing work.
+code, gratefully acknowledging the team's amazing work.
 
 ## Rationale
 Contact tracing via smartphone apps has been widely touted as an important
 way to control and limit the spread of the COVID-19 epidemic.
 However, basing contact-tracing on phone apps has several limitations.
 [According to market reports](https://en.wikipedia.org/wiki/List_of_countries_by_smartphone_penetration),
-
-While in higher income countries smartphone penetration is over 60%, in
+while in higher income countries smartphone penetration is over 60%, in
 lower income ones it drops significantly, even to less than 20%.
 Even in higher income countries, smartphone penetration declines significantly
 with [increased age](https://doi.org/10.1109/MCE.2016.2614524)
