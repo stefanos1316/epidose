@@ -10,3 +10,5 @@ __pycache__/
 venv/
 *.swp
 TAGS
+tags
+cuckoo-filter.bin

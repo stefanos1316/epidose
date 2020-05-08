@@ -91,9 +91,15 @@ class TracingDataBatch:
             # TODO Create filter from file
             pass
         else:
-            raise ValueError("Must specify tracing_seeds or file_path")
+            raise ValueError("Must specify at least one of tracing_seeds or file_path")
 
         self.release_time = release_time
+
+    def tofile(self, f):
+        """Save the filter to the specified file object. """
+        # This is based on the current implementation of CBucketFile
+        # TODO: Submit a pull request to make this part of its API
+        self.infected_observations.buckets.tofile(f)
 
 
 class ContactTracer:
