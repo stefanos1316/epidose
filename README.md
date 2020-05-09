@@ -184,12 +184,12 @@ tested, with a device reporting an *infected* status after (manually)
 downloading a filter constructed from identifiers actually transmitted
 and received over Bluetooth.
 
-The following programs are available in the `examples` directory.
+The following programs are available in the `epidose` directory.
 
-* `beacon_tx_unlinkable.py`
-* `beacon_rx_unlinkable.py`
-* `create_filter.py`
-* `check_infection_risk.py`
+* `device/beacon_tx_unlinkable.py`
+* `device/beacon_rx_unlinkable.py`
+* `device/check_infection_risk.py`
+* `back-end/create_filter.py`
 
 All programs can be run with a *--help* argument to obtain usage information.
 
@@ -233,8 +233,8 @@ After installing the project you can run the client code on a Raspberry-Pi Zero-
 
 ```sh
 sudo mkdir -p /var/lib/epidose
-nohup sudo venv/bin/python examples/beacon_tx_unlinkable.py -v &
-nohup sudo venv/bin/python examples/beacon_rx_unlinkable.py -v &
+nohup sudo venv/bin/python epidose/device/beacon_tx_unlinkable.py -v &
+nohup sudo venv/bin/python epidose/device/beacon_rx_unlinkable.py -v &
 ```
 
 You can then monitor the device's operation with

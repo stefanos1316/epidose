@@ -16,6 +16,7 @@ __copyright__ = """
 __license__ = "Apache 2.0"
 
 from pathlib import Path
+import pytest
 import subprocess
 
 FOUND = "E18901F5E514C82F03F039F2C43503D32F24DF988BC5E9CA4F3F9B307EA62A1B"
@@ -23,9 +24,9 @@ NOTFOUND = "A18901F5E514C82F03F039F2C43503D32F24DF988BC5E9CA4F3F9B307EA62A1B"
 
 
 def script_path(script):
-    """Return the full path of a script in the examples directory.
+    """Return the full path of a script in the epidose/ directory.
     """
-    return Path(__file__).parent.parent / "examples" / script
+    return Path(__file__).parent.parent / "epidose" / script
 
 
 def data_path(file_name):
@@ -34,10 +35,18 @@ def data_path(file_name):
     return Path(__file__).parent.parent / "test-data" / file_name
 
 
+beacon_scripts = (Path(__file__).parent.parent / "epidose/device").glob("b*.py")
+
+
+@pytest.mark.parametrize("script", beacon_scripts)
+def test_beacon_script(script):
+    subprocess.run([script, "--test"], check=True)
+
+
 def test_round_trip():
     r = subprocess.check_output(
         [
-            script_path("create_filter.py"),
+            script_path("back-end/create_filter.py"),
             "-d",
             "-s",
             data_path("epoch-seeds"),
@@ -48,7 +57,7 @@ def test_round_trip():
 
     r = subprocess.run(
         [
-            script_path("check_infection_risk.py"),
+            script_path("device/check_infection_risk.py"),
             "-d",
             "-o",
             FOUND,
@@ -60,7 +69,7 @@ def test_round_trip():
 
     r = subprocess.run(
         [
-            script_path("check_infection_risk.py"),
+            script_path("device/check_infection_risk.py"),
             "-d",
             "-o",
             NOTFOUND,
