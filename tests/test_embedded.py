@@ -48,7 +48,7 @@ def test_round_trip():
 
     r = subprocess.run(
         [
-            script_path("check-infection-risk.py"),
+            script_path("check_infection_risk.py"),
             "-d",
             "-o",
             FOUND,
@@ -60,7 +60,7 @@ def test_round_trip():
 
     r = subprocess.run(
         [
-            script_path("check-infection-risk.py"),
+            script_path("check_infection_risk.py"),
             "-d",
             "-o",
             NOTFOUND,
