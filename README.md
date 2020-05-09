@@ -324,7 +324,7 @@ are picked up correctly.
 * [Decentralized Privacy-Preserving Proximity Tracing](https://github.com/DP-3T/documents)
 * [ACM Europe TPC Statement on Principles, Practices for COVID-19 Contact Tracing Applications](https://www.acm.org/binaries/content/assets/public-policy/europe-tpc-contact-tracing-statement.pdf)
 * [Preprints from the BDI Pathogen Dynamics team about COVID-19 suppression through digital contact tracing](https://github.com/BDI-pathogens/covid-19_instant_tracing)
- * [https://science.sciencemag.org/content/368/6491/eabb6936](https://science.sciencemag.org/content/368/6491/eabb6936) *Science* , 08 May 2020: Vol. 368, Issue 6491.
+ * [Quantifying SARS-CoV-2 transmission suggests epidemic control with digital contact tracing](https://science.sciencemag.org/content/368/6491/eabb6936) *Science* , 08 May 2020: Vol. 368, Issue 6491.
 
 ## License
 
