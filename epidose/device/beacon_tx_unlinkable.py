@@ -23,9 +23,8 @@ import argparse
 from dp3t.config import EPOCH_LENGTH
 from datetime import datetime
 from dp3t.protocols.unlinkable_db import ContactTracer
-import logging
+from epidose.common import logging
 import subprocess
-import sys
 import time
 
 
@@ -135,27 +134,10 @@ def main():
 
     # Setup logging
     global logger
-    logger = logging.getLogger("beacon_tx")
-    if args.debug:
-        log_handler = logging.StreamHandler(sys.stderr)
-    else:
-        log_handler = logging.FileHandler("/var/log/beacon_tx")
-    formatter = logging.Formatter("%(asctime)s: %(message)s")
-    log_handler.setFormatter(formatter)
-
-    logger.addHandler(log_handler)
+    logger = logging.getLogger("beacon_tx", args)
 
     global dry_run
     dry_run = args.dry_run
-
-    if args.verbose:
-        log_level = logging.DEBUG
-    else:
-        log_level = logging.INFO
-    logger.setLevel(log_level)
-    log_handler.setLevel(log_level)
-
-    logger.info("Starting up")
 
     interface = f"hci{args.iface}"
 

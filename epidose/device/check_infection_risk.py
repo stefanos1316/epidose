@@ -21,7 +21,7 @@ __license__ = "Apache 2.0"
 
 import argparse
 from dp3t.protocols.unlinkable_db import TracingDataBatch, ContactTracer
-import logging
+from epidose.common import logging
 import sys
 
 
@@ -48,24 +48,8 @@ def main():
 
     # Setup logging
     global logger
-    logger = logging.getLogger("check_infection")
-    if args.debug:
-        log_handler = logging.StreamHandler(sys.stderr)
-    else:
-        log_handler = logging.FileHandler("/var/log/check_infection")
-    formatter = logging.Formatter("%(asctime)s: %(message)s")
-    log_handler.setFormatter(formatter)
+    logger = logging.getLogger("check_infection", args)
 
-    logger.addHandler(log_handler)
-
-    if args.verbose:
-        log_level = logging.DEBUG
-    else:
-        log_level = logging.INFO
-    logger.setLevel(log_level)
-    log_handler.setLevel(log_level)
-
-    logger.debug("Starting up")
     with open(args.filter, "rb") as f:
         cuckoo_filter = TracingDataBatch(fh=f, capacity=args.capacity)
 

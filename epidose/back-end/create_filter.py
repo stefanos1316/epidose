@@ -21,8 +21,7 @@ __license__ = "Apache 2.0"
 
 import argparse
 from dp3t.protocols.unlinkable_db import TracingDataBatch
-import logging
-import sys
+from epidose.common import logging
 
 
 def read_seeds(file_path):
@@ -61,24 +60,7 @@ def main():
 
     # Setup logging
     global logger
-    logger = logging.getLogger("create_filter")
-    if args.debug:
-        log_handler = logging.StreamHandler(sys.stderr)
-    else:
-        log_handler = logging.FileHandler("/var/log/create_filter")
-    formatter = logging.Formatter("%(asctime)s: %(message)s")
-    log_handler.setFormatter(formatter)
-
-    logger.addHandler(log_handler)
-
-    if args.verbose:
-        log_level = logging.DEBUG
-    else:
-        log_level = logging.INFO
-    logger.setLevel(log_level)
-    log_handler.setLevel(log_level)
-
-    logger.debug("Starting up")
+    logger = logging.getLogger("create_filter", args)
 
     # Obtain seeds
     if args.seeds_file:
