@@ -75,7 +75,7 @@ of comparable phone apps.
 
 ## Overview and Use
 
-<img width="300" alt="Epidemic dosimeter concept drawing" src="https://raw.githubusercontent.com/dspinellis/epidose/master/hardware/concept.png">
+<img width="300" alt="Epidemic dosimeter concept drawing" src="https://raw.githubusercontent.com/dspinellis/epidose/master/hardware/concept.svg">
 
 The epidemic dosimeter is a lightweight (<100g), low-cost
 (mass-produced <40€), self-contained device, housed in a package with a
@@ -162,7 +162,7 @@ as depicted in the diagram at the end of this section.
   contacts (at that point, or when the test results are out),
   providing a single-use key to authorize and authenticate the upload.
 
-![Software architecture](https://raw.githubusercontent.com/dspinellis/epidose/master/doc/software-architecture.png)
+![Software architecture](https://raw.githubusercontent.com/dspinellis/epidose/master/doc/software-architecture.svg?sanitize=1)
 
 ## Hardware parts list
 * Raspberry Pi Zero-W
