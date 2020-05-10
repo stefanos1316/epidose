@@ -19,7 +19,7 @@ __copyright__ = """
 """
 __license__ = "Apache 2.0"
 
-from flask import Flask, request, jsonify
+from flask import Flask, abort, jsonify, request
 import argparse
 from epidose.common import logging
 from dp3t.protocols.server_database import ServerDatabase
@@ -29,6 +29,22 @@ API_VERSION = "1"
 app = Flask("ha-server")
 
 db = None
+
+
+def shutdown_server():
+    func = request.environ.get("werkzeug.server.shutdown")
+    if func is None:
+        raise RuntimeError("Not running with the Werkzeug Server")
+    func()
+
+
+@app.route("/shutdown")
+def shutdown():
+    if app.debug:
+        shutdown_server()
+        return "Server shutting down..."
+    else:
+        abort(405)
 
 
 @app.route("/version", methods=["GET"])
