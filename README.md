@@ -147,7 +147,7 @@ as depicted in the diagram at the end of this section.
 * `upload_contacts.py`: Subject to an agreement between the user and
   the health authority, implemented through a physical interlock and
   a suitable protocol, this uploads to a health authority's server the
-  contacts of a user found to be infected.
+  contacts of a user found to be infected, using a supplied key.
 * `watchdog.sh`: Monitors the correct operation of all components and
   flashes the green LED to indicate correct operation.
   It also resets the device in case of a failure.
@@ -189,7 +189,9 @@ The following programs are available in the `epidose` directory.
 * `device/beacon_tx_unlinkable.py`
 * `device/beacon_rx_unlinkable.py`
 * `device/check_infection_risk.py`
+* `device/upload_contacts.py`
 * `back-end/create_filter.py`
+* `back-end/ha_server.py`
 
 All programs can be run with a *--help* argument to obtain usage information.
 
@@ -198,10 +200,8 @@ The server and the device automation and configuration are under construction.
 In the following days expect to see code for the following components.
 
 * `download_infected.sh`
-* `upload_contacts.py`
 * `watchdog.sh`
 * `update_client.sh`
-* `ha_server.py`
 
 In some places the code takes shortcuts or makes simplifications (e.g.
 not using the number of messages and their strength (RSSI) for estimating
@@ -209,7 +209,7 @@ the infection risk.)  These are marked in the code with `TODO` comments.
 
 Also missing are the following.
 
-* The health authority user interface
+* The health authority user interface and upload key protocol
 * The circuit diagram and PCB layout diagram for the support electronics
 * The design for 3D-printing the enclosure
 

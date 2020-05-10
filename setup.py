@@ -25,6 +25,7 @@ setuptools.setup(
         "pybluez",
         "pycryptodomex",
         "peewee",
+        "requests",
         "scalable-cuckoo-filter",
     ],
     extras_require={
