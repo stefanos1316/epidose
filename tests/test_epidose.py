@@ -46,7 +46,7 @@ def test_beacon_script(script):
 def test_round_trip():
     r = subprocess.check_output(
         [
-            script_path("back-end/create_filter.py"),
+            script_path("back_end/create_filter.py"),
             "-d",
             "-s",
             data_path("epoch-seeds"),
