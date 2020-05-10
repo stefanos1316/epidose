@@ -113,9 +113,9 @@ class ClientDatabase:
         self.state.last_ephid_change = t
         self.state.save()
 
-    def add_epoch_ids(self, add_epoch, add_seed, add_ephid):
+    def add_epoch_ids(self, epoch, seed, ephid):
         """Add the seed and ephid for the specified epoch."""
-        EpochIds.create(epoch=add_epoch, seed=add_seed, ephid=add_ephid)
+        EpochIds.create(epoch=epoch, seed=seed, ephid=ephid)
 
     def get_epoch_seeds(self, start_epoch, end_epoch):
         """Return the seeds for the specified (first inclusive, last exclusive) epoch range."""
