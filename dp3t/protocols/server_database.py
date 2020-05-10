@@ -78,6 +78,15 @@ class ServerDatabase:
             .iterator()
         )
 
+    def get_epoch_seeds_tuple(self):
+        """Return a tuple of epochs and seeds."""
+        epochs = []
+        seeds = []
+        for (epoch, seed) in self.get_epoch_seeds():
+            epochs.append(epoch)
+            seeds.append(seed)
+        return (epochs, seeds)
+
     def add_epoch_seed(self, epoch, seed):
         """Add contagious user's epoch and seed.
         """

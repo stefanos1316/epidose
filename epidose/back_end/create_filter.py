@@ -20,6 +20,7 @@ __copyright__ = """
 __license__ = "Apache 2.0"
 
 import argparse
+from dp3t.protocols.server_database import ServerDatabase
 from dp3t.protocols.unlinkable_db import TracingDataBatch
 from epidose.common import logging
 
@@ -66,8 +67,8 @@ def main():
     if args.seeds_file:
         tracing_seeds = read_seeds(args.seeds_file)
     else:
-        # TODO Obtain tracing seeds from the server database
-        tracing_seeds = ([], [])
+        db = ServerDatabase(args.database)
+        tracing_seeds = db.get_epochs_seeds_tuple()
 
     # Create and save filter
     cuckoo_filter = TracingDataBatch(tracing_seeds)

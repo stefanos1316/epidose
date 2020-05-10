@@ -39,14 +39,26 @@ def test_get_epoch_seeds_empty(db_connection):
 
 
 def test_add_get_epoch_seeds(db_connection):
-    for i in range(1, 10):
+    # Add
+    for i in range(0, 10):
         db_connection.add_epoch_seed(i, f"S{i}")
-    count = 1
+
+    # Get through iterator
+    count = 0
     for (epoch, seed) in db_connection.get_epoch_seeds():
         assert epoch == count
         assert seed == bytes(f"S{count}", encoding="ascii")
         count += 1
     assert count == 10
+
+    # Get tuple
+    (epochs, seeds) = db_connection.get_epoch_seeds_tuple()
+    assert len(epochs) == 10
+    assert len(seeds) == 10
+    assert 0 in epochs
+    assert 9 in epochs
+    assert b"S0" in seeds
+    assert b"S9" in seeds
 
 
 def test_delete_epoch_seeds(db_connection):
