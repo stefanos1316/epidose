@@ -17,9 +17,9 @@ __license__ = "Apache 2.0"
 
 from datetime import datetime, timedelta
 from dp3t.config import EPOCH_LENGTH
+from dp3t.protocols.client_database import ClientDatabase
 from dp3t.protocols.server_database import ServerDatabase
 from dp3t.protocols.unlinkable import epoch_from_time
-from dp3t.protocols.unlinkable_db import ContactTracer
 from os import close, remove
 from pathlib import Path
 import pytest
@@ -49,14 +49,7 @@ def test_context():
     # Initialize client database
     (client_db_handle, client_db_path) = mkstemp()
     close(client_db_handle)
-    contact_tracer = ContactTracer(
-        START_TIME - timedelta(days=2),
-        client_db_path,
-        transmitter=False,
-        receiver=False,
-    )
-    contact_tracer.check_advance_day(datetime.utcnow())
-    client_db = contact_tracer.db
+    client_db = ClientDatabase(client_db_path)
 
     # Add seeds to the client database
     for i in range(0, 10):
