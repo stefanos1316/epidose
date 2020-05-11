@@ -34,6 +34,9 @@ SERVER_URL = "https://api.contact-tracing.org"
 def main():
     parser = argparse.ArgumentParser(description="Contact tracing beacon trasmitter")
     parser.add_argument(
+        "-a", "--authorization", help="Upload authorization code", default=":NONE:"
+    )
+    parser.add_argument(
         "-d", "--debug", help="Run in debug mode logging to stderr", action="store_true"
     )
     parser.add_argument(
@@ -43,7 +46,6 @@ def main():
         default="/var/lib/epidose/client-database.db",
     )
     parser.add_argument("-t", "--test", help="Test script", action="store_true")
-    parser.add_argument("-k", "--key", help="Upload key", default=":NOKEY:")
     parser.add_argument("-s", "--server", help="Server URL", default=SERVER_URL)
     parser.add_argument(
         "-v", "--verbose", help="Set verbose logging", action="store_true"
@@ -72,7 +74,7 @@ def main():
     )
 
     # Create dictionary for JSON
-    post = {"key": args.key, "data": []}
+    post = {"authorization": args.authorization, "data": []}
     i = 0
     for e in epochs:
         post["data"].append({"epoch": e, "seed": seeds[i].hex()})

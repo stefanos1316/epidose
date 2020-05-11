@@ -54,7 +54,7 @@ def test_add_contagious(client):
     rv = client.post(
         "/add_contagious",
         json={
-            "key": "xyzzy",
+            "authorization": "xyzzy",
             "data": [
                 {"epoch": 42, "seed": "deadbeef"},
                 {"epoch": 43, "seed": "baadf00d"},

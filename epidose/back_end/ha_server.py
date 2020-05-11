@@ -57,14 +57,14 @@ def add_contagious():
     content = request.json
     print(db)
     with db.atomic():
-        logger.debug(f"Add new data with key {content['key']}")
-        # TODO: Check key
+        logger.debug(f"Add new data with authorization {content['authorization']}")
+        # TODO: Check authorization
         for rec in content["data"]:
             epoch = rec["epoch"]
             seed = bytes.fromhex(rec["seed"])
             db.add_epoch_seed(epoch, seed)
             logger.debug(f"Add {epoch} {seed.hex()}")
-            # TODO: Delete key
+            # TODO: Delete authorization
         return "OK"
 
 
