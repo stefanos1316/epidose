@@ -72,10 +72,17 @@ def test_context():
         [script_path("back_end/ha_server.py"), "-d", "-v", "-D", server_db_path]
     )
 
-    server_db = ServerDatabase(server_db_path)
     # Wait for server to come up
-    # TODO: Test with a loop trying to obtain the version
-    sleep(1)
+    while True:
+        try:
+            res = requests.get(f"{SERVER_URL}/version")
+            if res.ok:
+                break
+        except requests.exceptions.ConnectionError:
+            pass
+        sleep(0.1)
+
+    server_db = ServerDatabase(server_db_path)
 
     yield (client_db_path, server_db)
     # Shutdown the server
@@ -122,5 +129,4 @@ def test_upload_contacts(test_context):
         epoch_from_time(START_TIME + timedelta(minutes=8 * EPOCH_LENGTH)) + 1
         not in epochs
     )
-    print(seeds)
     assert bytes.fromhex("deadbeef06") in seeds
