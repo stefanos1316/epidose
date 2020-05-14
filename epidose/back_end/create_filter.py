@@ -73,8 +73,8 @@ def main():
     # Create and save filter
     cuckoo_filter = TracingDataBatch(tracing_seeds)
     with open(args.filter, "wb") as f:
+        f.write(cuckoo_filter.capacity.to_bytes(8, byteorder="big", signed=False))
         cuckoo_filter.tofile(f)
-    print(cuckoo_filter.capacity)
 
 
 if __name__ == "__main__":

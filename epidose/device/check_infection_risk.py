@@ -22,6 +22,7 @@ __license__ = "Apache 2.0"
 import argparse
 from dp3t.protocols.unlinkable_db import TracingDataBatch, ContactTracer
 from epidose.common import logging
+import struct
 import sys
 
 
@@ -43,7 +44,6 @@ def main():
         "-v", "--verbose", help="Set verbose logging", action="store_true"
     )
     parser.add_argument("filter", help="Cuckoo filter file")
-    parser.add_argument("capacity", type=int, help="Cuckoo filter file capacity")
     args = parser.parse_args()
 
     # Setup logging
@@ -51,7 +51,8 @@ def main():
     logger = logging.getLogger("check_infection", args)
 
     with open(args.filter, "rb") as f:
-        cuckoo_filter = TracingDataBatch(fh=f, capacity=args.capacity)
+        (capacity,) = struct.unpack(">Q", f.read(8))
+        cuckoo_filter = TracingDataBatch(fh=f, capacity=capacity)
 
     if args.observation:
         if (

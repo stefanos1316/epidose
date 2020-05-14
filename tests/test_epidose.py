@@ -53,7 +53,6 @@ def test_round_trip():
             "/tmp/cuckoo-filter.bin",
         ]
     )
-    assert r == b"120\n"  # Reported capacity
 
     r = subprocess.run(
         [
@@ -62,7 +61,6 @@ def test_round_trip():
             "-o",
             FOUND,
             "/tmp/cuckoo-filter.bin",
-            "120",
         ]
     )
     assert r.returncode == 0  # Found
@@ -74,7 +72,6 @@ def test_round_trip():
             "-o",
             NOTFOUND,
             "/tmp/cuckoo-filter.bin",
-            "120",
         ]
     )
     assert r.returncode == 1  # Not found
