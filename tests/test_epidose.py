@@ -16,7 +16,6 @@ __copyright__ = """
 __license__ = "Apache 2.0"
 
 from pathlib import Path
-import pytest
 import subprocess
 
 FOUND = "E18901F5E514C82F03F039F2C43503D32F24DF988BC5E9CA4F3F9B307EA62A1B"
@@ -36,11 +35,6 @@ def data_path(file_name):
 
 
 beacon_scripts = (Path(__file__).parent.parent / "epidose/device").glob("b*.py")
-
-
-@pytest.mark.parametrize("script", beacon_scripts)
-def test_beacon_script(script):
-    subprocess.run([script, "--test"], check=True)
 
 
 def test_round_trip():
