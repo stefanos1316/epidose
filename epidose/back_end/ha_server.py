@@ -19,10 +19,11 @@ __copyright__ = """
 """
 __license__ = "Apache 2.0"
 
-from flask import Flask, abort, jsonify, request
+from flask import Flask, abort, jsonify, request, send_from_directory
 import argparse
 from epidose.common import logging
 from dp3t.protocols.server_database import ServerDatabase
+from os.path import basename, dirname
 
 API_VERSION = "1"
 
@@ -36,6 +37,15 @@ def shutdown_server():
     if func is None:
         raise RuntimeError("Not running with the Werkzeug Server")
     func()
+
+
+@app.route("/filter", methods=["GET"])
+def filter():
+    """Send the Cuckoo filter as a static file.
+    In a production deployment this should be handled by the front-end server,
+    such as nginx.
+    """
+    return send_from_directory(dirname(filter_location), basename(filter_location))
 
 
 @app.route("/shutdown")
@@ -94,6 +104,12 @@ def main():
         help="Specify the database location",
         default="/var/lib/epidose/server-database.db",
     )
+    parser.add_argument(
+        "-f",
+        "--filter",
+        help="Specify the location of the Cuckoo filter",
+        default="/var/lib/epidose/filter.bin",
+    )
     parser.add_argument("-p", "--port", help="Set TCP port to listen", type=int)
     parser.add_argument(
         "-v", "--verbose", help="Set verbose logging", action="store_true"
@@ -101,6 +117,9 @@ def main():
     args = parser.parse_args()
 
     initialize(args)
+
+    global filter_location
+    filter_location = args.filter
 
     app.run(debug=args.debug, port=args.port)
 
