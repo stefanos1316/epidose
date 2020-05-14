@@ -23,6 +23,8 @@ import argparse
 from dp3t.protocols.server_database import ServerDatabase
 from dp3t.protocols.unlinkable_db import TracingDataBatch
 from epidose.common import logging
+import os
+from tempfile import mkstemp
 
 
 def read_seeds(file_path):
@@ -72,9 +74,15 @@ def main():
 
     # Create and save filter
     cuckoo_filter = TracingDataBatch(tracing_seeds)
-    with open(args.filter, "wb") as f:
+    handle, name = mkstemp(dir=os.path.dirname(args.filter))
+
+    # Write filter to a temparary file
+    with os.fdopen(handle, "wb") as f:
         f.write(cuckoo_filter.capacity.to_bytes(8, byteorder="big", signed=False))
         cuckoo_filter.tofile(f)
+
+    # Atomically replace any existing filter file with the new one
+    os.rename(name, args.filter)
 
 
 if __name__ == "__main__":
