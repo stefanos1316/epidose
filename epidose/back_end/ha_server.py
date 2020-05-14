@@ -92,7 +92,7 @@ def main():
         "-D",
         "--database",
         help="Specify the database location",
-        default="/var/epidose/dp3t/server-database.db",
+        default="/var/lib/epidose/server-database.db",
     )
     parser.add_argument("-p", "--port", help="Set TCP port to listen", type=int)
     parser.add_argument(
