@@ -23,7 +23,7 @@ import argparse
 import bluetooth._bluetooth as bluez
 from datetime import datetime
 from dp3t.protocols.unlinkable_db import ContactTracer
-from epidose.common import logging
+from epidose.device.beacon_format import BLE_PACKET
 import struct
 import sys
 
@@ -65,7 +65,7 @@ def process_packet(socket):
     if packet_length != 40:
         return
     # Ensure the packet is contact detection service
-    if packet[17:25] != bytes([0x03, 0x03, 0x6F, 0xFD, 0x13, 0x16, 0x6F, 0xFD]):
+    if packet[13:25] != BLE_PACKET:
         return
 
     # This is a contact detection service packet

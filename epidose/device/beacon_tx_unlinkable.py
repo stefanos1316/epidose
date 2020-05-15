@@ -24,6 +24,7 @@ from dp3t.config import EPOCH_LENGTH
 from datetime import datetime
 from dp3t.protocols.unlinkable_db import ContactTracer
 from epidose.common import logging
+from epidose.device.beacon_format import BLE_PACKET
 import subprocess
 import time
 
@@ -63,20 +64,13 @@ def set_transmit(interface, ephid, rssi):
         interface,
         "cmd",
         "0x08",
-        "0x0008",
-        "1E",
-        "02",  # Flags: Length
-        "01",  # Flags: Type Flag
-        "1A",  # Flags: Value (LE general discoverable?) (16)
-        "03",  # ServiceUUID: Length
-        "03",  # ServiceUUID: Type (Complete 16-bit ServiceUUID)
-        "6f",  # ServiceUUID: Contact Detection Service (0xFD6F)
-        "fd",  # ServiceUUID: Contact Detection Service (0xFD6F)
-        "13",  # Service Data: Length
-        "16",  # Service Data: Type (16 byte UUID)
-        "6f",  # Service Data: Contact Detection Service (0xFD6F)
-        "fd",  # Service Data: Contact Detection Service (0xFD6F)
+        "0x0008", # HCI_LE_Set_Advertising_Data command (7.8.7, p. 1062)
     ]
+
+    # Add BLE command
+    ble = BLE_PACKET.hex()
+    for p in range(0, len(BLE_PACKET) * 2, 2):
+        cmd.append(ble[p : p + 2])
 
     # Add ephid
     ephid = ephid.hex()
