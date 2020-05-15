@@ -65,19 +65,17 @@ def set_transmit(interface, ephid, rssi):
         "0x08",
         "0x0008",
         "1E",
-        "02",
-        "01",
-        "1A",
-        "1b",  # Advertisement length
-        "ff",  # Manufacturer-specific data structure
-        "f1",
-        "05",  # Manufacturer id: 0x05f1 Linux Foundation
-        "be",  # ... continue
-        "ac",  # AltBeacon code
-        "ed",  # ... continue
-        "05",  # Contact tracing id
-        "01",  # Contact tracing protocol version
-        "01",  # Contact tracing application (ephId beacon)
+        "02",  # Flags: Length
+        "01",  # Flags: Type Flag
+        "1A",  # Flags: Value (LE general discoverable?) (16)
+        "03",  # ServiceUUID: Length
+        "03",  # ServiceUUID: Type (Complete 16-bit ServiceUUID)
+        "6f",  # ServiceUUID: Contact Detection Service (0xFD6F)
+        "fd",  # ServiceUUID: Contact Detection Service (0xFD6F)
+        "13",  # Service Data: Length
+        "16",  # Service Data: Type (16 byte UUID)
+        "6f",  # Service Data: Contact Detection Service (0xFD6F)
+        "fd",  # Service Data: Contact Detection Service (0xFD6F)
     ]
 
     # Add ephid

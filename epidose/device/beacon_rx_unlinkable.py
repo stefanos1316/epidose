@@ -62,16 +62,14 @@ def process_packet(socket):
 
     # Early exit for other packets
     (packet_length,) = unpack_byte(packet[2])
-    if packet_length != 42:
+    if packet_length != 40:
         return
-    if packet[17:18] != bytes([0x1B]):
-        return
-    # Ensure the packet is     AltBeacon,  cntct-trc,  v1,   app 1
-    if packet[21:27] != bytes([0xBE, 0xAC, 0xED, 0x05, 0x01, 0x01]):
+    # Ensure the packet is contact detection service
+    if packet[17:25] != bytes([0x03, 0x03, 0x6F, 0xFD, 0x13, 0x16, 0x6F, 0xFD]):
         return
 
-    # This is a contact tracing packet
-    ephid = packet[27:43]
+    # This is a contact detection service packet
+    ephid = packet[25:41]
     (rssi,) = unpack_byte(packet[-1])
     logger.info(f"Got ephid {ephid.hex()} RSSI {rssi}")
 
