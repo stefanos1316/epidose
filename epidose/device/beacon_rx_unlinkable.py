@@ -23,6 +23,7 @@ import argparse
 import bluetooth._bluetooth as bluez
 from datetime import datetime
 from dp3t.protocols.unlinkable_db import ContactTracer
+from epidose.common import logging
 from epidose.device.beacon_format import BLE_PACKET
 import struct
 import sys
