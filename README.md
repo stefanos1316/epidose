@@ -142,8 +142,9 @@ as depicted in the diagram at the end of this section.
   The application updates the indicator LED according to the result.
 * [SQLite](https://www.sqlite.org/index.html) database for storing the
   created and received ephemeral identifiers.
-* `download_infected.sh`: A script that downloads from the server the
-  Cockoo filter for the identifiers of infected contacts.
+* `update_filter.sh`: A script that downloads from the server the
+  Cockoo filter for the identifiers of infected contacts, and checks
+  whether the device's user is affected or not.
 * `upload_contacts.py`: Subject to an agreement between the user and
   the health authority, implemented through a physical interlock and
   a suitable protocol, this uploads to a health authority's server the
@@ -190,6 +191,7 @@ The following programs are available in the `epidose` directory.
 * `device/beacon_rx_unlinkable.py`
 * `device/check_infection_risk.py`
 * `device/upload_contacts.py`
+* `device/update_filter.sh`
 * `back-end/create_filter.py`
 * `back-end/ha_server.py`
 
@@ -199,7 +201,6 @@ All programs can be run with a *--help* argument to obtain usage information.
 The server and the device automation and configuration are under construction.
 In the following days expect to see code for the following components.
 
-* `download_infected.sh`
 * `watchdog.sh`
 * `update_client.sh`
 
