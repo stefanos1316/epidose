@@ -14,12 +14,12 @@ tracing:
    seed `SKt` for efficiency. When an app owner is diagnosed with SARS-CoV-2,
    their app uploads the corresponding seed `SKt`. Other apps use this seed to
    regenerate the ephemeral Bluetooth identifiers, and check if they have seen
-   an identifier corresponding to an infected person.
+   an identifier corresponding to an affected person.
  * *Unlinkable design*. In this design, `EphID`s are generated independently
    from random seeds. When an app owner is diagnosed with SARS-CoV-2, their app
    uploads the corresponding seeds for each `EphID` broadcast in a compact
    representation. Other apps use this compact representation to check if they
-   have seen an identifier corresponding to an infected person.
+   have seen an identifier corresponding to an affected person.
  
 *Difference with respect to the Android/iOS SDKs and backend implementations.*
 The DP-3T project has also published
@@ -61,7 +61,7 @@ designs. These files follow a similar structure:
     (`get_ephid_for_time`), to process an observation (`add_obseration`), to
     output tracing information (`get_tracing_information`), and to process a
     batch of tracing information to determine the number of contacts with
-    infected people (`matches_with_batch`). Both designs use the same interface
+    affected people (`matches_with_batch`). Both designs use the same interface
     for this class
     
 This code deliberately does _not_ implement any interactions with (simulated)

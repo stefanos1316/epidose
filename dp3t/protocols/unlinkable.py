@@ -127,7 +127,7 @@ class TracingDataBatch:
 
         Args:
             tracing_seeds ([(reported_epochs, seeds)]): A list of reported epochs/seeds
-                per infected user
+                per affected user
             release_time (optional): Release time of this batch
         """
 
@@ -135,10 +135,10 @@ class TracingDataBatch:
         nr_items = sum([len(epochs) for (epochs, _) in tracing_seeds])
         capacity = int(nr_items * 1.2)
 
-        self.infected_observations = CuckooFilter(capacity, error_rate=CUCKOO_FPR)
+        self.affected_observations = CuckooFilter(capacity, error_rate=CUCKOO_FPR)
         for (epochs, seeds) in tracing_seeds:
             for (epoch, seed) in zip(epochs, seeds):
-                self.infected_observations.insert(
+                self.affected_observations.insert(
                     hashed_observation_from_seed(seed, epoch)
                 )
 
@@ -155,7 +155,7 @@ class ContactTracer:
     computing the final risk score. Observations are represented by the
     corresponding EphID, and we omit proximity metrics such as duration and
     signal strength. Similarly, the risk scoring mechanism is simple. It only
-    outputs the number of unique infected EphIDs that have been observed.
+    outputs the number of unique affected EphIDs that have been observed.
 
     Actual implementations will probably take into account extra information
     from the Bluetooth backend to do better distance measurements, and
@@ -332,21 +332,21 @@ class ContactTracer:
         return reported_epochs, self.get_tracing_seeds_for_epochs(reported_epochs)
 
     def matches_with_batch(self, batch):
-        """Check for contact with infected person given a published filter
+        """Check for contact with affected person given a published filter
 
         Args:
-            infected_observations: A (compact) representation of hashed
-                observations belonging to infected persons
+            affected_observations: A (compact) representation of hashed
+                observations belonging to affected persons
 
         Returns:
-            int: How many EphIDs of infected persons we saw
+            int: How many EphIDs of affected persons we saw
         """
 
-        seen_infected_ephids = 0
+        seen_affected_ephids = 0
 
         for (_, hashed_observations) in self.observations_per_day.items():
             for hashed_observation in hashed_observations:
-                if hashed_observation in batch.infected_observations:
-                    seen_infected_ephids += 1
+                if hashed_observation in batch.affected_observations:
+                    seen_affected_ephids += 1
 
-        return seen_infected_ephids
+        return seen_affected_ephids

@@ -163,7 +163,7 @@ class TracingDataBatch:
 
         Args:
             time_key_pairs ([(time, byte array)]): List of tracing keys of
-                infected people and the corresponding start times.
+                affected people and the corresponding start times.
             release_time (int, optional): Release time in seconds since UNIX Epoch
                 when missing, defaults to current time
 
@@ -190,7 +190,7 @@ class ContactTracer:
     computing the final risk score. Observations are represented by the
     corresponding EphID, and we omit proximity metrics such as duration and
     signal strength. Similarly, the risk scoring mechanism is simple. It only
-    outputs the number of unique infected EphIDs that have been observed.
+    outputs the number of unique affected EphIDs that have been observed.
 
     Actual implementations will probably take into account extra information
     from the Bluetooth backend to do better distance measurements, and
@@ -378,15 +378,15 @@ class ContactTracer:
         return start_contagious_day, tracing_key
 
     def matches_with_key(self, key, start_time, release_time):
-        """Count #contacts with infected person given person's day key
+        """Count #contacts with affected person given person's day key
 
         Args:
-            key (byte array): A 32-byte key of an infected person
+            key (byte array): A 32-byte key of an affected person
             start_time (int): The first day (in UNIX epoch seconds) on which this key is valid
             release_time (int): The publication time of the key
 
         Returns:
-            int: How many epochs we saw EphIDs of the infected person
+            int: How many epochs we saw EphIDs of the affected person
         """
 
         ephids_per_day = self._reconstruct_ephids(key, start_time, release_time)
@@ -412,22 +412,22 @@ class ContactTracer:
         return nr_encounters
 
     def matches_with_batch(self, batch):
-        """Count #contacts with each infected person in batch
+        """Count #contacts with each affected person in batch
 
         Args:
             batch (`obj`:TracingDataBatch): A batch of tracing keys
 
         Returns:
-            int: How many EphIDs of infected persons we saw
+            int: How many EphIDs of affected persons we saw
         """
 
-        seen_infected_ephids = 0
+        seen_affected_ephids = 0
         release_time = batch.release_time
 
         for (start_time, key) in batch.time_key_pairs:
-            seen_infected_ephids += self.matches_with_key(key, start_time, release_time)
+            seen_affected_ephids += self.matches_with_key(key, start_time, release_time)
 
-        return seen_infected_ephids
+        return seen_affected_ephids
 
     def housekeeping_after_batch(self, batch):
         """Update stored observations after processing batch.

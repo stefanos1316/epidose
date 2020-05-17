@@ -119,7 +119,7 @@ def main():
     batch = TracingDataBatch([tracing_info_bob], release_time=release_time)
 
     print("[Server -> Alice] Alice receives batch")
-    print("  * Alice checks if she was in contact with an infected person")
+    print("  * Alice checks if she was in contact with an affected person")
 
     if alice.matches_with_batch(batch) > 0:
         print("  * CORRECT: Alice's phone concludes she is at risk")

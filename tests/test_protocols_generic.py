@@ -94,7 +94,7 @@ def test_contact_tracing_single_observation(protocol):
         alice.next_day()
         bob.next_day()
 
-    # Bob infected, get tracing keys
+    # Bob affected, get tracing keys
     tracing_info_bob = bob.get_tracing_information(START_TIME)
 
     # Pack into a batch, set release time to 4 days from start
@@ -124,7 +124,7 @@ def test_contact_tracing_multiple_observations(protocol):
         alice.next_day()
         bob.next_day()
 
-    # Bob infected, get tracing keys
+    # Bob affected, get tracing keys
     tracing_info_bob = bob.get_tracing_information(START_TIME)
 
     # Pack into a batch
@@ -151,7 +151,7 @@ def test_contact_tracing_contact_before_contagious(protocol):
         alice.next_day()
         bob.next_day()
 
-    # Bob infected, get tracing keys, day after Alice and Bob met
+    # Bob affected, get tracing keys, day after Alice and Bob met
     start_of_being_contagious = START_TIME + timedelta(days=1)
     tracing_info_bob = bob.get_tracing_information(start_of_being_contagious)
 
@@ -171,7 +171,7 @@ def test_contact_tracing_no_replay_after_release(protocol):
     transmit_time = START_TIME + timedelta(minutes=20)
     ephid_bob = bob.get_ephid_for_time(transmit_time)
 
-    # Bob infected, get tracing keys
+    # Bob affected, get tracing keys
     start_of_being_contagious = START_TIME
     tracing_info_bob = bob.get_tracing_information(start_of_being_contagious)
 
