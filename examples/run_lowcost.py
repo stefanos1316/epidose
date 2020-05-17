@@ -122,9 +122,9 @@ def main():
     print("  * Alice checks if she was in contact with an affected person")
 
     if alice.matches_with_batch(batch) > 0:
-        print("  * CORRECT: Alice's phone concludes she is at risk")
+        print("  * CORRECT: Alice's phone concludes she is exposed")
     else:
-        print("  * ERROR: Alice's phone does not conclude she is at risk")
+        print("  * ERROR: Alice's phone does not conclude she is not exposed")
         raise RuntimeError("Example code failed!")
 
     print("\n[Alice] Runs housekeeping to update her observation store")
