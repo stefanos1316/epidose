@@ -18,7 +18,7 @@
 #
 
 
-cat <<\EOF | sqlite3 ${1:-/var/lib/epidose/client-database.db}
+cat <<\EOF | sqlite3 "${1:-/var/lib/epidose/client-database.db}"
 SELECT 'Received (and retained) ephemeral id hashes';
 SELECT '';
 .mode column
