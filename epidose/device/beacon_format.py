@@ -23,17 +23,19 @@ __license__ = "Apache 2.0"
 # This is defined in the Bluetoth Core Specification V4.0
 # page 1062 and in the Apple/Google Contact Tracing Bluetooth
 # specification.
-BLE_PACKET = bytes([
-        0x1c,  # Number of significant octets in advertising data
+BLE_PACKET = bytes(
+    [
+        0x1C,  # Number of significant octets in advertising data
         0x02,  # Flags: Length
         0x01,  # Flags: Type Flag
         0x1A,  # Flags: Value (0x02 is LE general discoverable)
         0x03,  # ServiceUUID: Length
         0x03,  # ServiceUUID: Type (Complete 16-bit ServiceUUID)
-        0x6f,  # ServiceUUID: Contact Detection Service (0xFD6F)
-        0xfd,  # ServiceUUID: Contact Detection Service (0xFD6F)
+        0x6F,  # ServiceUUID: Contact Detection Service (0xFD6F)
+        0xFD,  # ServiceUUID: Contact Detection Service (0xFD6F)
         0x13,  # Service Data: Length
         0x16,  # Service Data: Type (16 byte UUID)
-        0x6f,  # Service Data: Contact Detection Service (0xFD6F)
-        0xfd,  # Service Data: Contact Detection Service (0xFD6F)
-])
+        0x6F,  # Service Data: Contact Detection Service (0xFD6F)
+        0xFD,  # Service Data: Contact Detection Service (0xFD6F)
+    ]
+)

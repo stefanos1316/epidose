@@ -64,7 +64,7 @@ def set_transmit(interface, ephid, rssi):
         interface,
         "cmd",
         "0x08",
-        "0x0008", # HCI_LE_Set_Advertising_Data command (7.8.7, p. 1062)
+        "0x0008",  # HCI_LE_Set_Advertising_Data command (7.8.7, p. 1062)
     ]
 
     # Add BLE command
