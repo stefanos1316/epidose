@@ -110,6 +110,12 @@ def main():
         help="Specify the location of the Cuckoo filter",
         default="/var/lib/epidose/filter.bin",
     )
+    parser.add_argument(
+        "-s",
+        "--server-name",
+        help="Specify the server name (0.0.0.0 for externally visible)",
+        default="127.0.0.1",
+    )
     parser.add_argument("-p", "--port", help="Set TCP port to listen", type=int)
     parser.add_argument(
         "-v", "--verbose", help="Set verbose logging", action="store_true"
@@ -121,7 +127,7 @@ def main():
     global filter_location
     filter_location = args.filter
 
-    app.run(debug=args.debug, port=args.port)
+    app.run(debug=args.debug, host=args.server_name, port=args.port)
 
 
 if __name__ == "__main__":
