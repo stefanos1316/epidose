@@ -67,7 +67,6 @@ def main():
     logger = logging.getLogger("upload_contacts", args)
 
     # Obtain the specified seeds
-    print(args.database)
     ct = ContactTracer(None, args.database, transmitter=False, receiver=False)
     (epochs, seeds) = ct.get_tracing_information(
         datetime.fromisoformat(args.start_time), datetime.fromisoformat(args.end_time)
