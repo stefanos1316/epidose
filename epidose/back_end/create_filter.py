@@ -82,6 +82,7 @@ def main():
         cuckoo_filter.tofile(f)
 
     # Atomically replace any existing filter file with the new one
+    logger.debug(f"Rename {name} to {args.filter}")
     os.rename(name, args.filter)
 
 
