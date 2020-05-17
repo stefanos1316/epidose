@@ -50,7 +50,7 @@ def test_last_ephid_change_multiple(db_connection):
 
 def test_last_ephid_change_default(db_connection):
     db_connection.set_last_ephid_change()
-    assert abs(time() - db_connection.get_last_ephid_change()) < 10
+    assert abs(time() - db_connection.get_last_ephid_change()) < 30
 
 
 def test_add_get_epoch_ids(db_connection):
