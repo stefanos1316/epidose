@@ -70,7 +70,7 @@ def main():
         tracing_seeds = read_seeds(args.seeds_file)
     else:
         db = ServerDatabase(args.database)
-        tracing_seeds = db.get_epoch_seeds_tuple()
+        tracing_seeds = [db.get_epoch_seeds_tuple()]
 
     # Create and save filter
     cuckoo_filter = TracingDataBatch(tracing_seeds)
