@@ -67,7 +67,7 @@ def main():
     else:
         ct = ContactTracer(None, args.database, transmitter=False, receiver=False)
         matches = ct.matches_with_batch(cuckoo_filter)
-        print(matches)
+        logger.info(f"{'Contact match' if matches else 'No contact match'}")
         sys.exit(0 if matches == 0 else 1)
 
 
