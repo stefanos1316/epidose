@@ -29,6 +29,8 @@ code, gratefully acknowledging the team's amazing work.
 - [What is missing](#what-is-missing)
 - [Installing the reference implementation](#installing-the-reference-implementation)
 - [Running the client code](#running-the-client-code)
+- [Running the back-end Health Authority server code](#running-the-back-end-health-authority-server-code)
+- [End-to-end operation](#end-to-end-operation)
 - [Development](#development)
 - [More information](#more-information)
 - [License](#license)
@@ -244,6 +246,67 @@ You can then monitor the device's operation with
 You can also obtain a report of what has been stored in the device's
 database by running `utils/client-db-report.sh`.
 
+## Running the back-end Health Authority server code
+
+After installing the project you can run the health authority server code
+on a (hopefully) more powerful Raspberry-Pi host as follows.
+
+```sh
+sudo mkdir -p /var/lib/epidose
+nohup sudo venv/bin/python epidose/back_end/ha_server.py -p 5010 -s 0.0.0.0 -v &
+```
+
+You can then monitor the server's operation with `tail -f /var/log/ha_server`.
+Note that in a production setting the server process must be configured
+to run behind a hardened and efficient web server, such as
+[NGINX](https://www.nginx.com/).
+
+
+## End-to-end operation
+
+With the client and server running, you can run an end-to-end
+contact tracing scenario between an affected user and a user who
+is at risk, as follows.
+The example below assumes that the Health Authority server has a DNS
+record named `ha-server`.
+
+### On affected user's device
+Run the following command to upload the past half-hour contacts to the
+health authority server.
+Normally, this command will run automatically,
+after the Health Authority provides to the user's device an upload key
+and information regarding the period over which the user was
+infected, and
+the signals consent by pressing a button on the device.
+
+```sh
+sudo venv/bin/python epidose/device/upload_contacts.py -d -v -s http://ha-server:5010/ $(date +'%Y-%m-%dT%H:%M:%S' --date='30 min ago') $(date +'%Y-%m-%dT%H:%M:%S')
+```
+
+### On the Health Authority server
+Run the following command to create a new Cuckoo filter,
+which will include the contacts of the affected user.
+
+```sh
+sudo venv/bin/python epidose/back_end/create_filter.py -v -d /var/lib/epidose/filter.bin
+```
+
+### On user's at risk device
+Run the following command to download the new Cuckoo filter and
+check for matching contacts.
+
+```sh
+sudo epidose/device/update_filter.sh ha-server:5010
+```
+
+You can then see the check's result with the command
+`tail -f /var/log/check_infection`
+
+The filter is updated every six hours.
+To force the downloading of a new filter,
+remove the downloaded filter (`sudo rm /var/lib/client-filter.bin`)
+and rerun the `update_filter.py` script.
+
 ### Database report example
 ```
 Received (and retained) ephemeral id hashes
@@ -275,14 +338,6 @@ Timestamp            Epoch       Seed        Ephid
 2020-05-07 22:45:00  1765435     710ACBD99C  7FCBF944A5
 [...]
 ```
-
-To test contact tracing you currently need to follow these steps.
-
-* Obtain a list of contacts.
-* Store them into a file.
-* Create a Cuckoo filter by running `create_filter.py` on that file.
-* Copy the Cuckoo filter on another device.
-* Check against contacts by running `check_infection_risk.py`.
 
 ## Development
 
