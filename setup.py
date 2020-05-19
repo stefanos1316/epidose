@@ -26,6 +26,7 @@ setuptools.setup(
         "pycryptodomex",
         "peewee",
         "requests",
+        "RPi.GPIO",
         "scalable-cuckoo-filter",
     ],
     extras_require={
