@@ -151,6 +151,8 @@ as depicted in the diagram at the end of this section.
   the health authority, implemented through a physical interlock and
   a suitable protocol, this uploads to a health authority's server the
   contacts of a user found to be infected, using a supplied key.
+* `upload_contacts_d.sh`: Continuously waits for user authorization to
+  upload an affected user's contacts to the Health Authority.
 * `watchdog.sh`: Monitors the correct operation of all components and
   flashes the green LED to indicate correct operation.
   It also resets the device in case of a failure.
@@ -194,6 +196,7 @@ The following programs are available in the `epidose` directory.
 * `device/check_infection_risk.py`
 * `device/upload_contacts.py`
 * `device/update_filter_d.sh`
+* `device/upload_contacts_d.sh`
 * `back-end/create_filter.py`
 * `back-end/ha_server.py`
 
@@ -272,13 +275,19 @@ record named `ha-server`.
 
 ### On affected user's device
 Run the following command to upload the past half-hour contacts to the
-health authority server.
-Normally, this command will run automatically,
+health authority server when the device button is pressed to signify
+the user's consent.
+Normally, this command will run automatically in the background,
 after the Health Authority provides to the user's device an upload key
 and information regarding the period over which the user was
-infected, and
-the signals consent by pressing a button on the device.
+infected.
 
+```sh
+sudo epidose/device/upload_contacts_d.sh http://ha-server:5010
+```
+
+If you don't have a device with a physical button you can instead
+run the following command.
 ```sh
 sudo venv/bin/python epidose/device/upload_contacts.py -d -v -s http://ha-server:5010/ $(date +'%Y-%m-%dT%H:%M:%S' --date='30 min ago') $(date +'%Y-%m-%dT%H:%M:%S')
 ```
