@@ -30,12 +30,14 @@ MAX_FILTER_AGE=$((6 * 60 * 60))
 # 15 minutes
 RETRY_TIME=$((15 * 60))
 
-APP_NAME=update_filter
+export APP_NAME=update_filter_d
 
 # Source common functionality (logging, WiFi)
 if [ -t 1 ] ; then
-  . $(dirname "$0")/../common/util.sh
+  # shellcheck source=epidose/common/util.sh
+  . "$(dirname "$0")/../common/util.sh"
 else
+  # shellcheck source=epidose/common/util.sh
   . /usr/lib/dp3t/util.sh
 fi
 

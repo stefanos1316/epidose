@@ -144,9 +144,9 @@ as depicted in the diagram at the end of this section.
   The application updates the indicator LED according to the result.
 * [SQLite](https://www.sqlite.org/index.html) database for storing the
   created and received ephemeral identifiers.
-* `update_filter.sh`: A script that downloads from the server the
-  Cockoo filter for the identifiers of infected contacts, and checks
-  whether the device's user is affected or not.
+* `update_filter_d.sh`: A continuously running script that downloads
+  from the server the Cuckoo filter for the identifiers of infected contacts,
+  and checks whether the device's user is affected or not.
 * `upload_contacts.py`: Subject to an agreement between the user and
   the health authority, implemented through a physical interlock and
   a suitable protocol, this uploads to a health authority's server the
@@ -193,7 +193,7 @@ The following programs are available in the `epidose` directory.
 * `device/beacon_rx_unlinkable.py`
 * `device/check_infection_risk.py`
 * `device/upload_contacts.py`
-* `device/update_filter.sh`
+* `device/update_filter_d.sh`
 * `back-end/create_filter.py`
 * `back-end/ha_server.py`
 
@@ -296,7 +296,7 @@ Run the following command to download the new Cuckoo filter and
 check for matching contacts.
 
 ```sh
-sudo epidose/device/update_filter.sh ha-server:5010
+sudo epidose/device/update_filter_d.sh ha-server:5010
 ```
 
 You can then see the check's result with the command
@@ -305,7 +305,7 @@ You can then see the check's result with the command
 The filter is updated every six hours.
 To force the downloading of a new filter,
 remove the downloaded filter (`sudo rm /var/lib/client-filter.bin`)
-and rerun the `update_filter.py` script.
+and rerun the `update_filter_d.py` script.
 
 ### Database report example
 ```
