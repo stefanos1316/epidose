@@ -71,10 +71,10 @@ def main():
         logger.info(f"{'Contact match' if matches else 'No contact match'}")
         if matches:
             led_set(True)
-            sys.exit(1)
+            sys.exit(0)
         else:
             led_set(False)
-            sys.exit(0)
+            sys.exit(1)
 
 
 if __name__ == "__main__":
