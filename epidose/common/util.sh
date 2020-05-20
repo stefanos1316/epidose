@@ -17,6 +17,11 @@
 # limitations under the License.
 #
 
+# Sleep time between retries to get the filter over WiFi (in seconds)
+# 15 minutes
+export WIFI_RETRY_TIME=$((15 * 60))
+
+
 if [ -z "$APP_NAME" ] ; then
   echo "APP_NAME not set" 1>&2
   exit 2
@@ -49,7 +54,7 @@ fi
 log 'Starting up'
 
 # Create lock directory
-mkdir -p $(dirname "$WIFI_USERS_LOCK")
+mkdir -p "$(dirname "$WIFI_USERS_LOCK")"
 
 # Turn WiFi on and wait for for it to associate
 # Internal function

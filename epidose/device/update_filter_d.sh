@@ -26,10 +26,6 @@ FILTER=/var/lib/epidose/client-filter.bin
 # 6 hours
 MAX_FILTER_AGE=$((6 * 60 * 60))
 
-# Sleep time between retries to get the filter over WiFi (in seconds)
-# 15 minutes
-RETRY_TIME=$((15 * 60))
-
 export APP_NAME=update_filter_d
 
 # Source common functionality (logging, WiFi)
@@ -79,8 +75,8 @@ get_filter()
     else
       wifi_release
       log "Unable to get filter: $err"
-      log "Wil retry in $RETRY_TIME s"
-      sleep $RETRY_TIME
+      log "Wil retry in $WIFI_RETRY_TIME s"
+      sleep $WIFI_RETRY_TIME
     fi
   done
 }
