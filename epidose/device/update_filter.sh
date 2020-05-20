@@ -30,25 +30,14 @@ MAX_FILTER_AGE=$((6 * 60 * 60))
 # 15 minutes
 RETRY_TIME=$((15 * 60))
 
-# Where logs are sent
-LOG_FILE=/var/log/update_filter
+APP_NAME=update_filter
 
-# Log with a timestamp
-log()
-{
-  # Output is redirected to the log file if needed at the script's lop level
-  date +'%F %T ' | tr -d \\n
-  echo "$@"
-}
-
-
-# Log stdout and stderr if run from a deamon (e.g. from cron)
-if ! [ -t 1 ] ; then
-  exec >>"$LOG_FILE"
-  exec 2>&1
+# Source common functionality (logging, WiFi)
+if [ -t 1 ] ; then
+  . $(dirname "$0")/../common/util.sh
+else
+  . /usr/lib/dp3t/util.sh
 fi
-
-log 'Starting up'
 
 # Wait until a filter file is required
 wait_till_filter_needed()
@@ -71,41 +60,22 @@ wait_till_filter_needed()
   fi
 }
 
-# Turn WiFi on and wait for for it to associate
-wifi_on()
-{
-  # No WiFi operations when running from the command line
-  test -t && return
-  log "Turn on wifi"
-  ip link set wlan0 up
-  sleep 15
-}
-
-# Turn WiFi off
-# TODO: Check if "iwconfig wlan0 txpower off" yields additional power savings
-wifi_off()
-{
-  # No WiFi operations when running from the command line
-  test -t && return
-  log "Turn on wifi"
-  ip link set wlan0 down
-}
 
 # Obtain a (new) version of the Cuckoo filter
 get_filter()
 {
   log "Obtaining new filter from $SERVER_URL"
   while : ; do
-    wifi_on
+    wifi_acquire
     if err=$(curl --silent --show-error --fail --output "$FILTER.new" \
       "$SERVER_URL/filter" 2>&1) ; then
-      wifi_off
+      wifi_release
       # Atomically replace existing filter with new one
       mv "$FILTER.new" "$FILTER"
       log "New filter obtained: $(stat -c %s "$FILTER") bytes"
       return
     else
-      wifi_off
+      wifi_release
       log "Unable to get filter: $err"
       log "Wil retry in $RETRY_TIME s"
       sleep $RETRY_TIME
