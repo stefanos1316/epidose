@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-""" Test and abstract the operation of the switch and the LED. """
+""" Test and abstract the operation of the button and the LED. """
 
 __copyright__ = """
     Copyright 2020 Diomidis Spinellis
@@ -29,7 +29,7 @@ LED_PORT = 21
 
 
 def setup():
-    """ Setup the LED and switch I/O ports.
+    """ Setup the LED and button I/O ports.
     This must be called before calling the other functions."""
     GPIO.setmode(GPIO.BCM)
     GPIO.setwarnings(False)
@@ -38,20 +38,20 @@ def setup():
     GPIO.setup(LED_PORT, GPIO.OUT)
 
 
-def wait_for_switch_press():
-    """ Return when the switch is pressed.
+def wait_for_button_press():
+    """ Return when the button is pressed.
     This is interrupt-driven and therefore very efficient. """
     GPIO.wait_for_edge(SWITCH_PORT, GPIO.FALLING)
 
 
-def wait_for_switch_release():
-    """ Return when the switch is release.
+def wait_for_button_release():
+    """ Return when the button is release.
     This is interrupt-driven and therefore very efficient. """
     GPIO.wait_for_edge(SWITCH_PORT, GPIO.RISING)
 
 
-def switch_pressed():
-    """ Return true if the switch is pressed. """
+def button_pressed():
+    """ Return true if the button is pressed. """
     return not GPIO.input(SWITCH_PORT)
 
 
@@ -69,7 +69,7 @@ def toggle():
     print("Press the button to toggle the LED.")
     print("To terminate, press ^C and then the button.")
     while True:
-        wait_for_switch_press()
+        wait_for_button_press()
         led_set(led_state)
         print(f"{time.time()}: Button Pressed")
         # Debounce
@@ -86,7 +86,7 @@ def main():
     )
     parser.add_argument("-l", "--led", help="Turn LED on or off", type=int)
     parser.add_argument(
-        "-t", "--test", help="Toggle LED with switch", action="store_true"
+        "-t", "--test", help="Toggle LED with button", action="store_true"
     )
     parser.add_argument(
         "-v", "--verbose", help="Set verbose logging", action="store_true"
@@ -108,9 +108,9 @@ def main():
         logger.debug("Turn LED on")
         led_set(True)
     elif args.wait:
-        logger.debug("Waiting for key press")
-        wait_for_switch_press()
-        logger.debug("Key pressed")
+        logger.debug("Waiting for button press; press ^C and button to abort")
+        wait_for_button_press()
+        logger.debug("Button pressed")
         # Debounce
         time.sleep(0.2)
 
