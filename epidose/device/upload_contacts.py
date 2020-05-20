@@ -73,6 +73,7 @@ def main():
     )
 
     # Create dictionary for JSON
+    logger.debug("Creating request")
     post = {"authorization": args.authorization, "data": []}
     i = 0
     for e in epochs:
@@ -80,7 +81,9 @@ def main():
         i += 1
 
     # Send request and check response
+    logger.debug("Sending request")
     res = requests.post(f"{args.server}/add_contagious", json=post)
+    logger.debug("Request sent")
     exit(0 if res.ok else 1)
 
 
