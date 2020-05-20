@@ -37,7 +37,14 @@ def setup():
 
 
 def wait_for_switch_press():
-    """ Return when the switch is pressed. """
+    """ Return when the switch is pressed.
+    This is interrupt-driven and therefore very efficient. """
+    GPIO.wait_for_edge(SWITCH_PORT, GPIO.FALLING)
+
+
+def wait_for_switch_release():
+    """ Return when the switch is release.
+    This is interrupt-driven and therefore very efficient. """
     GPIO.wait_for_edge(SWITCH_PORT, GPIO.RISING)
 
 
@@ -56,13 +63,15 @@ def led_on(value):
 
 def main():
     setup()
+    # Toggle the LED with each key press
+    led_state = True
     while True:
-        if wait_for_switch_press():
-            print(f"{time.time()}: Button Pressed")
-            led_on(True)
-        else:
-            led_on(False)
-        time.sleep(0.5)
+        wait_for_switch_press()
+        led_on(led_state)
+        print(f"{time.time()}: Button Pressed")
+        # Debounce
+        time.sleep(0.2)
+        led_state = not led_state
 
 
 if __name__ == "__main__":
