@@ -36,6 +36,11 @@ def setup():
     GPIO.setup(LED_PORT, GPIO.OUT)
 
 
+def wait_for_switch_press():
+    """ Return when the switch is pressed. """
+    GPIO.wait_for_edge(SWITCH_PORT, GPIO.RISING)
+
+
 def switch_pressed():
     """ Return true if the switch is pressed. """
     return not GPIO.input(SWITCH_PORT)
@@ -52,12 +57,12 @@ def led_on(value):
 def main():
     setup()
     while True:
-        if switch_pressed():
+        if wait_for_switch_press():
             print(f"{time.time()}: Button Pressed")
             led_on(True)
         else:
             led_on(False)
-        time.sleep(0.2)
+        time.sleep(0.5)
 
 
 if __name__ == "__main__":
