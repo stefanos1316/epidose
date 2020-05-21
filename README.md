@@ -169,7 +169,10 @@ as depicted in the diagram at the end of this section.
 
 ![Software architecture](https://raw.githubusercontent.com/dspinellis/epidose/master/doc/software-architecture.svg?sanitize=1)
 
-## Hardware parts list
+## Hardware
+Instructions for building a prototype device can be found [here](https://www.spinellis.gr/blog/20200520/).
+
+### Parts list
 * Raspberry Pi Zero-W
 * Li-on rechargeable battery 3.7V / 3400mAh
 * Enclosure (3D printed)
