@@ -242,8 +242,8 @@ After installing the project you can run the client code on a Raspberry-Pi Zero-
 
 ```sh
 sudo mkdir -p /var/lib/epidose
-nohup sudo venv/bin/python epidose/device/beacon_tx_unlinkable.py -v &
-nohup sudo venv/bin/python epidose/device/beacon_rx_unlinkable.py -v &
+sudo venv/bin/python epidose/device/beacon_tx_unlinkable.py -v
+sudo venv/bin/python epidose/device/beacon_rx_unlinkable.py -v
 ```
 
 You can then monitor the device's operation with
@@ -259,10 +259,12 @@ on a (hopefully) more powerful Raspberry-Pi host as follows.
 
 ```sh
 sudo mkdir -p /var/lib/epidose
-nohup sudo venv/bin/python epidose/back_end/ha_server.py -p 5010 -s 0.0.0.0 -v &
+sudo venv/bin/gunicorn epidose.back_end.ha_server:app --daemon --pid=/run/ha_server.pid --access-logfile=/var/log/ha_server_access_log --disable-redirect-access-to-syslog --error-logfile=/var/log/ha_server_error_log --capture-output --bind=0.0.0.0:5010
 ```
 
-You can then monitor the server's operation with `tail -f /var/log/ha_server`.
+You can then monitor the server's operation with
+`tail -f /var/log/ha_server_error_log` and
+`tail -f /var/log/ha_server_access_log`.
 Note that in a production setting the server process must be configured
 to run behind a hardened and efficient web server, such as
 [NGINX](https://www.nginx.com/).

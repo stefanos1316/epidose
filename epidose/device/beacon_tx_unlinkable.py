@@ -20,14 +20,16 @@ __copyright__ = """
 __license__ = "Apache 2.0"
 
 import argparse
+from epidose.common.daemon import Daemon
 from dp3t.config import EPOCH_LENGTH
 from datetime import datetime
 from dp3t.protocols.unlinkable_db import ContactTracer
-from epidose.common import logging
 from epidose.device.beacon_format import BLE_PACKET
 import subprocess
 import time
 
+# The daemon object associated with this program
+daemon = None
 
 def run_command(cmd):
     """Run (or simulate the running of) the specified command.
@@ -123,10 +125,18 @@ def main():
         args.debug = True
         args.dry_run = True
         args.database = ":memory:"
+    global daemon
+    daemon = Daemon("beacon_tx", main_args, args)
+    daemon.start()
 
+
+def main_args():
     # Setup logging
     global logger
-    logger = logging.getLogger("beacon_tx", args)
+    logger = daemon.get_logger()
+
+    # Obtain parsed arguments
+    args = daemon.get_args()
 
     global dry_run
     dry_run = args.dry_run

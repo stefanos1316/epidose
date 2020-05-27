@@ -22,7 +22,7 @@ __license__ = "Apache 2.0"
 import argparse
 from dp3t.protocols.unlinkable_db import ContactTracer
 from datetime import datetime
-from epidose.common import logging
+from epidose.common.daemon import Daemon
 import requests
 from sys import exit
 
@@ -63,8 +63,9 @@ def main():
         args.database = ":memory:"
 
     # Setup logging
+    daemon = Daemon("upload_contacts", None, args)
     global logger
-    logger = logging.getLogger("upload_contacts", args)
+    logger = daemon.get_logger()
 
     # Obtain the specified seeds
     ct = ContactTracer(None, args.database, transmitter=False, receiver=False)

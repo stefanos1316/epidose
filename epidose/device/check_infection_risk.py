@@ -21,7 +21,7 @@ __license__ = "Apache 2.0"
 
 import argparse
 from dp3t.protocols.unlinkable_db import TracingDataBatch, ContactTracer
-from epidose.common import logging
+from epidose.common.daemon import Daemon
 from epidose.device.device_io import led_set
 import struct
 import sys
@@ -48,8 +48,9 @@ def main():
     args = parser.parse_args()
 
     # Setup logging
+    daemon = Daemon("check_infection", None, args)
     global logger
-    logger = logging.getLogger("check_infection", args)
+    logger = daemon.get_logger()
 
     with open(args.filter, "rb") as f:
         (capacity,) = struct.unpack(">Q", f.read(8))

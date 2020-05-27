@@ -19,10 +19,10 @@ __copyright__ = """
 """
 __license__ = "Apache 2.0"
 
-from flask import Flask, abort, jsonify, request, send_from_directory
 import argparse
-from epidose.common import logging
 from dp3t.protocols.server_database import ServerDatabase
+from epidose.common.daemon import Daemon
+from flask import Flask, abort, jsonify, request, send_from_directory
 from os.path import basename, dirname
 
 API_VERSION = "1"
@@ -30,7 +30,6 @@ API_VERSION = "1"
 app = Flask("ha-server")
 
 db = None
-
 
 def shutdown_server():
     func = request.environ.get("werkzeug.server.shutdown")
@@ -65,7 +64,6 @@ def version():
 @app.route("/add_contagious", methods=["POST"])
 def add_contagious():
     content = request.json
-    print(db)
     with db.atomic():
         logger.debug(f"Add new data with authorization {content['authorization']}")
         # TODO: Check authorization
@@ -81,10 +79,11 @@ def add_contagious():
 def initialize(args):
     """Initialize the server's database and logger. """
 
-    print(args)
+    global daemon
+    daemon = Daemon("ha_server", None, args)
     # Setup logging
     global logger
-    logger = logging.getLogger("ha_server", args)
+    logger = daemon.get_logger()
 
     # Connect to the database
     global db
@@ -127,6 +126,9 @@ def main():
     global filter_location
     filter_location = args.filter
 
+    # Daemonize with gunicorn or other means, because the daemonize
+    # module has trouble dealing with the lock files when the app
+    # reloads itself.
     app.run(debug=args.debug, host=args.server_name, port=args.port)
 
 

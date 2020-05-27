@@ -20,7 +20,7 @@ __copyright__ = """
 __license__ = "Apache 2.0"
 
 import argparse
-from epidose.common import logging
+from epidose.common.daemon import Daemon
 import RPi.GPIO as GPIO
 import time
 
@@ -95,8 +95,9 @@ def main():
     args = parser.parse_args()
 
     # Setup logging
+    daemon = Daemon("device_io", None, args)
     global logger
-    logger = logging.getLogger("device_io", args)
+    logger = daemon.get_logger()
 
     setup()
     if args.test:

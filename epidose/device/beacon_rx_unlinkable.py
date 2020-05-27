@@ -23,7 +23,7 @@ import argparse
 import bluetooth._bluetooth as bluez
 from datetime import datetime
 from dp3t.protocols.unlinkable_db import ContactTracer
-from epidose.common import logging
+from epidose.common.daemon import Daemon
 from epidose.device.beacon_format import BLE_PACKET
 import struct
 import sys
@@ -32,6 +32,8 @@ import sys
 OGF_LE_CTL = 0x08
 OCF_LE_SET_SCAN_ENABLE = 0x000C
 
+# The daemon object associated with this program
+daemon = None
 
 def set_receive(socket):
     """Setup to receive contact tracing packets."""
@@ -104,10 +106,17 @@ def main():
     if args.test:
         args.debug = True
         args.database = ":memory:"
+    global daemon
+    daemon = Daemon("beacon_rx", main_args, args)
+    daemon.start()
 
+def main_args():
     # Setup logging
     global logger
-    logger = logging.getLogger("beacon_rx", args)
+    logger = daemon.get_logger()
+
+    # Obtain parsed arguments
+    args = daemon.get_args()
 
     # Receive and process beacon packets
     global receiver

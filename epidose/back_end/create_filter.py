@@ -22,10 +22,12 @@ __license__ = "Apache 2.0"
 import argparse
 from dp3t.protocols.server_database import ServerDatabase
 from dp3t.protocols.unlinkable_db import TracingDataBatch
-from epidose.common import logging
+from epidose.common.daemon import Daemon
 import os
 from tempfile import mkstemp
 
+# The daemon object associated with this program
+daemon = None
 
 def read_seeds(file_path):
     """Return an array containing a pair containing a list of epochs and a
@@ -62,8 +64,9 @@ def main():
     args = parser.parse_args()
 
     # Setup logging
+    daemon = Daemon("create_filter", None, args)
     global logger
-    logger = logging.getLogger("create_filter", args)
+    logger = daemon.get_logger()
 
     # Obtain seeds
     if args.seeds_file:
