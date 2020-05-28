@@ -66,6 +66,7 @@ def test_context():
     )
 
     # Wait for server to come up
+    count = 0
     while True:
         try:
             res = requests.get(f"{SERVER_URL}/version")
@@ -74,6 +75,10 @@ def test_context():
         except requests.exceptions.ConnectionError:
             pass
         sleep(0.1)
+        count += 0.1
+        # Timeout after 5s
+        if count > 5:
+            raise TimeoutError
 
     server_db = ServerDatabase(server_db_path)
 

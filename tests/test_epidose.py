@@ -77,6 +77,7 @@ def test_round_trip():
     )
 
     # Wait for server to come up
+    count = 0
     while True:
         try:
             res = requests.get(f"{SERVER_URL}/version")
@@ -85,6 +86,10 @@ def test_round_trip():
         except requests.exceptions.ConnectionError:
             pass
         sleep(0.1)
+        count += 0.1
+        # Timeout after 5s
+        if count > 5:
+            raise TimeoutError
 
     # Obtain the Cuckoo filter from the server
     handle, client_filter_name = mkstemp(prefix="client-")
