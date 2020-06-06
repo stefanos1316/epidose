@@ -57,8 +57,12 @@ class ServerDatabase:
     def __init__(self, db_path=":memory:"):
         """Setup the database access and schema."""
 
+        # Deferred initialization
         db.init(db_path)
-        db.create_tables(MODELS)
+
+        # Create schema if needed
+        if not db.get_tables():
+            db.create_tables(MODELS)
 
     def close(self):
         """Close the database connection. Useful to reset state in testing."""
