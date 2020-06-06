@@ -40,7 +40,9 @@ WIFI_USERS_LOCK=/var/lock/epidose/wifi-users.lock
 log()
 {
   # Output is redirected to the log file if needed at the script's lop level
-  date +'%F %T ' | tr -d \\n
+  if [ -z "$DEBUG_FLAG" ] ; then
+    date +'%F %T ' | tr -d \\n
+  fi
   echo "$@"
 }
 
