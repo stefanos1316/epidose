@@ -52,12 +52,22 @@ fi
 test -z "$1" && usage
 SERVER_URL="$1"
 
+# Upload contacts via WiFi
+upload_contacts()
+{
+  log "Uploading contacts"
+  wifi_acquire
+  # TODO: Obtain upload authorization and affected period from Health Authority
+  run_python upload_contacts -v -s "$SERVER_URL" "$(date +'%Y-%m-%dT%H:%M:%S' --date='30 min ago')" "$(date +'%Y-%m-%dT%H:%M:%S')"
+  exit_code=$?
+  wifi_release
+  return $exit_code
+}
+
 # Wait for button press and upload contacts
-# TODO: Obtain upload authorization and affected period from Health Authority
 while : ; do
   run_python device_io -w -v
-  log "Uploading contacts"
-  while ! run_python upload_contacts -v -s "$SERVER_URL" "$(date +'%Y-%m-%dT%H:%M:%S' --date='30 min ago')" "$(date +'%Y-%m-%dT%H:%M:%S')" ; do
+  while ! upload_contacts ; do
     log "Upload failed; will retry in 30 minutes"
     sleep 1800
   done
