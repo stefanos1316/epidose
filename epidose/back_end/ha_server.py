@@ -31,7 +31,9 @@ app = Flask("ha-server")
 
 db = None
 
-filter_location = "/var/lib/epidose/filter.bin"
+FILTER_LOCATION = "/var/lib/epidose/filter.bin"
+DATABASE_LOCATION = "/var/lib/epidose/server-database.db"
+
 
 def shutdown_server():
     func = request.environ.get("werkzeug.server.shutdown")
@@ -46,7 +48,7 @@ def filter():
     In a production deployment this should be handled by the front-end server,
     such as nginx.
     """
-    return send_from_directory(dirname(filter_location), basename(filter_location))
+    return send_from_directory(dirname(FILTER_LOCATION), basename(FILTER_LOCATION))
 
 
 @app.route("/shutdown")
@@ -99,18 +101,21 @@ def main():
     parser.add_argument(
         "-d", "--debug", help="Run in debug mode logging to stderr", action="store_true"
     )
+
+    global DATABASE_LOCATION
     parser.add_argument(
         "-D",
         "--database",
         help="Specify the database location",
-        default="/var/lib/epidose/server-database.db",
+        default=DATABASE_LOCATION,
     )
-    global filter_location
+
+    global FILTER_LOCATION
     parser.add_argument(
         "-f",
         "--filter",
         help="Specify the location of the Cuckoo filter",
-        default=filter_location,
+        default=FILTER_LOCATION,
     )
     parser.add_argument(
         "-s",
@@ -126,12 +131,14 @@ def main():
 
     initialize(args)
 
-    filter_location = args.filter
+    FILTER_LOCATION = args.filter
+    DATABASE_LOCATION = args.database
 
     # Daemonize with gunicorn or other means, because the daemonize
     # module has trouble dealing with the lock files when the app
     # reloads itself.
     app.run(debug=args.debug, host=args.server_name, port=args.port)
+
 
 if __name__ == "__main__":
     main()
