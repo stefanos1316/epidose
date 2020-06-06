@@ -105,6 +105,7 @@ def main():
         help="Specify the database location",
         default="/var/lib/epidose/server-database.db",
     )
+    global filter_location
     parser.add_argument(
         "-f",
         "--filter",
