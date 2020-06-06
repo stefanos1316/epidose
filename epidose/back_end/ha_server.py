@@ -31,6 +31,8 @@ app = Flask("ha-server")
 
 db = None
 
+filter_location = "/var/lib/epidose/filter.bin"
+
 def shutdown_server():
     func = request.environ.get("werkzeug.server.shutdown")
     if func is None:
@@ -107,7 +109,7 @@ def main():
         "-f",
         "--filter",
         help="Specify the location of the Cuckoo filter",
-        default="/var/lib/epidose/filter.bin",
+        default=filter_location,
     )
     parser.add_argument(
         "-s",
@@ -123,14 +125,12 @@ def main():
 
     initialize(args)
 
-    global filter_location
     filter_location = args.filter
 
     # Daemonize with gunicorn or other means, because the daemonize
     # module has trouble dealing with the lock files when the app
     # reloads itself.
     app.run(debug=args.debug, host=args.server_name, port=args.port)
-
 
 if __name__ == "__main__":
     main()
