@@ -64,8 +64,14 @@ class ServerDatabase:
         if not db.get_tables():
             db.create_tables(MODELS)
 
+    def connect(self):
+        """Connect to the underlying database. Return whether a new connection
+        was opened."""
+        return db.connect()
+
     def close(self, drop_tables=False):
-        """Close the database connection. Useful to reset state in testing."""
+        """Close the database connection. Useful to reset state in testing.
+        Return True if the database was closed."""
         if drop_tables:
             db.drop_tables(MODELS)
         db.close()
