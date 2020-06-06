@@ -28,8 +28,23 @@ MAX_FILTER_AGE=$((6 * 60 * 60))
 
 export APP_NAME=update_filter_d
 
+# Parse options
+while getopts 'vd' c
+do
+  case $c in
+    v)
+      VERBOSE_FLAG=1
+      ;;
+    d)
+      DEBUG_FLAG=-d
+      ;;
+  esac
+done
+
+shift $((OPTIND-1))
+
 # Source common functionality (logging, WiFi)
-if [ -t 1 ] ; then
+if [ "$DEBUG_FLAG" ] ; then
   # shellcheck source=epidose/common/util.sh
   . "$(dirname "$0")/../common/util.sh"
 else
@@ -91,9 +106,5 @@ SERVER_URL="$1"
 while : ; do
   wait_till_filter_needed
   get_filter
-  if [ -t 1 ] ; then
-    venv/bin/python epidose/device/check_infection_risk.py "$FILTER"
-  else
-    check_infection_risk "$FILTER"
-  fi
+  run_python check_infection_risk "$FILTER" || :
 done

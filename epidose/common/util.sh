@@ -46,7 +46,7 @@ log()
 
 # Log stdout and stderr if run from a deamon (e.g. from cron)
 # LOG_FILE must be set
-if ! [ -t 1 ] ; then
+if ! [ "$DEBUG_FLAG" ] ; then
   exec >>"$LOG_FILE"
   exec 2>&1
 fi
@@ -61,8 +61,8 @@ mkdir -p "$(dirname "$WIFI_USERS_LOCK")"
 _wifi_on()
 {
   log "Turn on wifi"
-  # No WiFi operations when running from the command line
-  test -t && return
+  # No WiFi operations when running in debug mode
+  test "$DEBUG_FLAG" && return
   ip link set wlan0 up
   sleep 15
 }
@@ -73,8 +73,8 @@ _wifi_on()
 _wifi_off()
 {
   log "Turn off wifi"
-  # No WiFi operations when running from the command line
-  test -t && return
+  # No WiFi operations when running in debug mode
+  test "$DEBUG_FLAG" && return
   ip link set wlan0 down
 }
 
@@ -109,4 +109,16 @@ wifi_release()
       _wifi_off
     fi
   ) 9>"$WIFI_USERS_LOCK"
+}
+
+# Run the specified Python script from the local or installation directory
+run_python()
+{
+  if [ "$DEBUG_FLAG" ] ; then
+    prog="$1"
+    shift
+    venv/bin/python epidose/device/$prog.py --debug "$@"
+  else
+    "$@"
+  fi
 }

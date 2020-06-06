@@ -21,6 +21,21 @@ set -e
 
 export APP_NAME=upload_contacts_d
 
+# Parse options
+while getopts 'vd' c
+do
+  case $c in
+    v)
+      VERBOSE_FLAG=1
+      ;;
+    d)
+      DEBUG_FLAG=-d
+      ;;
+  esac
+done
+
+shift $((OPTIND-1))
+
 # Source common functionality (logging, WiFi)
 if [ -t 1 ] ; then
   # shellcheck source=epidose/common/util.sh
@@ -39,12 +54,6 @@ SERVER_URL="$1"
 # Wait for button press and upload contacts
 # TODO: Obtain upload authorization and affected period from Health Authority
 while : ; do
-  # Use development files if running from a terminal
-  if [ -t 1 ] ; then
-    venv/bin/python epidose/device/device_io.py -w -d -v
-    venv/bin/python epidose/device/upload_contacts.py -d -v -s "$SERVER_URL" "$(date +'%Y-%m-%dT%H:%M:%S' --date='30 min ago')" "$(date +'%Y-%m-%dT%H:%M:%S')"
-  else
-    device_io -w -v
-    upload_contacts -v -s "$SERVER_URL" "$(date +'%Y-%m-%dT%H:%M:%S' --date='30 min ago')" "$(date +'%Y-%m-%dT%H:%M:%S')"
-  fi
+  run_python device_io -w -v
+  run_python upload_contacts -v -s "$SERVER_URL" "$(date +'%Y-%m-%dT%H:%M:%S' --date='30 min ago')" "$(date +'%Y-%m-%dT%H:%M:%S')"
 done
