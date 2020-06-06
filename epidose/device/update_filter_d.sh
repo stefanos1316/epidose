@@ -33,10 +33,13 @@ while getopts 'vd' c
 do
   case $c in
     v)
-      VERBOSE_FLAG=1
+      export VERBOSE_FLAG=1
       ;;
     d)
       DEBUG_FLAG=-d
+      ;;
+    *)
+      usage
       ;;
   esac
 done
@@ -96,11 +99,8 @@ get_filter()
   done
 }
 
-
-if [ -z "$1" ] ; then
-  echo "Usage: $0 server-url" 1>&2
-  exit 1
-fi
+# Obtain server URL
+test -z "$1" && usage
 SERVER_URL="$1"
 
 while : ; do

@@ -44,6 +44,13 @@ log()
   echo "$@"
 }
 
+# Report usage information and exit with an error
+usage()
+{
+  echo "Usage: $0 [-v] [-d] server-url" 1>&2
+  exit 1
+}
+
 # Log stdout and stderr if run from a deamon (e.g. from cron)
 # LOG_FILE must be set
 if ! [ "$DEBUG_FLAG" ] ; then
@@ -117,7 +124,7 @@ run_python()
   if [ "$DEBUG_FLAG" ] ; then
     prog="$1"
     shift
-    venv/bin/python epidose/device/$prog.py --debug "$@"
+    venv/bin/python epidose/device/"$prog".py --debug "$@"
   else
     "$@"
   fi
