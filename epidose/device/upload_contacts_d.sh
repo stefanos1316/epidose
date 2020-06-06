@@ -56,5 +56,9 @@ SERVER_URL="$1"
 # TODO: Obtain upload authorization and affected period from Health Authority
 while : ; do
   run_python device_io -w -v
-  run_python upload_contacts -v -s "$SERVER_URL" "$(date +'%Y-%m-%dT%H:%M:%S' --date='30 min ago')" "$(date +'%Y-%m-%dT%H:%M:%S')"
+  log "Uploading contacts"
+  while ! run_python upload_contacts -v -s "$SERVER_URL" "$(date +'%Y-%m-%dT%H:%M:%S' --date='30 min ago')" "$(date +'%Y-%m-%dT%H:%M:%S')" ; do
+    log "Upload failed; will retry in 30 minutes"
+    sleep 1800
+  done
 done
