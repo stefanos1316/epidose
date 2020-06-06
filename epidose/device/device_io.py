@@ -21,7 +21,12 @@ __license__ = "Apache 2.0"
 
 import argparse
 from epidose.common.daemon import Daemon
-import RPi.GPIO as GPIO
+
+# This import only works on a Rasberry Pi; ignore import when testing
+try:
+    import RPi.GPIO as GPIO
+except RuntimeError:
+    pass
 import time
 
 SWITCH_PORT = 15
