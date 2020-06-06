@@ -38,6 +38,11 @@ def setup():
     GPIO.setup(LED_PORT, GPIO.OUT)
 
 
+def cleanup():
+    """Cleanup the GPIO API."""
+    GPIO.cleanup()
+
+
 def wait_for_button_press():
     """ Return when the button is pressed.
     This is interrupt-driven and therefore very efficient. """
@@ -114,6 +119,7 @@ def main():
         logger.debug("Button pressed")
         # Debounce
         time.sleep(0.2)
+    cleanup()
 
 
 if __name__ == "__main__":

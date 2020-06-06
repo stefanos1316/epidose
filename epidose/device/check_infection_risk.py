@@ -22,7 +22,7 @@ __license__ = "Apache 2.0"
 import argparse
 from dp3t.protocols.unlinkable_db import TracingDataBatch, ContactTracer
 from epidose.common.daemon import Daemon
-from epidose.device.device_io import led_set, setup
+from epidose.device.device_io import cleanup, led_set, setup
 import struct
 import sys
 
@@ -73,10 +73,12 @@ def main():
         setup()
         if matches:
             led_set(True)
-            sys.exit(0)
+            exit_code = 0
         else:
             led_set(False)
-            sys.exit(1)
+            exit_code = 1
+        cleanup()
+        sys.exit(exit_code)
 
 
 if __name__ == "__main__":
