@@ -64,9 +64,10 @@ class ServerDatabase:
         if not db.get_tables():
             db.create_tables(MODELS)
 
-    def close(self):
+    def close(self, drop_tables=False):
         """Close the database connection. Useful to reset state in testing."""
-        db.drop_tables(MODELS)
+        if drop_tables:
+            db.drop_tables(MODELS)
         db.close()
 
     def atomic(self):

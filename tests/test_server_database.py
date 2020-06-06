@@ -30,7 +30,7 @@ from datetime import datetime, timezone
 def db_connection():
     d = ServerDatabase(":memory:")
     yield d
-    d.close()
+    d.close(drop_tables=True)
 
 
 def test_get_epoch_seeds_empty(db_connection):
