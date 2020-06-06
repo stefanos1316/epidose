@@ -22,7 +22,7 @@ __license__ = "Apache 2.0"
 import argparse
 from dp3t.protocols.unlinkable_db import TracingDataBatch, ContactTracer
 from epidose.common.daemon import Daemon
-from epidose.device.device_io import led_set
+from epidose.device.device_io import led_set, setup
 import struct
 import sys
 
@@ -70,6 +70,7 @@ def main():
         ct = ContactTracer(None, args.database, transmitter=False, receiver=False)
         matches = ct.matches_with_batch(cuckoo_filter)
         logger.info(f"{'Contact match' if matches else 'No contact match'}")
+        setup()
         if matches:
             led_set(True)
             sys.exit(0)
