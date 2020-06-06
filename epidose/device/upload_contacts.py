@@ -85,7 +85,11 @@ def main():
     logger.debug("Sending request")
     res = requests.post(f"{args.server}/add_contagious", json=post)
     logger.debug("Request sent")
-    exit(0 if res.ok else 1)
+    if res.ok:
+        exit(0)
+    else:
+        logger.error(f"Request failed: {res.status_code} {res.reason}")
+        exit(1)
 
 
 if __name__ == "__main__":
