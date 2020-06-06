@@ -1,7 +1,7 @@
 # Epidose: A privacy-preserving epidemic dosimeter based on contact tracing
 
 This repository provides an open source software
-reference implementation for an *epidemic dosimeter*.
+reference implementation for an _epidemic dosimeter_.
 Just as a [radiation dosimeter](https://en.wikipedia.org/wiki/Dosimeter)
 measures dose uptake of external ionizing
 radiation, the epidemic dosimeter tracks potential exposure to viruses
@@ -188,7 +188,7 @@ Instructions for building a prototype device can be found [here](https://www.spi
 
 ## What is implemented
 Currently all the device-end functionality has been implemented and
-tested, with a device reporting an *infected* status after (manually)
+tested, with a device reporting an _infected_ status after (manually)
 downloading a filter constructed from identifiers actually transmitted
 and received over Bluetooth.
 
@@ -203,7 +203,7 @@ The following programs are available in the `epidose` directory.
 * `back-end/create_filter.py`
 * `back-end/ha_server.py`
 
-All programs can be run with a *--help* argument to obtain usage information.
+All programs can be run with a _--help_ argument to obtain usage information.
 
 ## What is missing
 The server and the device automation and configuration are under construction.
