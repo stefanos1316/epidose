@@ -23,6 +23,7 @@ import argparse
 from dp3t.protocols.server_database import ServerDatabase
 from epidose.common.daemon import Daemon
 from flask import Flask, abort, jsonify, request, send_from_directory
+import logging
 from os.path import basename, dirname
 
 API_VERSION = "1"
@@ -158,3 +159,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+else:
+    global logger
+    logger = logging.getLogger("gunicorn.error")
