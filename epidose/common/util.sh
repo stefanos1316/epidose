@@ -17,6 +17,14 @@
 # limitations under the License.
 #
 
+# Detach daemon
+if [ -n "$DETACH" ] ; then
+  # Run the process again without detaching and as a daemon (-S)
+  # shellcheck disable=SC2086
+  setsid "$0" -S -D $DEBUG_FLAG $VERBOSE_FLAG "$@" &
+  exit 0
+fi
+
 # Sleep time between retries to get the filter over WiFi (in seconds)
 # 15 minutes
 export WIFI_RETRY_TIME=$((15 * 60))
@@ -40,7 +48,7 @@ WIFI_USERS_LOCK=/var/lock/epidose/wifi-users.lock
 log()
 {
   # Output is redirected to the log file if needed at the script's lop level
-  if [ -z "$DEBUG_FLAG" ] ; then
+  if [ -n "$DAEMON" ] ; then
     date +'%F %T ' | tr -d \\n
   fi
   echo "$@"
@@ -49,15 +57,25 @@ log()
 # Report usage information and exit with an error
 usage()
 {
-  echo "Usage: $0 [-v] [-d] server-url" 1>&2
+  cat <<EOF 1>&2
+Usage: $0 [-D] [-d] [-v] server-url
+-D	Do not detach
+-d	Debug mode: run scripts from local dir; send debug messages
+-v	Verbose mode
+EOF
   exit 1
 }
 
-# Log stdout and stderr if run from a deamon (e.g. from cron)
-# LOG_FILE must be set
-if ! [ "$DEBUG_FLAG" ] ; then
+if [ -n "$DAEMON" ] ; then
+  # Log stdout and stderr if run as a deamon
+  # LOG_FILE must be set
   exec >>"$LOG_FILE"
   exec 2>&1
+
+  # Detach stdin
+  exec 0</dev/null
+
+  echo $$ >/run/"${APP_NAME}".pid
 fi
 
 log 'Starting up'

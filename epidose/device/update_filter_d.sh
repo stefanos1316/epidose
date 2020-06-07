@@ -29,14 +29,21 @@ MAX_FILTER_AGE=$((6 * 60 * 60))
 export APP_NAME=update_filter_d
 
 # Parse options
-while getopts 'vd' c
+DETACH=1
+while getopts 'DdSv' c
 do
   case $c in
-    v)
-      export VERBOSE_FLAG=1
-      ;;
     d)
       DEBUG_FLAG=-d
+      ;;
+    D)
+      DETACH=''
+      ;;
+    S)			# Being run by setdid as a daemon (undocumented)
+      export DAEMON=1
+      ;;
+    v)
+      VERBOSE_FLAG=-v
       ;;
     *)
       usage
