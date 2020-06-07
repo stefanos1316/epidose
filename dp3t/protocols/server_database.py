@@ -61,13 +61,15 @@ class ServerDatabase:
         db.init(db_path)
 
         # Create schema if needed
-        if not db.get_tables():
-            db.create_tables(MODELS)
+        db.create_tables(MODELS)
 
-    def connect(self):
+    def connect(self, reuse_if_open=False):
         """Connect to the underlying database. Return whether a new connection
         was opened."""
-        return db.connect()
+        ret = db.connect(reuse_if_open)
+        if not db.get_tables():
+            db.create_tables(MODELS)
+        return ret
 
     def close(self, drop_tables=False):
         """Close the database connection. Useful to reset state in testing.

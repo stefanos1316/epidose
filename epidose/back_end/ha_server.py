@@ -42,6 +42,22 @@ def shutdown_server():
     func()
 
 
+@app.before_request
+def before_request():
+    global db
+    if not db:
+        db = ServerDatabase(DATABASE_LOCATION)
+    db.connect(reuse_if_open=True)
+
+
+@app.after_request
+def after_request(response):
+    global db
+    if not app.config["TESTING"]:
+        db.close()
+    return response
+
+
 @app.route("/filter", methods=["GET"])
 def filter():
     """Send the Cuckoo filter as a static file.

@@ -33,6 +33,7 @@ def client():
     args.debug = True
     args.verbose = True
     with ha_server.app.test_client() as client:
+        ha_server.app.config["TESTING"] = True
         with ha_server.app.app_context():
             ha_server.initialize(args)
         yield client
