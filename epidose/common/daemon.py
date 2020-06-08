@@ -23,6 +23,7 @@ from daemonize import Daemonize
 import logging
 import sys
 
+
 class Daemon(object):
     def __init__(self, name, main, main_args):
         """Construct a new daemon given its name, main function, and
@@ -45,9 +46,9 @@ class Daemon(object):
             log_handler = logging.FileHandler(f"/var/log/{name}")
             keep_fds = [log_handler.stream.fileno()]
 
-            # Messages are preceded by timestamp
-            formatter = logging.Formatter("%(asctime)s: %(message)s")
-            log_handler.setFormatter(formatter)
+        # Messages are preceded by timestamp
+        formatter = logging.Formatter("%(asctime)s: %(message)s")
+        log_handler.setFormatter(formatter)
 
         self.logger.addHandler(log_handler)
 
@@ -59,9 +60,15 @@ class Daemon(object):
         log_handler.setLevel(log_level)
 
         # Run as a daemon
-        self.daemon = Daemonize(app=name, pid=f"/run/{name}.pid", action=main,
-                           keep_fds=keep_fds, logger=self.logger,
-                           foreground=self.args.debug)
+        self.daemon = Daemonize(
+            app=name,
+            pid=f"/run/{name}.pid",
+            action=main,
+            keep_fds=keep_fds,
+            logger=self.logger,
+            foreground=self.args.debug,
+        )
+
     def start(self):
         """Start the underlying daemon."""
         self.daemon.start()
@@ -73,4 +80,3 @@ class Daemon(object):
     def get_args(self):
         """Return the parsed arguments passed to the constructor."""
         return self.args
-
