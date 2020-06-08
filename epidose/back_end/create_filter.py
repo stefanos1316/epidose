@@ -29,6 +29,7 @@ from tempfile import mkstemp
 # The daemon object associated with this program
 daemon = None
 
+
 def read_seeds(file_path):
     """Return an array containing a pair containing a list of epochs and a
     list of corresponding seeds read from the specified file path."""
@@ -64,7 +65,7 @@ def main():
     args = parser.parse_args()
 
     # Setup logging
-    daemon = Daemon("create_filter", None, args)
+    daemon = Daemon("create_filter", args)
     global logger
     logger = daemon.get_logger()
 

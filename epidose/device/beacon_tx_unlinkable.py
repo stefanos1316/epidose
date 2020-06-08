@@ -28,8 +28,6 @@ from epidose.device.beacon_format import BLE_PACKET
 import subprocess
 import time
 
-# The daemon object associated with this program
-daemon = None
 
 def run_command(cmd):
     """Run (or simulate the running of) the specified command.
@@ -125,18 +123,11 @@ def main():
         args.debug = True
         args.dry_run = True
         args.database = ":memory:"
-    global daemon
-    daemon = Daemon("beacon_tx", main_args, args)
-    daemon.start()
 
-
-def main_args():
     # Setup logging
+    daemon = Daemon("beacon_tx", args)
     global logger
     logger = daemon.get_logger()
-
-    # Obtain parsed arguments
-    args = daemon.get_args()
 
     global dry_run
     dry_run = args.dry_run

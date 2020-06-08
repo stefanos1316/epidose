@@ -48,7 +48,7 @@ def main():
     args = parser.parse_args()
 
     # Setup logging
-    daemon = Daemon("check_infection", None, args)
+    daemon = Daemon("check_infection", args)
     global logger
     logger = daemon.get_logger()
 

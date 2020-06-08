@@ -105,7 +105,7 @@ def main():
     args = parser.parse_args()
 
     # Setup logging
-    daemon = Daemon("device_io", None, args)
+    daemon = Daemon("device_io", args)
     global logger
     logger = daemon.get_logger()
 

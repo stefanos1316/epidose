@@ -19,13 +19,12 @@ __copyright__ = """
 """
 __license__ = "Apache 2.0"
 
-from daemonize import Daemonize
 import logging
 import sys
 
 
 class Daemon(object):
-    def __init__(self, name, main, main_args):
+    def __init__(self, name, main_args):
         """Construct a new daemon given its name, main function, and
         parsed arguments."""
         # Setup logging
@@ -37,14 +36,8 @@ class Daemon(object):
         # Display log messages only on defined handlers.
         self.logger.propagate = False
 
-        if self.args.debug:
-            # Logging output goes to stderr
-            log_handler = logging.StreamHandler(sys.stderr)
-            keep_fds = None
-        else:
-            # Logging output goes to file
-            log_handler = logging.FileHandler(f"/var/log/{name}")
-            keep_fds = [log_handler.stream.fileno()]
+        # Logging output goes to stderr
+        log_handler = logging.StreamHandler(sys.stderr)
 
         # Messages are preceded by timestamp
         formatter = logging.Formatter("%(asctime)s: %(message)s")
@@ -58,20 +51,6 @@ class Daemon(object):
             log_level = logging.INFO
         self.logger.setLevel(log_level)
         log_handler.setLevel(log_level)
-
-        # Run as a daemon
-        self.daemon = Daemonize(
-            app=name,
-            pid=f"/run/{name}.pid",
-            action=main,
-            keep_fds=keep_fds,
-            logger=self.logger,
-            foreground=self.args.debug,
-        )
-
-    def start(self):
-        """Start the underlying daemon."""
-        self.daemon.start()
 
     def get_logger(self):
         """Return a logger given the name and the program's arguments."""

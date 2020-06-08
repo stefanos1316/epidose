@@ -35,6 +35,7 @@ OCF_LE_SET_SCAN_ENABLE = 0x000C
 # The daemon object associated with this program
 daemon = None
 
+
 def set_receive(socket):
     """Setup to receive contact tracing packets."""
     # Enable scanning
@@ -106,17 +107,11 @@ def main():
     if args.test:
         args.debug = True
         args.database = ":memory:"
-    global daemon
-    daemon = Daemon("beacon_rx", main_args, args)
-    daemon.start()
 
-def main_args():
     # Setup logging
+    daemon = Daemon("beacon_rx", args)
     global logger
     logger = daemon.get_logger()
-
-    # Obtain parsed arguments
-    args = daemon.get_args()
 
     # Receive and process beacon packets
     global receiver

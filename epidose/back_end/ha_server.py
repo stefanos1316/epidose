@@ -101,7 +101,7 @@ def initialize(args):
     """Initialize the server's database and logger. """
 
     global daemon
-    daemon = Daemon("ha_server", None, args)
+    daemon = Daemon("ha_server", args)
     # Setup logging
     global logger
     logger = daemon.get_logger()

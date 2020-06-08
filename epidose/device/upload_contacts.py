@@ -63,7 +63,7 @@ def main():
         args.database = ":memory:"
 
     # Setup logging
-    daemon = Daemon("upload_contacts", None, args)
+    daemon = Daemon("upload_contacts", args)
     global logger
     logger = daemon.get_logger()
 
