@@ -288,7 +288,7 @@ and information regarding the period over which the user was
 infected.
 
 ```sh
-sudo epidose/device/upload_contacts_d.sh -D -d http://ha-server:5010
+sudo epidose/device/upload_contacts_d.sh -l http://ha-server:5010
 ```
 
 If you don't have a device with a physical button you can instead
@@ -310,7 +310,7 @@ Run the following command to download the new Cuckoo filter and
 check for matching contacts.
 
 ```sh
-sudo epidose/device/update_filter_d.sh -D -d ha-server:5010
+sudo epidose/device/update_filter_d.sh -l ha-server:5010
 ```
 
 You can then see the check's result with the command

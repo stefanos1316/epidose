@@ -23,19 +23,29 @@ export APP_NAME=upload_contacts_d
 
 # Parse options
 DETACH=1
-while getopts 'DdSv' c
+UTIL=/usr/lib/epidose/util.sh
+while getopts 'dlSv' c
 do
   case $c in
     d)
+      # Debug: Do not detach; log to stderr; pass flag to other programs
       DEBUG_FLAG=-d
-      ;;
-    D)
       DETACH=''
       ;;
-    S)			# Being run by setdid as a daemon (undocumented)
-      export DAEMON=1
+    l)
+      # Pick up utility functions relative to the script's source code
+      UTIL="$(dirname "$0")/../common/util.sh"
+      SCRIPT_DIR="$(dirname "$0")"
+      LOCAL_FLAG=-l
+      ;;
+    S)
+      # This undocumented flag is internally set when the script is run
+      # detached under setsid.
+      DAEMON=1
+      DETACH=''
       ;;
     v)
+      # Verbose logging; pass to other programs
       VERBOSE_FLAG=-v
       ;;
     *)
@@ -47,13 +57,8 @@ done
 shift $((OPTIND-1))
 
 # Source common functionality (logging, WiFi)
-if [ "$DEBUG_FLAG" ] ; then
-  # shellcheck source=epidose/common/util.sh
-  . "$(dirname "$0")/../common/util.sh"
-else
-  # shellcheck source=epidose/common/util.sh
-  . /usr/lib/dp3t/util.sh
-fi
+# shellcheck source=epidose/common/util.sh
+. "$UTIL"
 
 # Obtain server URL
 test -z "$1" && usage

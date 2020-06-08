@@ -21,7 +21,7 @@
 if [ -n "$DETACH" ] ; then
   # Run the process again without detaching and as a daemon (-S)
   # shellcheck disable=SC2086
-  setsid "$0" -S -D $DEBUG_FLAG $VERBOSE_FLAG "$@" &
+  setsid "$0" -S $LOCAL_FLAG $VERBOSE_FLAG "$@" &
   exit 0
 fi
 
@@ -58,10 +58,10 @@ log()
 usage()
 {
   cat <<EOF 1>&2
-Usage: $0 [-D] [-d] [-v] server-url
--D	Do not detach
--d	Debug mode: run scripts from local dir; send debug messages
--v	Verbose mode
+Usage: $0 [-d] [-l] [-v] server-url
+-d	Debug mode: do not detach; log to stderr
+-l	Source utility functions from local directory relative to source code
+-v	Verbose logging
 EOF
   exit 1
 }
@@ -141,10 +141,10 @@ wifi_release()
 # Run the specified Python script from the local or installation directory
 run_python()
 {
-  if [ "$DEBUG_FLAG" ] ; then
+  if [ "$SCRIPT_DIR" ] ; then
     prog="$1"
     shift
-    venv/bin/python epidose/device/"$prog".py --debug "$@"
+    venv/bin/python "$SCRIPT_DIR"/"$prog".py "$DEBUG_FLAG" "$@"
   else
     "$@"
   fi
