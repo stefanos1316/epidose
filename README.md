@@ -1,4 +1,4 @@
-# Epidose: A privacy-preserving epidemic dosimeter based on contact tracing
+#Epidose: A privacy-preserving epidemic dosimeter based on contact tracing
 
 This repository provides an open source software
 reference implementation for an _epidemic dosimeter_.
@@ -358,7 +358,7 @@ Timestamp            Epoch       Seed        Ephid
 For development, you should install the development and test dependencies:
 
 ```bash
-pip install -e ".[dev,test]"
+pip install -e ".[dev,test,deploy]"
 ```
 
 You should also install the proper pre-commit-hooks so that the files stay

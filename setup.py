@@ -4,13 +4,15 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="dp3t-python-reference",
+    name="epidose",
     version="0.0.1",
-    author="EPFL",
-    description="DP3T Python Reference Implementation",
+    author="Diomidis Spinellis,EPFL",
+    maintainer="Diomidis Spinellis",
+    maintainer_email="dds@aueb.gr",
+    description="Epidemic dosimeter based on DP3T",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/dp-3t/dp3t-python-reference",
+    url="https://github.com/dspinellis/epidose",
     packages=setuptools.find_packages(),
     classifiers=[
         "Development Status :: 3 - Alpha",
@@ -34,5 +36,6 @@ setuptools.setup(
     extras_require={
         "dev": ["black", "flake8", "pre-commit"],
         "test": ["pytest", "testfixtures"],
+        "deploy": ["make-deb"],
     },
 )
