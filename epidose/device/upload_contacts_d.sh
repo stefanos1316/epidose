@@ -22,31 +22,32 @@ set -e
 export APP_NAME=upload_contacts_d
 
 # Parse options
-DETACH=1
+export DETACH=1
+export SCRIPT_DIR=''
 UTIL=/usr/lib/epidose/util.sh
 while getopts 'dlSv' c
 do
   case $c in
     d)
       # Debug: Do not detach; log to stderr; pass flag to other programs
-      DEBUG_FLAG=-d
+      export DEBUG_FLAG=-d
       DETACH=''
       ;;
     l)
       # Pick up utility functions relative to the script's source code
       UTIL="$(dirname "$0")/../common/util.sh"
       SCRIPT_DIR="$(dirname "$0")"
-      LOCAL_FLAG=-l
+      export LOCAL_FLAG=-l
       ;;
     S)
       # This undocumented flag is internally set when the script is run
       # detached under setsid.
-      DAEMON=1
+      export DAEMON=1
       DETACH=''
       ;;
     v)
       # Verbose logging; pass to other programs
-      VERBOSE_FLAG=-v
+      export VERBOSE_FLAG=-v
       ;;
     *)
       usage

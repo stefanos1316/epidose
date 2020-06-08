@@ -29,31 +29,32 @@ MAX_FILTER_AGE=$((6 * 60 * 60))
 export APP_NAME=update_filter_d
 
 # Parse options
-DETACH=1
+export DETACH=1
+export SCRIPT_DIR=''
 UTIL=/usr/lib/epidose/util.sh
 while getopts 'dlSv' c
 do
   case $c in
     d)
       # Debug: Do not detach; log to stderr; pass flag to other programs
-      DEBUG_FLAG=-d
+      export DEBUG_FLAG=-d
       DETACH=''
       ;;
     l)
       # Pick up utility functions relative to the script's source code
       UTIL="$(dirname "$0")/../common/util.sh"
       SCRIPT_DIR="$(dirname "$0")"
-      LOCAL_FLAG=-l
+      export LOCAL_FLAG=-l
       ;;
     S)
       # This undocumented flag is internally set when the script is run
       # detached under setsid.
-      DAEMON=1
+      export DAEMON=1
       DETACH=''
       ;;
     v)
       # Verbose logging; pass to other programs
-      VERBOSE_FLAG=-v
+      export VERBOSE_FLAG=-v
       ;;
     *)
       usage
@@ -106,7 +107,7 @@ get_filter()
       wifi_release
       log "Unable to get filter: $err"
       log "Wil retry in $WIFI_RETRY_TIME s"
-      sleep $WIFI_RETRY_TIME
+      sleep "$WIFI_RETRY_TIME"
     fi
   done
 }
@@ -119,4 +120,5 @@ while : ; do
   wait_till_filter_needed
   get_filter
   run_python check_infection_risk "$FILTER" || :
+  # TODO: Also check for software updates
 done
