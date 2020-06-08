@@ -228,7 +228,7 @@ You'll need to install the required libraries and project.
 Here is how you can do it under the Ubuntu GNU/Linux distribution.
 
 ```bash
-sudo apt-get install libbluetooth-dev libglib2.0-dev python3-dev python3-setuptools shellcheck sqlite3 virtualenv
+sudo apt-get install libbluetooth-dev libglib2.0-dev python3-dev python3-setuptools shellcheck sqlite3 virtualenv dh-virtualenv debhelper supervisor
 git clone https://github.com/dspinellis/epidose
 cd epidose
 virtualenv venv -p /usr/bin/python3
@@ -389,6 +389,23 @@ pytest
 If you just installed the test dependencies, you may need to reload the `venv`
 (`deactivate` followed by `source venv/bin/ativate`) to ensure that the paths
 are picked up correctly.
+
+### Deployment
+Run the following commands
+```
+# Create a Debian package structure
+make-deb
+
+# Correct the resulting rules file
+printf '\n\noverride_dh_virtualenv:\n\tdh_virtualenv --use-system-packages\n' >>debian/rules
+
+# Package the Debian package structure into an installable .deb file
+# No not sign the source code or the changes
+dpkg-buildpackage -us -uc
+
+# Distribute the package where required and install it
+sudo dpkg -i epidose_0.0.1_amd64.deb
+```
 
 ## More information
 A comprehensive list is maintained at the [crowdsourced list of projects related to COVID-19 contact tracing ](https://github.com/shankari/covid-19-tracing-projects) repository.
