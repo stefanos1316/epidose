@@ -390,22 +390,15 @@ If you just installed the test dependencies, you may need to reload the `venv`
 (`deactivate` followed by `source venv/bin/ativate`) to ensure that the paths
 are picked up correctly.
 
+### Packaging
+Run `make package` to create a package for distribution.
+
 ### Deployment
-Run the following commands
-```
-# Create a Debian package structure
-make-deb
+Run  `sudo make install` to deploy the package.
 
-# Correct the resulting rules file
-printf '\n\noverride_dh_virtualenv:\n\tdh_virtualenv --use-system-packages\n' >>debian/rules
-
-# Package the Debian package structure into an installable .deb file
-# No not sign the source code or the changes
-dpkg-buildpackage -us -uc
-
-# Distribute the package where required and install it
-sudo dpkg -i epidose_0.0.1_amd64.deb
-```
+### Deployment refresh
+After the first deployment, source code files can be deployed by
+running `sudo make fast-install`.
 
 ## More information
 A comprehensive list is maintained at the [crowdsourced list of projects related to COVID-19 contact tracing ](https://github.com/shankari/covid-19-tracing-projects) repository.
