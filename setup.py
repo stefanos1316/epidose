@@ -38,4 +38,12 @@ setuptools.setup(
         "test": ["pytest", "testfixtures"],
         "deploy": ["make-deb"],
     },
+    scripts=[
+        "epidose/device/update_filter_d.sh",
+        "epidose/device/upload_contacts_d.sh",
+        "epidose/common/util.sh",
+    ],
+    # Could also support entry_points console_scripts, but they are
+    # not supported by the current version of make_deb
+    # See https://github.com/nylas/make-deb/pull/11
 )
