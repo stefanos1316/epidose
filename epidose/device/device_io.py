@@ -34,19 +34,31 @@ LED_PORT = 21
 
 
 def setup():
-    """ Setup the LED and button I/O ports.
+    """ Setup GPIO for I/O
     This must be called before calling the other functions."""
-    # Red LED
     GPIO.setmode(GPIO.BCM)
     GPIO.setwarnings(False)
 
-    # Switch
-    GPIO.setup(SWITCH_PORT, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+
+def setup_leds():
+    """ Setup the LED port.
+    This must be called before calling the other functions."""
+    setup()
+
+    # Red external LED
     GPIO.setup(LED_PORT, GPIO.OUT)
 
     # Green on-board LED
     with open("/sys/class/leds/led0/trigger", "w") as f:
         f.write("none")
+
+
+def setup_switch():
+    """ Setup the button I/O port.
+    This must be called before calling the other functions."""
+    setup()
+
+    GPIO.setup(SWITCH_PORT, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 
 def cleanup():
@@ -124,26 +136,32 @@ def main():
     global logger
     logger = daemon.get_logger()
 
-    setup()
     if args.test:
+        setup_leds()
+        setup_switch()
         try:
             toggle()
         except KeyboardInterrupt:
             pass
     if args.green_off:
         logger.debug("Turn green LED off")
+        setup_leds()
         green_led_set(False)
     if args.green_on:
         logger.debug("Turn green LED on")
+        setup_leds()
         green_led_set(True)
     if args.red_off:
         logger.debug("Turn red LED off")
+        setup_leds()
         red_led_set(False)
     if args.red_on:
         logger.debug("Turn red LED on")
+        setup_leds()
         red_led_set(True)
     if args.wait:
         logger.debug("Waiting for button press; press ^C and button to abort")
+        setup_switch()
         wait_for_button_press()
         logger.debug("Button pressed")
     # Wait for LEDs to be visible
