@@ -17,7 +17,7 @@ install: $(DEB)
 	-apt-get -y remove epidose
 	dpkg -i $(DEB)
 	cp epidose/device/supervisord.conf /etc/supervisor/conf.d/epidose.conf
-	systemctl restart supervisor
+	systemctl reload supervisor
 
 # Install after source code files have changed
 fast-install:
