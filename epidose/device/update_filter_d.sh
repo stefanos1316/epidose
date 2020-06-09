@@ -29,11 +29,11 @@ MAX_FILTER_AGE=$((6 * 60 * 60))
 export APP_NAME=update_filter_d
 
 # Pick up utility functions relative to the script's source code
-UTIL="$(dirname "$0")/../common/util.sh"
+UTIL="$(dirname "$0")/util.sh"
 
 
 # Source common functionality (logging, WiFi)
-# shellcheck source=epidose/common/util.sh
+# shellcheck source=epidose/device/util.sh
 . "$UTIL"
 
 # Wait until a filter file is required

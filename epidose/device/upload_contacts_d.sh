@@ -22,10 +22,10 @@ set -e
 export APP_NAME=upload_contacts_d
 
 # Pick up utility functions relative to the script's source code
-UTIL="$(dirname "$0")/../common/util.sh"
+UTIL="$(dirname "$0")/util.sh"
 
 # Source common functionality (logging, WiFi)
-# shellcheck source=epidose/common/util.sh
+# shellcheck source=epidose/device/util.sh
 . "$UTIL"
 
 # Upload contacts via WiFi

@@ -133,6 +133,7 @@ do
       ;;
     i)
       PYTHON=/opt/venvs/epidose/bin/python
+      SCRIPT_DIR=/opt/venvs/epidose/lib/python3.7/site-packages/epidose/device
       ;;
     v)
       # Verbose logging; pass to other programs
