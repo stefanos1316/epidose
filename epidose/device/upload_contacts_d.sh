@@ -21,49 +21,12 @@ set -e
 
 export APP_NAME=upload_contacts_d
 
-# Parse options
-export DETACH=1
-export SCRIPT_DIR=''
-UTIL=/usr/lib/epidose/util.sh
-while getopts 'dlSv' c
-do
-  case $c in
-    d)
-      # Debug: Do not detach; log to stderr; pass flag to other programs
-      export DEBUG_FLAG=-d
-      DETACH=''
-      ;;
-    l)
-      # Pick up utility functions relative to the script's source code
-      UTIL="$(dirname "$0")/../common/util.sh"
-      SCRIPT_DIR="$(dirname "$0")"
-      export LOCAL_FLAG=-l
-      ;;
-    S)
-      # This undocumented flag is internally set when the script is run
-      # detached under setsid.
-      export DAEMON=1
-      DETACH=''
-      ;;
-    v)
-      # Verbose logging; pass to other programs
-      export VERBOSE_FLAG=-v
-      ;;
-    *)
-      usage
-      ;;
-  esac
-done
-
-shift $((OPTIND-1))
+# Pick up utility functions relative to the script's source code
+UTIL="$(dirname "$0")/../common/util.sh"
 
 # Source common functionality (logging, WiFi)
 # shellcheck source=epidose/common/util.sh
 . "$UTIL"
-
-# Obtain server URL
-test -z "$1" && usage
-SERVER_URL="$1"
 
 # Upload contacts via WiFi
 upload_contacts()
@@ -71,7 +34,7 @@ upload_contacts()
   log "Uploading contacts"
   wifi_acquire
   # TODO: Obtain upload authorization and affected period from Health Authority
-  run_python upload_contacts -v -s "$SERVER_URL" "$(date +'%Y-%m-%dT%H:%M:%S' --date='30 min ago')" "$(date +'%Y-%m-%dT%H:%M:%S')"
+  run_python upload_contacts -s "$SERVER_URL" "$(date +'%Y-%m-%dT%H:%M:%S' --date='30 min ago')" "$(date +'%Y-%m-%dT%H:%M:%S')"
   exit_code=$?
   wifi_release
   return $exit_code
@@ -79,7 +42,7 @@ upload_contacts()
 
 # Wait for button press and upload contacts
 while : ; do
-  run_python device_io -w -v
+  run_python device_io -w
   while ! upload_contacts ; do
     log "Upload failed; will retry in 30 minutes"
     sleep 1800

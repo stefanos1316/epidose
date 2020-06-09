@@ -28,41 +28,9 @@ MAX_FILTER_AGE=$((6 * 60 * 60))
 
 export APP_NAME=update_filter_d
 
-# Parse options
-export DETACH=1
-export SCRIPT_DIR=''
-UTIL=/usr/lib/epidose/util.sh
-while getopts 'dlSv' c
-do
-  case $c in
-    d)
-      # Debug: Do not detach; log to stderr; pass flag to other programs
-      export DEBUG_FLAG=-d
-      DETACH=''
-      ;;
-    l)
-      # Pick up utility functions relative to the script's source code
-      UTIL="$(dirname "$0")/../common/util.sh"
-      SCRIPT_DIR="$(dirname "$0")"
-      export LOCAL_FLAG=-l
-      ;;
-    S)
-      # This undocumented flag is internally set when the script is run
-      # detached under setsid.
-      export DAEMON=1
-      DETACH=''
-      ;;
-    v)
-      # Verbose logging; pass to other programs
-      export VERBOSE_FLAG=-v
-      ;;
-    *)
-      usage
-      ;;
-  esac
-done
+# Pick up utility functions relative to the script's source code
+UTIL="$(dirname "$0")/../common/util.sh"
 
-shift $((OPTIND-1))
 
 # Source common functionality (logging, WiFi)
 # shellcheck source=epidose/common/util.sh
@@ -111,10 +79,6 @@ get_filter()
     fi
   done
 }
-
-# Obtain server URL
-test -z "$1" && usage
-SERVER_URL="$1"
 
 while : ; do
   wait_till_filter_needed

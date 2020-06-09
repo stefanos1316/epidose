@@ -17,71 +17,42 @@
 # limitations under the License.
 #
 
-# Detach daemon
-if [ -n "$DETACH" ] ; then
-  # Run the process again without detaching and as a daemon (-S)
-  # shellcheck disable=SC2086
-  setsid "$0" -S $LOCAL_FLAG $VERBOSE_FLAG "$@" &
-  exit 0
-fi
-
 # Sleep time between retries to get the filter over WiFi (in seconds)
 # 15 minutes
 export WIFI_RETRY_TIME=$((15 * 60))
 
-
-if [ -z "$APP_NAME" ] ; then
-  echo "APP_NAME not set" 1>&2
-  exit 2
-fi
-
-# Where logs are sent
-# Stdout and stderr will go there if run from a deamon (e.g. from cron)
-LOG_FILE="/var/log/$APP_NAME"
-
 # Directory of WiFi users
 WIFI_USERS=/var/lock/epidose/wifi-users
+
 # Obtain exclusive access to the above directory
 WIFI_USERS_LOCK=/var/lock/epidose/wifi-users.lock
+
+# Pick up Python scripts from the same directory
+SCRIPT_DIR="$(dirname "$0")"
+
+# Pick Python from the current directory
+PYTHON=venv/bin/python
+
 
 # Log with a timestamp
 log()
 {
   # Output is redirected to the log file if needed at the script's lop level
-  if [ -n "$DAEMON" ] ; then
-    date +'%F %T ' | tr -d \\n
-  fi
-  echo "$@"
+  date +'%F %T ' | tr -d \\n 1>&2
+  echo "$@" 1>&2
 }
 
 # Report usage information and exit with an error
 usage()
 {
   cat <<EOF 1>&2
-Usage: $0 [-d] [-l] [-v] server-url
--d	Debug mode: do not detach; log to stderr
--l	Source utility functions from local directory relative to source code
+Usage: $0 [-d] [-i] [-v] server-url
+-d	Debug mode
+-i	Use Python installed for the epidose venv
 -v	Verbose logging
 EOF
   exit 1
 }
-
-if [ -n "$DAEMON" ] ; then
-  # Log stdout and stderr if run as a deamon
-  # LOG_FILE must be set
-  exec >>"$LOG_FILE"
-  exec 2>&1
-
-  # Detach stdin
-  exec 0</dev/null
-
-  echo $$ >/run/"${APP_NAME}".pid
-fi
-
-log 'Starting up'
-
-# Create lock directory
-mkdir -p "$(dirname "$WIFI_USERS_LOCK")"
 
 # Turn WiFi on and wait for for it to associate
 # Internal function
@@ -141,11 +112,47 @@ wifi_release()
 # Run the specified Python script from the local or installation directory
 run_python()
 {
-  if [ "$SCRIPT_DIR" ] ; then
-    prog="$1"
-    shift
-    venv/bin/python "$SCRIPT_DIR"/"$prog".py "$DEBUG_FLAG" "$@"
-  else
-    "$@"
-  fi
+  prog="$1"
+  shift
+  # shellcheck disable=SC2086
+  "$PYTHON" "$SCRIPT_DIR"/"$prog".py $DEBUG_FLAG $VERBOSE_FLAG "$@"
 }
+
+if [ -z "$APP_NAME" ] ; then
+  echo "APP_NAME not set" 1>&2
+  exit 2
+fi
+
+# Parse command line options
+while getopts 'div' c
+do
+  case $c in
+    d)
+      # Debug: Pass flag to other programs
+      export DEBUG_FLAG=-d
+      ;;
+    i)
+      PYTHON=/opt/venvs/epidose/bin/python
+      ;;
+    v)
+      # Verbose logging; pass to other programs
+      export VERBOSE_FLAG=-v
+      ;;
+    *)
+      echo "Invalid option $c" 1>&2
+      usage
+      ;;
+  esac
+done
+
+shift $((OPTIND-1))
+
+
+log 'Starting up'
+
+# Obtain server URL
+test -z "$1" && usage
+export SERVER_URL="$1"
+
+# Create lock directory
+mkdir -p "$(dirname "$WIFI_USERS_LOCK")"

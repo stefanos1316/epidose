@@ -30,7 +30,12 @@ from xmlrpc import client
 daemon = None
 
 # Processes to verify
-PROCESSES = ["beacon_tx", "beacon_rx"]
+PROCESSES = [
+    "beacon_rx",
+    "beacon_tx",
+    "update_filter",
+    "upload_contacts",
+]
 
 FLASH_PAUSE = 3
 
