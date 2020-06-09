@@ -22,6 +22,7 @@ __license__ = "Apache 2.0"
 import argparse
 from http.client import HTTPConnection
 from epidose.common.daemon import Daemon
+from epidose.device.device_io import green_led_set, setup_leds
 import socket
 from time import sleep
 from xmlrpc import client
@@ -37,7 +38,8 @@ PROCESSES = [
     "upload_contacts",
 ]
 
-FLASH_PAUSE = 3
+FLASH_PAUSE = 2
+FLASH_BLINK = 0.2
 
 
 # Routines to allow connection over a Unix domain socket
@@ -61,21 +63,25 @@ def supervisor_check(proxy):
     """Return true if supervisor is running"""
     # Might fail due to an exception.  In this case the watchdog will
     # cease operating and the fault will become visible.
-    return proxy.supervisor.getState()["statename"] == "RUNNING"
+    if proxy.supervisor.getState()["statename"] == "RUNNING":
+        return True
+    else:
+        logger.error("supervisord not running")
+        return False
 
 
 def process_check(proxy):
     """ Return true if all epidose processes are running."""
     for i in PROCESSES:
         if proxy.supervisor.getProcessInfo(f"epidose:{i}")["statename"] != "RUNNING":
+            logger.error(f"{i} not running")
             return False
     return True
 
 
 def watchdog_check(proxy):
     """ Flash green led if all processes are running """
-    if supervisor_check(proxy) and process_check(proxy):
-        print("OK")
+    return supervisor_check(proxy) and process_check(proxy)
 
 
 def main():
@@ -104,8 +110,12 @@ def main():
     proxy = client.ServerProxy(
         "http://localhost", transport=UnixStreamTransport("/run/supervisor.sock")
     )
+    setup_leds()
     while True:
-        watchdog_check(proxy)
+        if watchdog_check(proxy):
+            green_led_set(True)
+            sleep(FLASH_BLINK)
+            green_led_set(False)
         sleep(FLASH_PAUSE)
 
 
