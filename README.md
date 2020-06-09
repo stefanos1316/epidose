@@ -402,6 +402,11 @@ Run  `sudo make install` to deploy the package.
 After the first deployment, source code files can be deployed by
 running `sudo make fast-install`.
 
+### Library documentation
+* [Gunicorn WSGI server](https://docs.gunicorn.org/en/stable/index.html)
+* [Supervisor process control](http://supervisord.org/index.html)
+* [dh-virtualenv packager](https://dh-virtualenv.readthedocs.io/en/1.1/index.html)
+
 ## More information
 A comprehensive list is maintained at the [crowdsourced list of projects related to COVID-19 contact tracing ](https://github.com/shankari/covid-19-tracing-projects) repository.
 Below are links to information directly relevant to this project.
