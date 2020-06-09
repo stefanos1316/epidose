@@ -21,12 +21,14 @@ __license__ = "Apache 2.0"
 
 import argparse
 from epidose.common.daemon import Daemon
+from epidose.common.interruptible_sleep import InterruptibleSleep
 from dp3t.config import EPOCH_LENGTH
 from datetime import datetime
 from dp3t.protocols.unlinkable_db import ContactTracer
 from epidose.device.beacon_format import BLE_PACKET
+import signal
 import subprocess
-import time
+from sys import exit
 
 
 def run_command(cmd):
@@ -143,6 +145,7 @@ def main():
     # Transmit and store beacon packets
     current_ephid = None
     transmitter = ContactTracer(None, args.database, receiver=False)
+    sleeper = InterruptibleSleep([signal.SIGTERM, signal.SIGINT])
     while True:
         now = datetime.now()
         transmitter.check_advance_day(now)
@@ -152,8 +155,12 @@ def main():
             current_ephid = ephid
             logger.debug(f"Change ephid to {ephid.hex()}")
         # Wait for the current epoch (e.g. 15 minutes) to pass
-        # Sample every minute
-        time.sleep(EPOCH_LENGTH / 60)
+        # The API can't tell us TTL, so sample every minute
+        sleeper.sleep(EPOCH_LENGTH / 60)
+        if sleeper.signaled:
+            # Stop advertising
+            run_command(["hciconfig", interface, "noleadv"])
+            exit(0)
         if args.test:
             break
 
