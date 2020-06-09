@@ -24,7 +24,7 @@ code, gratefully acknowledging the team's amazing work.
 - [Overview and Use](#overview-and-use)
 - [Technology](#technology)
 - [Software architecture](#software-architecture)
-- [Hardware parts list](#hardware-parts-list)
+- [Hardware](#hardware)
 - [What is implemented](#what-is-implemented)
 - [What is missing](#what-is-missing)
 - [Installing the reference implementation](#installing-the-reference-implementation)
@@ -185,6 +185,11 @@ Instructions for building a prototype device can be found [here](https://www.spi
   * 40-pin connector (receptacle for prototyping, soldered for mass production)
 * 8GB microSDHC Class 10 card
 * 5V USB charger
+
+### Circuit diagram
+
+![Circuit diagram](https://raw.githubusercontent.com/dspinellis/epidose/master/hardware/circuit/circuit.svg?sanitize=1)
+
 
 ## What is implemented
 Currently all the device-end functionality has been implemented and
