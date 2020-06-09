@@ -36,16 +36,24 @@ LED_PORT = 21
 def setup():
     """ Setup the LED and button I/O ports.
     This must be called before calling the other functions."""
+    # Red LED
     GPIO.setmode(GPIO.BCM)
     GPIO.setwarnings(False)
 
+    # Switch
     GPIO.setup(SWITCH_PORT, GPIO.IN, pull_up_down=GPIO.PUD_UP)
     GPIO.setup(LED_PORT, GPIO.OUT)
+
+    # Green on-board LED
+    with open("/sys/class/leds/led0/trigger", "w") as f:
+        f.write("none")
 
 
 def cleanup():
     """Cleanup the GPIO API."""
     GPIO.cleanup()
+    with open("/sys/class/leds/led0/trigger", "w") as f:
+        f.write("mmc0")
 
 
 def wait_for_button_press():
@@ -65,12 +73,15 @@ def button_pressed():
     return not GPIO.input(SWITCH_PORT)
 
 
-def led_set(value):
+def red_led_set(value):
     """ Turn the LED on or off depending on the passed value. """
-    if value:
-        GPIO.output(LED_PORT, GPIO.HIGH)
-    else:
-        GPIO.output(LED_PORT, GPIO.LOW)
+    GPIO.output(LED_PORT, GPIO.HIGH if value else GPIO.LOW)
+
+
+def green_led_set(value):
+    """ Turn the LED on or off depending on the passed value. """
+    with open("/sys/class/leds/led0/brightness", "w") as f:
+        f.write("0" if value else "1")
 
 
 def toggle():
@@ -80,7 +91,8 @@ def toggle():
     print("To terminate, press ^C and then the button.")
     while True:
         wait_for_button_press()
-        led_set(led_state)
+        red_led_set(led_state)
+        green_led_set(not led_state)
         print(f"{time.time()}: Button Pressed")
         # Debounce
         time.sleep(0.2)
@@ -89,12 +101,15 @@ def toggle():
 
 def main():
     parser = argparse.ArgumentParser(description="Contact tracing device I/O")
-    parser.add_argument("-1", "--on", help="Turn LED on", action="store_true")
-    parser.add_argument("-0", "--off", help="Turn LED off", action="store_true")
     parser.add_argument(
         "-d", "--debug", help="Run in debug mode logging to stderr", action="store_true"
     )
-    parser.add_argument("-l", "--led", help="Turn LED on or off", type=int)
+    parser.add_argument("-G", "--green-on", help="Turn red LED on", action="store_true")
+    parser.add_argument(
+        "-g", "--green-off", help="Turn red LED off", action="store_true"
+    )
+    parser.add_argument("-R", "--red-on", help="Turn red LED on", action="store_true")
+    parser.add_argument("-r", "--red-off", help="Turn red LED off", action="store_true")
     parser.add_argument(
         "-t", "--test", help="Toggle LED with button", action="store_true"
     )
@@ -111,19 +126,28 @@ def main():
 
     setup()
     if args.test:
-        toggle()
-    elif args.off:
-        logger.debug("Turn LED off")
-        led_set(False)
-    elif args.on:
-        logger.debug("Turn LED on")
-        led_set(True)
-    elif args.wait:
+        try:
+            toggle()
+        except KeyboardInterrupt:
+            pass
+    if args.green_off:
+        logger.debug("Turn green LED off")
+        green_led_set(False)
+    if args.green_on:
+        logger.debug("Turn green LED on")
+        green_led_set(True)
+    if args.red_off:
+        logger.debug("Turn red LED off")
+        red_led_set(False)
+    if args.red_on:
+        logger.debug("Turn red LED on")
+        red_led_set(True)
+    if args.wait:
         logger.debug("Waiting for button press; press ^C and button to abort")
         wait_for_button_press()
         logger.debug("Button pressed")
-        # Debounce
-        time.sleep(0.2)
+    # Wait for LEDs to be visible
+    time.sleep(1)
     cleanup()
 
 
