@@ -1,4 +1,4 @@
-#Epidose: A privacy-preserving epidemic dosimeter based on contact tracing
+# Epidose: A privacy-preserving epidemic dosimeter based on contact tracing
 
 This repository provides an open source software
 reference implementation for an _epidemic dosimeter_.
