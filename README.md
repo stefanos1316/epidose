@@ -121,13 +121,13 @@ global WiFi sharing network, such as that offered by [fon](https://fon.com/).
 The dosimeter's software is designed around the following components,
 as depicted in the diagram at the end of this section.
 
-* `beacon_tx_unlinkable.py`: Continuously running transmitter of ephemeral
+* `beacon_tx_unlinkable_d.py`: Continuously running transmitter of ephemeral
   identifiers.
   Each day a new set of identifiers are created, stored in a database,
   and transmitted.  Every 15 minutes the transmitted identifier changes.
   Each day the transmitter also purges from the database ephemeral
   identifiers that no longer need to be retained.
-* `beacon_rx_unlinkable.py`: Continuously running receiver of
+* `beacon_rx_unlinkable_d.py`: Continuously running receiver of
   identifiers transmitted by other devices.
   These are again stored in a database in hashed format to allow
   the identification of contacts with infected persons.
@@ -153,7 +153,7 @@ as depicted in the diagram at the end of this section.
   contacts of a user found to be infected, using a supplied key.
 * `upload_contacts_d.sh`: Continuously waits for user authorization to
   upload an affected user's contacts to the Health Authority.
-* `watchdog.sh`: Monitors the correct operation of all components and
+* `watchdog_d.py`: Monitors the correct operation of all components and
   flashes the green LED to indicate correct operation.
   It also resets the device in case of a failure.
 * `update_client.sh`: Runs periodically to download an updated filter,
@@ -194,8 +194,8 @@ and received over Bluetooth.
 
 The following programs are available in the `epidose` directory.
 
-* `device/beacon_tx_unlinkable.py`
-* `device/beacon_rx_unlinkable.py`
+* `device/beacon_tx_unlinkable_d.py`
+* `device/beacon_rx_unlinkable_d.py`
 * `device/check_infection_risk.py`
 * `device/upload_contacts.py`
 * `device/update_filter_d.sh`
@@ -209,7 +209,7 @@ All programs can be run with a _--help_ argument to obtain usage information.
 The server and the device automation and configuration are under construction.
 In the following days expect to see code for the following components.
 
-* `watchdog.sh`
+* `watchdog_d.py`
 * `update_client.sh`
 
 In some places the code takes shortcuts or makes simplifications (e.g.
@@ -242,8 +242,8 @@ After installing the project you can run the client code on a Raspberry-Pi Zero-
 
 ```sh
 sudo mkdir -p /var/lib/epidose
-sudo venv/bin/python epidose/device/beacon_tx_unlinkable.py -v
-sudo venv/bin/python epidose/device/beacon_rx_unlinkable.py -v
+sudo venv/bin/python epidose/device/beacon_tx_unlinkable_d.py -v
+sudo venv/bin/python epidose/device/beacon_rx_unlinkable_d.py -v
 ```
 
 You can then monitor the device's operation with
