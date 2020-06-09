@@ -251,10 +251,10 @@ sudo make install
 You can then monitor the device's operation with the following commands:
 
 ```sh
-tail -f /var/log/beacon_tx
-tail -f /var/log/beacon_rx
-tail -f /var/log/upload_contacts
-tail -f /var/log/update_filter
+tail -F /var/log/beacon_tx
+tail -F /var/log/beacon_rx
+tail -F /var/log/upload_contacts
+tail -F /var/log/update_filter
 ```
 
 You can also obtain a report of what has been stored in the device's
@@ -271,8 +271,8 @@ sudo venv/bin/gunicorn epidose.back_end.ha_server:app --daemon --pid=/run/ha_ser
 ```
 
 You can then monitor the server's operation with
-`tail -f /var/log/ha_server_error_log` and
-`tail -f /var/log/ha_server_access_log`.
+`tail -F /var/log/ha_server_error_log` and
+`tail -F /var/log/ha_server_access_log`.
 Note that in a production setting the server process must be configured
 to run behind a hardened and efficient web server, such as
 [NGINX](https://www.nginx.com/).
