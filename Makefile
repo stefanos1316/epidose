@@ -17,6 +17,7 @@ install: $(DEB)
 	-apt-get -y remove epidose
 	rm -rf /opt/venvs/epidose
 	dpkg -i $(DEB)
+	mkdir -p /var/lib/epidose
 	cp epidose/device/supervisord.conf /etc/supervisor/conf.d/epidose.conf
 	systemctl reload supervisor
 

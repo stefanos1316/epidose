@@ -240,23 +240,29 @@ pip3 install -e .
 
 ## Running the client code
 
-After installing the project you can run the client code on a Raspberry-Pi Zero-W as follows.
+After downloading the project you can run the client code
+on a Raspberry-Pi Zero-W as follows.
 
 ```sh
-sudo mkdir -p /var/lib/epidose
-sudo venv/bin/python epidose/device/beacon_tx_unlinkable_d.py -v
-sudo venv/bin/python epidose/device/beacon_rx_unlinkable_d.py -v
+make package
+sudo make install
 ```
 
-You can then monitor the device's operation with
-`tail -f /var/log/beacon_tx` and `tail -f /var/log/beacon_rx`.
+You can then monitor the device's operation with the following commands:
+
+```sh
+tail -f /var/log/beacon_tx
+tail -f /var/log/beacon_rx
+tail -f /var/log/upload_contacts
+tail -f /var/log/update_filter
+```
 
 You can also obtain a report of what has been stored in the device's
 database by running `utils/client-db-report.sh`.
 
 ## Running the back-end Health Authority server code
 
-After installing the project you can run the health authority server code
+After downloading the project you can run the health authority server code
 on a (hopefully) more powerful Raspberry-Pi host as follows.
 
 ```sh
@@ -281,17 +287,14 @@ The example below assumes that the Health Authority server has a DNS
 record named `ha-server`.
 
 ### On affected user's device
-Run the following command to upload the past half-hour contacts to the
-health authority server when the device button is pressed to signify
+To upload the past half-hour contacts to the
+health authority server press the device button is pressed to signify
 the user's consent.
-Normally, this command will run automatically in the background,
+Normally, this will happen
 after the Health Authority provides to the user's device an upload key
 and information regarding the period over which the user was
 infected.
 
-```sh
-sudo epidose/device/upload_contacts_d.sh -l http://ha-server:5010
-```
 
 If you don't have a device with a physical button you can instead
 run the following command.
@@ -308,15 +311,14 @@ sudo venv/bin/python epidose/back_end/create_filter.py -v -d /var/lib/epidose/fi
 ```
 
 ### On user's at risk device
-Run the following command to download the new Cuckoo filter and
+Wait for at most six hours for the Cuckoo filter to be updated.
+Alternatively,
+run the following command to download the new Cuckoo filter and
 check for matching contacts.
 
 ```sh
 sudo epidose/device/update_filter_d.sh -l ha-server:5010
 ```
-
-You can then see the check's result with the command
-`tail -f /var/log/check_infection`
 
 The filter is updated every six hours.
 To force the downloading of a new filter,
