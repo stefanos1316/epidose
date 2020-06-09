@@ -23,14 +23,15 @@ from threading import Event
 import signal
 
 
-class InterruptableSleep:
+class InterruptibleSleep:
     """ Provide a sleep-like function that can be interrupted and
     by a detectable signal.  See https://stackoverflow.com/a/46346184/20520
     """
 
-    def __init__(self, sig):
-        """ Create an object for the specified signal """
-        signal.signal(sig, self.sigterm_handler)
+    def __init__(self, signals):
+        """ Create an object for the specified signals """
+        for s in signals:
+            signal.signal(s, self.sig_handler)
         self.event = Event()
         self.signaled = False
 
@@ -42,13 +43,13 @@ class InterruptableSleep:
         self.signaled = False
         self.event.wait(t)
 
-    def sigterm_handler(self, signum, frame):
+    def sig_handler(self, signum, frame):
         self.signaled = True
         self.event.set()
 
 
 def main():
-    sleeper = InterruptableSleep(signal.SIGTERM)
+    sleeper = InterruptibleSleep([signal.SIGTERM])
     print("Expect to see a 'signaled' message when you send a TERM signal")
     while True:
         print("Sleeping")
