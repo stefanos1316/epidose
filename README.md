@@ -322,7 +322,7 @@ sudo epidose/device/update_filter_d.sh -l ha-server:5010
 
 The filter is updated every six hours.
 To force the downloading of a new filter,
-remove the downloaded filter (`sudo rm /var/lib/client-filter.bin`)
+remove the downloaded filter (`sudo rm /var/lib/epidose/client-filter.bin`)
 and rerun the `update_filter_d.py` script.
 
 ### Database report example
