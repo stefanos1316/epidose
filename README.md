@@ -207,10 +207,8 @@ All programs can be run with a _--help_ argument to obtain usage information.
 
 ## What is missing
 The server and the device automation and configuration are under construction.
-In the following days expect to see code for the following components.
-
-* `watchdog_d.py`
-* `update_client.sh`
+Our aim is to automate their configuration with suitable
+[Puppet](https://puppet.com/) scripts.
 
 In some places the code takes shortcuts or makes simplifications (e.g.
 not using the number of messages and their strength (RSSI) for estimating
@@ -219,7 +217,6 @@ the infection risk.)  These are marked in the code with `TODO` comments.
 Also missing are the following.
 
 * The health authority user interface and upload key protocol
-* The circuit diagram and PCB layout diagram for the support electronics
 * The design for 3D-printing the enclosure
 
 ## Installing the reference implementation
