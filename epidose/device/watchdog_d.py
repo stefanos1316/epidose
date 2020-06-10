@@ -35,7 +35,7 @@ PROCESSES = [
     "beacon_rx",
     "beacon_tx",
     "update_filter",
-    "upload_contacts",
+    "upload_seeds",
 ]
 
 FLASH_PAUSE = 2

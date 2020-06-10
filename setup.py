@@ -40,7 +40,7 @@ setuptools.setup(
     },
     scripts=[
         "epidose/device/update_filter_d.sh",
-        "epidose/device/upload_contacts_d.sh",
+        "epidose/device/upload_seeds_d.sh",
         "epidose/device/util.sh",
     ],
     # Could also support entry_points console_scripts, but they are

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-""" Upload specified contact seeds to the server """
+""" Upload specified seeds for past transmissions to the server """
 
 __copyright__ = """
     Copyright 2020 Diomidis Spinellis
@@ -32,7 +32,7 @@ SERVER_URL = "https://api.contact-tracing.org"
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Contact tracing beacon trasmitter")
+    parser = argparse.ArgumentParser(description="Contact tracing seed uploader")
     parser.add_argument(
         "-a", "--authorization", help="Upload authorization code", default=":NONE:"
     )
@@ -63,7 +63,7 @@ def main():
         args.database = ":memory:"
 
     # Setup logging
-    daemon = Daemon("upload_contacts", args)
+    daemon = Daemon("upload_seeds", args)
     global logger
     logger = daemon.get_logger()
 

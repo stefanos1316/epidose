@@ -96,13 +96,13 @@ def test_context():
     remove(client_db_path)
 
 
-def test_upload_contacts(test_context):
+def test_upload_seeds(test_context):
     (client_db_path, server_db) = test_context
 
     # Upload contacts from database
     client_proc = subprocess.run(
         [
-            script_path("device/upload_contacts.py"),
+            script_path("device/upload_seeds.py"),
             "-d",
             "-D",
             client_db_path,

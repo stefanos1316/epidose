@@ -147,12 +147,13 @@ as depicted in the diagram at the end of this section.
 * `update_filter_d.sh`: A continuously running script that downloads
   from the server the Cuckoo filter for the identifiers of infected contacts,
   and checks whether the device's user is affected or not.
-* `upload_contacts.py`: Subject to an agreement between the user and
+* `upload_seeds.py`: Subject to an agreement between the user and
   the health authority, implemented through a physical interlock and
   a suitable protocol, this uploads to a health authority's server the
-  contacts of a user found to be infected, using a supplied key.
-* `upload_contacts_d.sh`: Continuously waits for user authorization to
-  upload an affected user's contacts to the Health Authority.
+  seeds used for transmitting ephemeral ids of a user found to be infected,
+  using a supplied key.
+* `upload_seeds_d.sh`: Continuously waits for user authorization to
+  upload an affected user's ephemeral id seeds to the Health Authority.
 * `watchdog_d.py`: Monitors the correct operation of all components and
   flashes the green LED to indicate correct operation.
   It also resets the device in case of a failure.
@@ -202,9 +203,9 @@ The following programs are available in the `epidose` directory.
 * `device/beacon_tx_unlinkable_d.py`
 * `device/beacon_rx_unlinkable_d.py`
 * `device/check_infection_risk.py`
-* `device/upload_contacts.py`
+* `device/upload_seeds.py`
 * `device/update_filter_d.sh`
-* `device/upload_contacts_d.sh`
+* `device/upload_seeds_d.sh`
 * `back-end/create_filter.py`
 * `back-end/ha_server.py`
 
@@ -253,7 +254,7 @@ You can then monitor the device's operation with the following commands:
 ```sh
 tail -F /var/log/beacon_tx
 tail -F /var/log/beacon_rx
-tail -F /var/log/upload_contacts
+tail -F /var/log/upload_seeds
 tail -F /var/log/update_filter
 ```
 
@@ -299,7 +300,7 @@ infected.
 If you don't have a device with a physical button you can instead
 run the following command.
 ```sh
-sudo venv/bin/python epidose/device/upload_contacts.py -d -v -s http://ha-server:5010/ $(date +'%Y-%m-%dT%H:%M:%S' --date='30 min ago') $(date +'%Y-%m-%dT%H:%M:%S')
+sudo venv/bin/python epidose/device/upload_seeds.py -d -v -s http://ha-server:5010/ $(date +'%Y-%m-%dT%H:%M:%S' --date='30 min ago') $(date +'%Y-%m-%dT%H:%M:%S')
 ```
 
 ### On the Health Authority server

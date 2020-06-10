@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Upload contacts when authorized by the affected user and the Health Authority
+# Upload TXd seeds when authorized by the affected user and the Health Authority
 #
 # Copyright 2020 Diomidis Spinellis
 #
@@ -19,7 +19,7 @@
 
 set -e
 
-export APP_NAME=upload_contacts_d
+export APP_NAME=upload_seeds_d
 
 # Pick up utility functions relative to the script's source code
 UTIL="$(dirname "$0")/util.sh"
@@ -29,12 +29,12 @@ UTIL="$(dirname "$0")/util.sh"
 . "$UTIL"
 
 # Upload contacts via WiFi
-upload_contacts()
+upload_seeds()
 {
   log "Uploading contacts"
   wifi_acquire
   # TODO: Obtain upload authorization and affected period from Health Authority
-  run_python upload_contacts -s "$SERVER_URL" "$(date +'%Y-%m-%dT%H:%M:%S' --date='30 min ago')" "$(date +'%Y-%m-%dT%H:%M:%S')"
+  run_python upload_seeds -s "$SERVER_URL" "$(date +'%Y-%m-%dT%H:%M:%S' --date='30 min ago')" "$(date +'%Y-%m-%dT%H:%M:%S')"
   exit_code=$?
   wifi_release
   return $exit_code
@@ -43,7 +43,7 @@ upload_contacts()
 # Wait for button press and upload contacts
 while : ; do
   run_python device_io -w
-  while ! upload_contacts ; do
+  while ! upload_seeds ; do
     log "Upload failed; will retry in 30 minutes"
     sleep 1800
   done
