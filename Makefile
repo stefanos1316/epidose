@@ -26,5 +26,5 @@ fast-install:
 	cp -r epidose dp3t $(SITE)/
 	cp epidose/device/upload_seeds_d.sh \
 		epidose/device/update_filter_d.sh \
-		epidose/device/util.sh $(opt)/bin/
+		epidose/device/util.sh $(OPT)/bin/
 	supervisorctl restart epidose:*
