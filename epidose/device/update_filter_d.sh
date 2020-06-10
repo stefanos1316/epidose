@@ -48,7 +48,7 @@ wait_till_filter_needed()
       to_sleep=$((MAX_FILTER_AGE - filter_age))
       log "Sleeping for $to_sleep s"
       sleep $to_sleep
-      log "Waiting up from sleep; new filter is now required"
+      log "Waking up from sleep; new filter is now required"
     fi
     log "Filter's age ($filter_age s) makes it stale; update required"
   else

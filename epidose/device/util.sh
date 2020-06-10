@@ -54,11 +54,11 @@ EOF
   exit 1
 }
 
-# Turn WiFi on and wait for for it to associate
+# Turn WiFi on and wait for it to associate
 # Internal function
 _wifi_on()
 {
-  log "Turn on wifi"
+  log "Turn on WiFi"
   # No WiFi operations when running in debug mode
   test "$DEBUG_FLAG" && return
   ip link set wlan0 up
@@ -70,7 +70,7 @@ _wifi_on()
 # Internal function
 _wifi_off()
 {
-  log "Turn off wifi"
+  log "Turn off WiFi"
   # No WiFi operations when running in debug mode
   test "$DEBUG_FLAG" && return
   ip link set wlan0 down
@@ -79,23 +79,25 @@ _wifi_off()
 # On return WiFi will be on and stay on until the last app releases it
 wifi_acquire()
 {
+  log "Acquiring WiFi"
   (
     # Acquire exclusive access to the WiFi users directory
     flock -n 9 || exit 1
-    if ! [ -d "$WIFI_USERS" ] ; then
-      # Directory not there; create and turn WiFi on
-      mkdir "$WIFI_USERS"
+    if mkdir "$WIFI_USERS" 2>/dev/null ; then
+      # Directory was not there; having created it, turn WiFi on
       _wifi_on
     fi
     # Add ourselves to the WiFi users
     touch "$WIFI_USERS/$APP_NAME"
   ) 9>"$WIFI_USERS_LOCK"
+  log "Acquired WiFi"
 }
 
 # Release use of the WiFi.  When the last app releases it it will turn
 # off
 wifi_release()
 {
+  log "Releasing WiFi"
   (
     # Acquire exclusive access to the WiFi users directory
     flock -n 9 || exit 1
@@ -107,6 +109,7 @@ wifi_release()
       _wifi_off
     fi
   ) 9>"$WIFI_USERS_LOCK"
+  log "Released WiFi"
 }
 
 # Run the specified Python script from the local or installation directory
