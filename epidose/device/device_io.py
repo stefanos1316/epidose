@@ -29,8 +29,11 @@ except RuntimeError:
     pass
 import time
 
-SWITCH_PORT = 15
-LED_PORT = 21
+# Ports with BCM numbering
+SWITCH_PORT = 26
+RED_LED_PORT = 17
+ORANGE_LED_PORT = 4
+GREEN_LED_PORT = 2
 
 
 def setup():
@@ -46,11 +49,9 @@ def setup_leds():
     setup()
 
     # Red external LED
-    GPIO.setup(LED_PORT, GPIO.OUT)
-
-    # Green on-board LED
-    with open("/sys/class/leds/led0/trigger", "w") as f:
-        f.write("none")
+    GPIO.setup(RED_LED_PORT, GPIO.OUT)
+    GPIO.setup(ORANGE_LED_PORT, GPIO.OUT)
+    GPIO.setup(GREEN_LED_PORT, GPIO.OUT)
 
 
 def setup_switch():
@@ -64,8 +65,6 @@ def setup_switch():
 def cleanup():
     """Cleanup the GPIO API."""
     GPIO.cleanup()
-    with open("/sys/class/leds/led0/trigger", "w") as f:
-        f.write("mmc0")
 
 
 def wait_for_button_press():
@@ -87,13 +86,17 @@ def button_pressed():
 
 def red_led_set(value):
     """ Turn the LED on or off depending on the passed value. """
-    GPIO.output(LED_PORT, GPIO.HIGH if value else GPIO.LOW)
+    GPIO.output(RED_LED_PORT, GPIO.HIGH if value else GPIO.LOW)
 
 
 def green_led_set(value):
     """ Turn the LED on or off depending on the passed value. """
-    with open("/sys/class/leds/led0/brightness", "w") as f:
-        f.write("0" if value else "1")
+    GPIO.output(GREEN_LED_PORT, GPIO.HIGH if value else GPIO.LOW)
+
+
+def orange_led_set(value):
+    """ Turn the LED on or off depending on the passed value. """
+    GPIO.output(ORANGE_LED_PORT, GPIO.HIGH if value else GPIO.LOW)
 
 
 def toggle():
@@ -104,7 +107,8 @@ def toggle():
     while True:
         wait_for_button_press()
         red_led_set(led_state)
-        green_led_set(not led_state)
+        orange_led_set(not led_state)
+        green_led_set(led_state)
         print(f"{time.time()}: Button Pressed")
         # Debounce
         time.sleep(0.2)
@@ -119,6 +123,12 @@ def main():
     parser.add_argument("-G", "--green-on", help="Turn red LED on", action="store_true")
     parser.add_argument(
         "-g", "--green-off", help="Turn red LED off", action="store_true"
+    )
+    parser.add_argument(
+        "-O", "--orange-on", help="Turn orange LED on", action="store_true"
+    )
+    parser.add_argument(
+        "-o", "--orange-off", help="Turn orange LED off", action="store_true"
     )
     parser.add_argument("-R", "--red-on", help="Turn red LED on", action="store_true")
     parser.add_argument("-r", "--red-off", help="Turn red LED off", action="store_true")
@@ -151,6 +161,14 @@ def main():
         logger.debug("Turn green LED on")
         setup_leds()
         green_led_set(True)
+    if args.orange_off:
+        logger.debug("Turn orange LED off")
+        setup_leds()
+        orange_led_set(False)
+    if args.orange_on:
+        logger.debug("Turn orange LED on")
+        setup_leds()
+        orange_led_set(True)
     if args.red_off:
         logger.debug("Turn red LED off")
         setup_leds()
@@ -164,9 +182,6 @@ def main():
         setup_switch()
         wait_for_button_press()
         logger.debug("Button pressed")
-    # Wait for LEDs to be visible
-    time.sleep(1)
-    cleanup()
 
 
 if __name__ == "__main__":
