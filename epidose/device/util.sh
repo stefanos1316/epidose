@@ -59,6 +59,10 @@ EOF
 _wifi_on()
 {
   log "Turn on WiFi"
+
+  log "Temporary stop beacon transmissions"
+  supervisorctl stop epidose:beacon_tx
+
   # No WiFi operations when running in debug mode
   test "$DEBUG_FLAG" && return
   ip link set wlan0 up
@@ -71,6 +75,10 @@ _wifi_on()
 _wifi_off()
 {
   log "Turn off WiFi"
+
+  log "Resume beacon transmissions"
+  supervisorctl start epidose:beacon_tx
+
   # No WiFi operations when running in debug mode
   test "$DEBUG_FLAG" && return
   ip link set wlan0 down
