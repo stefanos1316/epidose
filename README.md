@@ -422,5 +422,8 @@ Below are links to information directly relevant to this project.
 
 ## License
 
-This code is licensed under the Apache 2.0 license, as found in the LICENSE
-file.
+Unless otherwise noted, this code is licensed under the Apache 2.0 license,
+as found in the LICENSE file.
+
+The code under epidose/device/bdaddr is licensed under the terms of
+the GNU General Public License, as published the Free Software Foundation.
