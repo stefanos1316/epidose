@@ -7,6 +7,9 @@ default: bdaddr
 bdaddr: bdaddr.o oui.o
 	$(CC) -o bdaddr bdaddr.o oui.o $(LINK_OPT)
 
+install: bdaddr
+	install  bdaddr /usr/local/bin/
+
 bdaddr.o: bdaddr.c
 	$(CC) -c bdaddr.c
 
