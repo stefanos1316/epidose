@@ -61,6 +61,9 @@ def process_packet(socket):
 
     # TODO: This is both too frequent (it triggers for every packet) and
     # can also be too infrequent (if no packets are received)
+    # SUGGESTION: Maybe we can implement a simple protocol
+    # that increases the sleep time of this function if no packets are received.
+    # However, once a packet is received, we can reset the sleep.
     now = datetime.now()
     receiver.check_advance_day(now)
 
@@ -71,6 +74,11 @@ def process_packet(socket):
     # Ensure the packet is contact detection service
     if packet[13:25] != BLE_PACKET:
         return
+
+    # Print sender's Bluetooth MAC address
+    bdaddr = packet[7:13]
+    bdaddr = bdaddr[::-1].hex().upper()
+    logger.debug(f"Received packet from {':'.join(bdaddr[i:i+2] for i in range(0, len(bdaddr), 2))}")
 
     # This is a contact detection service packet
     ephid = packet[25:41]
