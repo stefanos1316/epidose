@@ -28,6 +28,7 @@ from dp3t.protocols.unlinkable_db import ContactTracer
 from epidose.device.beacon_format import BLE_PACKET
 import signal
 import subprocess
+import secrets
 from sys import exit
 
 
@@ -82,6 +83,28 @@ def set_transmit(interface, ephid, rssi):
     cmd.append(format(rssi, "x"))  # Reference RSSI
     cmd.append("01")  # Manufacturer reserved
     run_command(cmd)
+
+
+def generate_random_bdaddr():
+    """Generate a 6-byte hexadecimal number that will act
+    as the new Bluetooth Device (MAC) Address (bdaddr),
+    then return it in a MAC address-like format.
+    """
+
+    # 5d30c4a19c1e
+    bdaddr = secrets.token_hex(6)
+    # (5, d, 3, 0, c, 4, a, 1, 9, c, 1, e)
+    bdaddr = list(bdaddr)
+
+    # The values below denote that the bdaddr is locally administered
+    locally_administered_elements = ['2', '6', 'a', 'e']
+   
+    # if locally_administered_elements = 2 then (5, 2, 3, 0, c, 4, a, 1, 9, c, 1, e)
+    bdaddr[1] = secrets.choice(locally_administered_elements)
+    # (5, 2,3, 0, c, 4, a, 1, 9, c, 1, e) -> 5230c4a19c1e
+    bdaddr = ''.join(bdaddr)
+    # 52:30:c4:a1:9c:1e
+    return ':'.join(bdaddr[i:i+2] for i in range(0, len(bdaddr), 2))
 
 
 def main():
@@ -151,6 +174,18 @@ def main():
         transmitter.check_advance_day(now)
         ephid = transmitter.get_ephid_for_time(now)
         if ephid != current_ephid:
+            # Stop advetising before changing bdaddr
+            run_command(["hciconfig", interface, "noleadv"])
+            
+            # Generate random bdaddr
+            bdaddr = generate_random_bdaddr()
+
+            # Change local device bdaddr and reset
+            run_command(["bdaddr", "-i", interface, "-r", bdaddr])
+            run_command(["hciconfig", interface, "reset"])
+            run_command(["hciconfig", interface, "up"])
+            run_command(["hciconfig", interface, "leadv", "3"])
+            
             set_transmit(interface, ephid, args.rssi)
             current_ephid = ephid
             logger.debug(f"Change ephid to {ephid.hex()}")
