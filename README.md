@@ -288,14 +288,13 @@ The example below assumes that the Health Authority server has a DNS
 record named `ha-server`.
 
 ### On affected user's device
-To upload the past half-hour contacts to the
+To upload the past half-hour ephemeral id seeds to the
 health authority server press the device button is pressed to signify
 the user's consent.
 Normally, this will happen
 after the Health Authority provides to the user's device an upload key
-and information regarding the period over which the user was
-infected.
-
+and information regarding the period of several days
+over which the user was affected (rather than half-hour).
 
 If you don't have a device with a physical button you can instead
 run the following command.
