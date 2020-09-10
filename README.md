@@ -231,7 +231,7 @@ You'll need to install the required libraries and project.
 Here is how you can do it under the Ubuntu GNU/Linux distribution.
 
 ```bash
-sudo apt-get install libbluetooth-dev libglib2.0-dev python3-dev python3-setuptools shellcheck sqlite3 virtualenv dh-virtualenv debhelper supervisor
+sudo apt-get install git libbluetooth-dev libglib2.0-dev python3-dev python3-setuptools shellcheck sqlite3 virtualenv dh-virtualenv debhelper supervisor
 git clone https://github.com/dspinellis/epidose
 cd epidose
 virtualenv venv -p /usr/bin/python3
