@@ -28,9 +28,11 @@ try:
 except RuntimeError:
     pass
 import time
+import sys
 
 # Ports with GPIO (BCM) numbering
-DATA_SWITCH_PORT = 20
+SHARE_SWITCH_PORT = 20
+WIFI_SWITCH_PORT = 21
 RED_LED_PORT = 19
 ORANGE_LED_PORT = 4
 GREEN_LED_PORT = 26
@@ -53,12 +55,10 @@ def setup_leds():
     GPIO.setup(GREEN_LED_PORT, GPIO.OUT)
 
 
-def setup_switch():
-    """Setup the button I/O port.
+def setup_switch(port):
+    """Setup the specified button I/O port.
     This must be called before calling the other functions."""
-    setup()
-
-    GPIO.setup(DATA_SWITCH_PORT, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+    GPIO.setup(port, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 
 def cleanup():
@@ -66,21 +66,21 @@ def cleanup():
     GPIO.cleanup()
 
 
-def wait_for_button_press():
+def wait_for_button_press(port):
     """Return when the button is pressed.
     This is interrupt-driven and therefore very efficient."""
-    GPIO.wait_for_edge(DATA_SWITCH_PORT, GPIO.FALLING)
+    GPIO.wait_for_edge(port, GPIO.FALLING)
 
 
-def wait_for_button_release():
+def wait_for_button_release(port):
     """Return when the button is release.
     This is interrupt-driven and therefore very efficient."""
-    GPIO.wait_for_edge(DATA_SWITCH_PORT, GPIO.RISING)
+    GPIO.wait_for_edge(port, GPIO.RISING)
 
 
-def button_pressed():
+def button_pressed(port):
     """ Return true if the button is pressed. """
-    return not GPIO.input(DATA_SWITCH_PORT)
+    return not GPIO.input(port)
 
 
 def red_led_set(value):
@@ -104,20 +104,16 @@ def orange_led_set(value):
         GPIO.output(RED_LED_PORT, GPIO.HIGH)
 
 
-def toggle():
+def toggle(led_state, switch):
     """ Toggle the LED with each key press. """
-    led_state = True
-    print("Press the button to toggle the LED.")
     print("To terminate, press ^C and then the button.")
-    while True:
-        wait_for_button_press()
-        red_led_set(led_state)
-        orange_led_set(not led_state)
-        green_led_set(led_state)
-        print(f"{time.time()}: Button Pressed")
-        # Debounce
-        time.sleep(0.2)
-        led_state = not led_state
+    wait_for_button_press(switch)
+    red_led_set(led_state)
+    green_led_set(led_state)
+    print(f"{time.time()}: Button Pressed")
+    # Debounce
+    time.sleep(0.2)
+    return not led_state
 
 
 def main():
@@ -138,12 +134,17 @@ def main():
     parser.add_argument("-R", "--red-on", help="Turn red LED on", action="store_true")
     parser.add_argument("-r", "--red-off", help="Turn red LED off", action="store_true")
     parser.add_argument(
+        "-s", "--share-wait", help="Wait for share key press", action="store_true"
+    )
+    parser.add_argument(
         "-t", "--test", help="Toggle LED with button", action="store_true"
     )
     parser.add_argument(
         "-v", "--verbose", help="Set verbose logging", action="store_true"
     )
-    parser.add_argument("-w", "--wait", help="Wait for key press", action="store_true")
+    parser.add_argument(
+        "-w", "--wifi-wait", help="Wait for WiFi key press", action="store_true"
+    )
     args = parser.parse_args()
 
     # Setup logging
@@ -153,11 +154,17 @@ def main():
 
     if args.test:
         setup_leds()
-        setup_switch()
-        try:
-            toggle()
-        except KeyboardInterrupt:
-            pass
+        setup_switch(SHARE_SWITCH_PORT)
+        setup_switch(WIFI_SWITCH_PORT)
+        led_state = True
+        while True:
+            try:
+                print("Press the share button to toggle the LED.")
+                led_state = toggle(led_state, SHARE_SWITCH_PORT)
+                print("Press the WiFi button to toggle the LED.")
+                led_state = toggle(led_state, WIFI_SWITCH_PORT)
+            except KeyboardInterrupt:
+                sys.exit(0)
     if args.green_off:
         logger.debug("Turn green LED off")
         setup_leds()
@@ -182,11 +189,19 @@ def main():
         logger.debug("Turn red LED on")
         setup_leds()
         red_led_set(True)
-    if args.wait:
-        logger.debug("Waiting for button press; press ^C and button to abort")
-        setup_switch()
-        wait_for_button_press()
-        logger.debug("Button pressed")
+    if args.share_wait:
+        logger.debug("Waiting for share button press; press ^C and button to abort")
+        setup()
+        setup_switch(SHARE_SWITCH_PORT)
+        wait_for_button_press(SHARE_SWITCH_PORT)
+        logger.debug("Share button pressed")
+
+    if args.wifi_wait:
+        logger.debug("Waiting for WiFi button press; press ^C and button to abort")
+        setup()
+        setup_switch(WIFI_SWITCH_PORT)
+        wait_for_button_press(WIFI_SWITCH_PORT)
+        logger.debug("WiFi button pressed")
 
 
 if __name__ == "__main__":

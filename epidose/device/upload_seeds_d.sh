@@ -40,9 +40,10 @@ upload_seeds()
   return $exit_code
 }
 
-# Wait for button press and upload contacts
+# Wait for share button press and upload seeds used for broadcasting
+# ephemeral ids
 while : ; do
-  run_python device_io -w
+  run_python device_io --share-wait
   while ! upload_seeds ; do
     log "Upload failed; will retry in 30 minutes"
     sleep 1800
