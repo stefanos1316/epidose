@@ -22,7 +22,7 @@ __license__ = "Apache 2.0"
 import argparse
 from http.client import HTTPConnection
 from epidose.common.daemon import Daemon
-from epidose.device.device_io import green_led_set, setup_leds
+from epidose.device.device_io import get_battery_voltage, green_led_set, setup_leds
 import socket
 from time import sleep
 from xmlrpc import client
@@ -117,6 +117,8 @@ def main():
             sleep(FLASH_BLINK)
             green_led_set(False)
         sleep(FLASH_PAUSE)
+        v = get_battery_voltage()
+        logger.debug(f"Battery {v}")
 
 
 if __name__ == "__main__":
