@@ -241,8 +241,8 @@ pip3 install -e .
 
 ## Running the client code
 
-After downloading the project you can run the client code
-on a Raspberry-Pi Zero-W as follows.
+After downloading the project and setting up the development dependencies
+(see below), you can run the client code on a Raspberry-Pi Zero-W as follows.
 
 ```sh
 make package
@@ -402,6 +402,13 @@ Run  `sudo make install` to deploy the package.
 ### Deployment refresh
 After the first deployment, source code files can be deployed by
 running `sudo make fast-install`.
+
+### Program monitoring and restarting
+* Run `sudo supervisorctl status` to see the running programs
+* Edit `/etc/supervisor/conf.d/epidose.conf` to change program parameters
+* Run `sudo supervisorctl reload` to read changed program parameters
+* Run `sudo supervisorctl restart` _progam name_` to restart new program
+  version.
 
 ### Library documentation
 * [Gunicorn WSGI server](https://docs.gunicorn.org/en/stable/index.html)
