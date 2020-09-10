@@ -362,14 +362,13 @@ Timestamp            Epoch       Seed        Ephid
 For development, you should install the development and test dependencies:
 
 ```bash
-pip install -e ".[dev,test,deploy]"
+pip3 install -e ".[dev,test,deploy]"
 ```
 
 You should also install the proper pre-commit-hooks so that the files stay
 formatted:
 
 ```bash
-pip install pre-commit
 pre-commit install
 ```
 
