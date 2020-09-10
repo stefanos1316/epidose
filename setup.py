@@ -31,6 +31,7 @@ setuptools.setup(
         "requests",
         "RPi.GPIO",
         "scalable-cuckoo-filter",
+        "spidev",
     ],
     extras_require={
         "dev": ["black", "flake8", "pre-commit"],

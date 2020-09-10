@@ -21,6 +21,7 @@ __license__ = "Apache 2.0"
 
 import argparse
 from epidose.common.daemon import Daemon
+import spidev
 
 # This import only works on a Rasberry Pi; ignore import when testing
 try:
@@ -116,8 +117,32 @@ def toggle(led_state, switch):
     return not led_state
 
 
+def get_battery_voltage():
+    """ Return the battery's voltage in V"""
+    spi = spidev.SpiDev()
+    spi.open(0, 0)
+
+    # Set SPI speed and mode
+    spi.max_speed_hz = 50000
+    spi.mode = 0
+    spi.cshigh = True
+    # Ask for battery voltage
+    msg = [1, 0, 0, 0]
+    spi.xfer2(msg)
+    # Actually get it
+    msg = [0, 0, 0, 0]
+    result = spi.xfer2(msg)
+    value = (result[0] << 8) | result[1]
+    voltage = 2 * (3.258 * value) / 4096
+    spi.close()
+    return voltage
+
+
 def main():
     parser = argparse.ArgumentParser(description="Contact tracing device I/O")
+    parser.add_argument(
+        "-b", "--battery", help="Display battery voltage", action="store_true"
+    )
     parser.add_argument(
         "-d", "--debug", help="Run in debug mode logging to stderr", action="store_true"
     )
@@ -152,6 +177,8 @@ def main():
     global logger
     logger = daemon.get_logger()
 
+    if args.battery:
+        print(get_battery_voltage())
     if args.test:
         setup_leds()
         setup_switch(SHARE_SWITCH_PORT)
