@@ -29,37 +29,36 @@ except RuntimeError:
     pass
 import time
 
-# Ports with BCM numbering
-SWITCH_PORT = 26
-RED_LED_PORT = 17
+# Ports with GPIO (BCM) numbering
+DATA_SWITCH_PORT = 20
+RED_LED_PORT = 19
 ORANGE_LED_PORT = 4
-GREEN_LED_PORT = 2
+GREEN_LED_PORT = 26
 
 
 def setup():
-    """ Setup GPIO for I/O
+    """Setup GPIO for I/O
     This must be called before calling the other functions."""
     GPIO.setmode(GPIO.BCM)
     GPIO.setwarnings(False)
 
 
 def setup_leds():
-    """ Setup the LED port.
+    """Setup the LED port.
     This must be called before calling the other functions."""
     setup()
 
     # Red external LED
     GPIO.setup(RED_LED_PORT, GPIO.OUT)
-    GPIO.setup(ORANGE_LED_PORT, GPIO.OUT)
     GPIO.setup(GREEN_LED_PORT, GPIO.OUT)
 
 
 def setup_switch():
-    """ Setup the button I/O port.
+    """Setup the button I/O port.
     This must be called before calling the other functions."""
     setup()
 
-    GPIO.setup(SWITCH_PORT, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+    GPIO.setup(DATA_SWITCH_PORT, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 
 def cleanup():
@@ -68,35 +67,41 @@ def cleanup():
 
 
 def wait_for_button_press():
-    """ Return when the button is pressed.
-    This is interrupt-driven and therefore very efficient. """
-    GPIO.wait_for_edge(SWITCH_PORT, GPIO.FALLING)
+    """Return when the button is pressed.
+    This is interrupt-driven and therefore very efficient."""
+    GPIO.wait_for_edge(DATA_SWITCH_PORT, GPIO.FALLING)
 
 
 def wait_for_button_release():
-    """ Return when the button is release.
-    This is interrupt-driven and therefore very efficient. """
-    GPIO.wait_for_edge(SWITCH_PORT, GPIO.RISING)
+    """Return when the button is release.
+    This is interrupt-driven and therefore very efficient."""
+    GPIO.wait_for_edge(DATA_SWITCH_PORT, GPIO.RISING)
 
 
 def button_pressed():
     """ Return true if the button is pressed. """
-    return not GPIO.input(SWITCH_PORT)
+    return not GPIO.input(DATA_SWITCH_PORT)
 
 
 def red_led_set(value):
     """ Turn the LED on or off depending on the passed value. """
-    GPIO.output(RED_LED_PORT, GPIO.HIGH if value else GPIO.LOW)
+    # Negative logic!
+    GPIO.output(RED_LED_PORT, GPIO.LOW if value else GPIO.HIGH)
 
 
 def green_led_set(value):
     """ Turn the LED on or off depending on the passed value. """
-    GPIO.output(GREEN_LED_PORT, GPIO.HIGH if value else GPIO.LOW)
+    GPIO.output(GREEN_LED_PORT, GPIO.LOW if value else GPIO.HIGH)
 
 
 def orange_led_set(value):
     """ Turn the LED on or off depending on the passed value. """
-    GPIO.output(ORANGE_LED_PORT, GPIO.HIGH if value else GPIO.LOW)
+    if value:
+        GPIO.output(GREEN_LED_PORT, GPIO.LOW)
+        GPIO.output(RED_LED_PORT, GPIO.LOW)
+    else:
+        GPIO.output(GREEN_LED_PORT, GPIO.HIGH)
+        GPIO.output(RED_LED_PORT, GPIO.HIGH)
 
 
 def toggle():
