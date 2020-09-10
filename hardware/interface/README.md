@@ -14,6 +14,10 @@ The RPi communicates over SPI with the battery management microcontroller. The m
 | get_stm_fw | Returns the microcontroller's firmware version.|
 
 # Raspberry Pi - Battery Management System Connections
+
+Numbers refer to the GPIO (also known as BCM) scheme.  Note that the red LED
+is wired in negative logic.
+
 | Raspberry Pi | STM32L010F4P6	| Operation | Value on Power-Up | Comments |
 | ------ | ------ | ------ | ------ | ------ |
 | GPIO27 | NRST	|  | HIGH-Z  |  |
