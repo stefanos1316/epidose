@@ -3,7 +3,8 @@
 """ Test and abstract the operation of the button and the LED. """
 
 __copyright__ = """
-    Copyright 2020 Diomidis Spinellis
+    Copyright 2020 Diomidis Spinellis, Konstantinos Papafotis,
+      Konstantinos Asimakopoulos, and Paul P. Sotiriadis
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -21,6 +22,7 @@ __license__ = "Apache 2.0"
 
 import argparse
 from epidose.common.daemon import Daemon
+from datetime import datetime
 import spidev
 
 # This import only works on a Rasberry Pi; ignore import when testing
@@ -138,10 +140,82 @@ def get_battery_voltage():
     return voltage
 
 
+def zero_pad(v):
+    """ Return value as a string zero-padded to two digits"""
+    if v < 10:
+        return "0" + str(v)
+    else:
+        return str(v)
+
+
+def get_real_time_clock():
+    """Return a datetime object obtained from the controller's
+    real time clock"""
+
+    spi = spidev.SpiDev()
+    spi.open(0, 0)
+
+    # Set SPI speed and mode
+    spi.max_speed_hz = 50000
+    spi.mode = 0
+    spi.cshigh = True
+    # Ask for time
+    msg = [2, 0, 0, 0]
+    spi.xfer2(msg)
+    # Actually get it
+    msg = [0, 0, 0, 0]
+    result = spi.xfer2(msg)
+    time_str = zero_pad(result[0]) + zero_pad(result[1]) + zero_pad(result[2])
+
+    time.sleep(1)
+    # Ask for date
+    msg = [3, 0, 0, 0]
+    spi.xfer2(msg)
+    # Actually get it
+    msg = [0, 0, 0, 0]
+    result = spi.xfer2(msg)
+    date_str = zero_pad(result[0]) + zero_pad(result[1]) + zero_pad(result[2] - 4)
+    spi.close()
+
+    # Create the datetime object
+    date_time_obj = datetime.strptime(str(date_str + " " + time_str), "%d%m%y %H%M%S")
+    return date_time_obj
+
+
+def set_real_time_clock():
+    # Datetime object containing current date and time
+    now = datetime.now()
+
+    spi = spidev.SpiDev()
+    spi.open(0, 0)
+
+    # Set SPI speed and mode
+    spi.max_speed_hz = 50000
+    spi.mode = 0
+    spi.cshigh = True
+    # Set time to now
+    msg = [4, now.hour, now.minute, now.second]
+    spi.xfer2(msg)
+
+    # Set day to today
+    msg = [5, now.day, now.month, now.year - 2000]
+    spi.xfer2(msg)
+    spi.close()
+
+
 def main():
     parser = argparse.ArgumentParser(description="Contact tracing device I/O")
     parser.add_argument(
         "-b", "--battery", help="Display battery voltage", action="store_true"
+    )
+    parser.add_argument(
+        "-c", "--clock-get", help="Display real time clock", action="store_true"
+    )
+    parser.add_argument(
+        "-C",
+        "--clock-set",
+        help="Set real time clock to the current time",
+        action="store_true",
     )
     parser.add_argument(
         "-d", "--debug", help="Run in debug mode logging to stderr", action="store_true"
@@ -180,6 +254,7 @@ def main():
     if args.battery:
         print(get_battery_voltage())
     if args.test:
+        print(get_real_time_clock())
         setup_leds()
         setup_switch(SHARE_SWITCH_PORT)
         setup_switch(WIFI_SWITCH_PORT)
@@ -192,6 +267,13 @@ def main():
                 led_state = toggle(led_state, WIFI_SWITCH_PORT)
             except KeyboardInterrupt:
                 sys.exit(0)
+
+    if args.clock_get:
+        print(get_real_time_clock())
+    if args.clock_set:
+        set_real_time_clock()
+        print(get_real_time_clock())
+
     if args.green_off:
         logger.debug("Turn green LED off")
         setup_leds()
