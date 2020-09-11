@@ -22,7 +22,12 @@ __license__ = "Apache 2.0"
 import argparse
 from http.client import HTTPConnection
 from epidose.common.daemon import Daemon
-from epidose.device.device_io import get_battery_voltage, green_led_set, setup_leds
+from epidose.device.device_io import (
+    get_battery_voltage,
+    green_led_set,
+    red_led_set,
+    setup_leds,
+)
 import socket
 from time import sleep
 from xmlrpc import client
@@ -111,6 +116,7 @@ def main():
         "http://localhost", transport=UnixStreamTransport("/run/supervisor.sock")
     )
     setup_leds()
+    red_led_set(False)
     while True:
         if watchdog_check(proxy):
             green_led_set(True)
