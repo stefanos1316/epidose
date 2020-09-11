@@ -119,8 +119,8 @@ def toggle(led_state, switch):
     return not led_state
 
 
-def get_battery_voltage():
-    """ Return the battery's voltage in V"""
+def spi_setup():
+    """ Return an spi handle after setting it up for communication """
     spi = spidev.SpiDev()
     spi.open(0, 0)
 
@@ -128,6 +128,12 @@ def get_battery_voltage():
     spi.max_speed_hz = 50000
     spi.mode = 0
     spi.cshigh = True
+    return spi
+
+
+def get_battery_voltage():
+    """ Return the battery's voltage in V"""
+    spi = spi_setup()
     # Ask for battery voltage
     msg = [1, 0, 0, 0]
     spi.xfer2(msg)
@@ -152,13 +158,7 @@ def get_real_time_clock():
     """Return a datetime object obtained from the controller's
     real time clock"""
 
-    spi = spidev.SpiDev()
-    spi.open(0, 0)
-
-    # Set SPI speed and mode
-    spi.max_speed_hz = 50000
-    spi.mode = 0
-    spi.cshigh = True
+    spi = spi_setup()
     # Ask for time
     msg = [2, 0, 0, 0]
     spi.xfer2(msg)
@@ -167,7 +167,6 @@ def get_real_time_clock():
     result = spi.xfer2(msg)
     time_str = zero_pad(result[0]) + zero_pad(result[1]) + zero_pad(result[2])
 
-    time.sleep(1)
     # Ask for date
     msg = [3, 0, 0, 0]
     spi.xfer2(msg)
@@ -186,19 +185,21 @@ def set_real_time_clock():
     # Datetime object containing current date and time
     now = datetime.now()
 
-    spi = spidev.SpiDev()
-    spi.open(0, 0)
-
-    # Set SPI speed and mode
-    spi.max_speed_hz = 50000
-    spi.mode = 0
-    spi.cshigh = True
+    spi = spi_setup()
     # Set time to now
     msg = [4, now.hour, now.minute, now.second]
     spi.xfer2(msg)
 
     # Set day to today
     msg = [5, now.day, now.month, now.year - 2000]
+    spi.xfer2(msg)
+    spi.close()
+
+
+def schedule_power_off():
+    """Schedule the power to be shut down after 30s"""
+    spi = spi_setup()
+    msg = [6, 0, 0, 0]
     spi.xfer2(msg)
     spi.close()
 

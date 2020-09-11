@@ -26,11 +26,17 @@ from epidose.device.device_io import (
     get_battery_voltage,
     green_led_set,
     red_led_set,
+    schedule_power_off,
     setup_leds,
 )
+from os import system
 import socket
+from sys import exit
 from time import sleep
 from xmlrpc import client
+
+# Voltage level at which the device shuts down (V)
+SHUTDOWN_VOLTAGE = 3.45
 
 # The daemon object associated with this program
 daemon = None
@@ -125,6 +131,12 @@ def main():
         sleep(FLASH_PAUSE)
         v = get_battery_voltage()
         logger.debug(f"Battery {v}")
+        # Graceful shutdown when needed
+        if v < SHUTDOWN_VOLTAGE:
+            logger.debug("Battery exchausted; shutting down")
+            schedule_power_off()
+            system("shutdown now 'Battery exhausted (${v} V)'")
+            exit(0)
 
 
 if __name__ == "__main__":
