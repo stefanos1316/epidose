@@ -25,6 +25,7 @@ from epidose.common.daemon import Daemon
 from epidose.device.device_io import (
     get_battery_voltage,
     green_led_set,
+    led_change_age,
     red_led_set,
     schedule_power_off,
     setup_leds,
@@ -49,8 +50,12 @@ PROCESSES = [
     "upload_seeds",
 ]
 
-FLASH_PAUSE = 2
-FLASH_BLINK = 0.2
+# Check state (and flash LED if needed) every so many seconds
+CHECK_INTERVAL = 2
+
+# LED heartbeat timing
+FLASH_PAUSE = 0.1
+FLASH_BLINK = 0.05
 
 
 # Routines to allow connection over a Unix domain socket
@@ -125,10 +130,15 @@ def main():
     red_led_set(False)
     while True:
         if watchdog_check(proxy):
-            green_led_set(True)
-            sleep(FLASH_BLINK)
-            green_led_set(False)
-        sleep(FLASH_PAUSE)
+            # Signal heartbeat if no other signalling is active
+            if led_change_age() > CHECK_INTERVAL * 2:
+                green_led_set(True)
+                sleep(FLASH_BLINK)
+                green_led_set(False)
+                sleep(FLASH_PAUSE)
+                green_led_set(True)
+                sleep(FLASH_BLINK)
+                green_led_set(False)
         v = get_battery_voltage()
         logger.debug(f"Battery {v}")
         # Graceful shutdown when needed
@@ -137,6 +147,7 @@ def main():
             schedule_power_off()
             system("shutdown now 'Battery exhausted (${v} V)'")
             exit(0)
+        sleep(CHECK_INTERVAL)
 
 
 if __name__ == "__main__":

@@ -25,10 +25,9 @@ from datetime import datetime
 from dp3t.protocols.unlinkable_db import ContactTracer
 from epidose.common.daemon import Daemon
 from epidose.device.beacon_format import BLE_PACKET
-from epidose.device.device_io import green_led_set, setup_leds
+from epidose.device.device_io import green_led_set, orange_led_set, setup_leds
 import struct
 import sys
-from time import sleep
 
 # RSSI above this value is considered close and causes LED to flash
 CLOSE_CONTACT_RSSI = -50
@@ -89,15 +88,20 @@ def process_packet(socket):
     # This is a contact detection service packet
     ephid = packet[25:41]
     (rssi,) = unpack_byte(packet[-1])
+
+    if rssi > CLOSE_CONTACT_RSSI:
+        orange_led_set(True)
+    else:
+        green_led_set(True)
+
     logger.info(f"Got ephid {ephid.hex()} RSSI {rssi}")
 
-    # Flash LED for close contacts
-    if rssi > CLOSE_CONTACT_RSSI:
-        green_led_set(True)
-        sleep(0.2)
-        green_led_set(False)
-
     receiver.add_observation(ephid, now, rssi)
+
+    if rssi > CLOSE_CONTACT_RSSI:
+        orange_led_set(False)
+    else:
+        green_led_set(False)
 
 
 def main():

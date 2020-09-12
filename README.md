@@ -87,16 +87,22 @@ providing any personal data, charges it, and carries it around.
 When health authorities test people, they associate its contacts with the
 test results by attaching the dosimeter to a special beacon.
 
-A single LED indicates the dosimeter’s status.
+### Dosimeter status indicator LED
 
-* Flashing green: Normal operation
+* Heartbeat (double) flashing green: Normal isolated operation
+* Green flashes: other exposure notification devices are being detected
+* Orange flashes: other exposure notification devices are close
 * Slow flashing red: User may have been exposed and should contact a
   health provider.
 * Rapidly flashing red: User has been tested positive and needs to self
   quarantine. (To be used in areas lacking better means to contact people.)
+
+### Power indicator LED
+* Off: Device is operating on batter
 * Orange: Charging is required.
-  It is estimated that the dosimeter would last a full working day without
-  charging.
+* Green: Device is being charged
+
+The dosimeter can last more than a full working day without charging.
 
 As a possible extension the LED indicator can be extended to more
 LEDs to indicate:

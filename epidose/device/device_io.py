@@ -23,15 +23,16 @@ __license__ = "Apache 2.0"
 import argparse
 from epidose.common.daemon import Daemon
 from datetime import datetime
-import spidev
+from pathlib import Path
 
 # This import only works on a Rasberry Pi; ignore import when testing
 try:
     import RPi.GPIO as GPIO
 except RuntimeError:
     pass
-import time
+import spidev
 import sys
+import time
 
 # Ports with GPIO (BCM) numbering
 SHARE_SWITCH_PORT = 20
@@ -39,6 +40,9 @@ WIFI_SWITCH_PORT = 21
 RED_LED_PORT = 19
 ORANGE_LED_PORT = 4
 GREEN_LED_PORT = 26
+
+# Touched on every LED status change
+LED_CHANGE = Path("/var/lib/epidose/led-change")
 
 
 def setup():
@@ -88,23 +92,31 @@ def button_pressed(port):
 
 def red_led_set(value):
     """ Turn the LED on or off depending on the passed value. """
+    LED_CHANGE.touch()
     # Negative logic!
     GPIO.output(RED_LED_PORT, GPIO.LOW if value else GPIO.HIGH)
 
 
 def green_led_set(value):
     """ Turn the LED on or off depending on the passed value. """
+    LED_CHANGE.touch()
     GPIO.output(GREEN_LED_PORT, GPIO.LOW if value else GPIO.HIGH)
 
 
 def orange_led_set(value):
     """ Turn the LED on or off depending on the passed value. """
+    LED_CHANGE.touch()
     if value:
         GPIO.output(GREEN_LED_PORT, GPIO.LOW)
         GPIO.output(RED_LED_PORT, GPIO.LOW)
     else:
         GPIO.output(GREEN_LED_PORT, GPIO.HIGH)
         GPIO.output(RED_LED_PORT, GPIO.HIGH)
+
+
+def led_change_age():
+    """ Return the time elapsed from the last LED modification """
+    return datetime.now().timestamp() - LED_CHANGE.stat().st_mtime
 
 
 def toggle(led_state, switch):
