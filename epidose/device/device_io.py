@@ -243,6 +243,9 @@ def main():
     parser.add_argument(
         "-o", "--orange-off", help="Turn orange LED off", action="store_true"
     )
+    parser.add_argument(
+        "-p", "--power-off", help="Schedule power to turn off", action="store_true"
+    )
     parser.add_argument("-R", "--red-on", help="Turn red LED on", action="store_true")
     parser.add_argument("-r", "--red-off", help="Turn red LED off", action="store_true")
     parser.add_argument(
@@ -303,6 +306,9 @@ def main():
         logger.debug("Turn orange LED on")
         setup_leds()
         orange_led_set(True)
+    if args.power_off:
+        logger.debug("Schedule power off")
+        schedule_power_off()
     if args.red_off:
         logger.debug("Turn red LED off")
         setup_leds()
