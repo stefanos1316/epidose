@@ -79,6 +79,8 @@ of comparable phone apps.
 
 <img width="300" alt="Epidemic dosimeter concept drawing" src="https://raw.githubusercontent.com/dspinellis/epidose/master/hardware/concept.svg">
 
+<img width="300" alt="Epidemic dosimeter prototype box" src="https://raw.githubusercontent.com/dspinellis/epidose/master/hardware/box.svg">
+
 The epidemic dosimeter is a lightweight (<100g), low-cost
 (mass-produced <40€), self-contained device, housed in a package with a
 three-color LED.
