@@ -29,16 +29,16 @@ def set_rtc_timedate():
 		spi.open(0,0)
 
 # Set SPI speed and mode
-		spi.max_speed_hz = 50000
-#spi.mode = 0
+		spi.max_speed_hz = 5000
+		spi.mode = 0
 		spi.cshigh = True
 # set time to now
 		msg = [4,now.hour,now.minute,now.second]
-		result=spi.xfer2(msg)
-
+		spi.writebytes(msg)
+		time.sleep(0.001)
 # set day to today
 		msg = [5,now.day,now.month,now.year-2000]
-		result=spi.xfer2(msg)
+		result=spi.writebytes(msg)
 
 	
 		

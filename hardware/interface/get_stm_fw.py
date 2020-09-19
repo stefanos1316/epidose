@@ -20,24 +20,22 @@ import spidev
 
 
 def get_stm_fw():
-
 	try:
 		spi = spidev.SpiDev()
 		spi.open(0,0)
 
 # Set SPI speed and mode
-		spi.max_speed_hz = 50000
-#spi.mode = 0
+		spi.max_speed_hz = 5000
+		spi.mode = 0
 		spi.cshigh = True
 # ask for fw version
 		msg = [9,0,0,0]
-		fake=spi.xfer2(msg)
+		spi.writebytes(msg)
 #actually get it
-		msg = [0,0,0,0]
-		result=spi.xfer2(msg)
+		time.sleep(0.001)
+		result=spi.readbytes(4)
 		return (result[0]+result[1]*0.1)
 		spi.close()
 	except:
 		print("Unexpected error:", sys.exc_info()[0])
 		return 0
-

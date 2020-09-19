@@ -15,6 +15,7 @@
 #limitations under the License.
 
 import sys
+from time import sleep
 import time
 import spidev
 from datetime import datetime
@@ -27,30 +28,31 @@ def rtc_fix_result_padding(_res):
 		return str(_res)
 
 def get_rtc_timedate():
-
 	try:
 		spi = spidev.SpiDev()
 		spi.open(0,0)
 
 		# Set SPI speed and mode
-		spi.max_speed_hz = 50000
+		spi.max_speed_hz = 5000
 		#spi.mode = 0
 		spi.cshigh = True
 		# ask for time
 		msg = [2,0,0,0]
-		fake=spi.xfer2(msg)
+		spi.writebytes(msg)
 		#actually get it
-		msg = [0,0,0,0]
-		result=spi.xfer2(msg)
+		sleep(0.001)
+		result=spi.readbytes(4)
 		time_str=rtc_fix_result_padding(result[0])+rtc_fix_result_padding(result[1])+rtc_fix_result_padding(result[2])
+		print(result)
 
 		# ask for date
 		msg = [3,0,0,0]
-		fake=spi.xfer2(msg)
+		spi.writebytes(msg)
 		#actually get it
-		msg = [0,0,0,0]
-		result=spi.xfer2(msg)
+		sleep(0.001)
+		result=spi.readbytes(4)
 		date_str=rtc_fix_result_padding(result[0])+rtc_fix_result_padding(result[1])+rtc_fix_result_padding(result[2]-4)
+		print(result)
 
 		spi.close()
 		#create the datetime object
