@@ -137,21 +137,25 @@ def spi_setup():
     spi.open(0, 0)
 
     # Set SPI speed and mode
-    spi.max_speed_hz = 50000
+    spi.max_speed_hz = 5000
     spi.mode = 0
     spi.cshigh = True
     return spi
+
+
+def spi_command(spi, message, get_result):
+    """Write the specified message to the serial peripheral interface
+    and return the result if get_result is true."""
+    spi.writebytes(message)
+    time.sleep(0.001)
+    return spi.readbytes(4) if get_result else None
 
 
 def get_battery_voltage():
     """ Return the battery's voltage in V"""
     spi = spi_setup()
     # Ask for battery voltage
-    msg = [1, 0, 0, 0]
-    spi.writebytes(msg)
-    # Actually get it
-    time.sleep(0.001)
-    result=spi.readbytes(4)
+    result = spi_command(spi, [1, 0, 0, 0], True)
     value = (result[0] << 8) | result[1]
     voltage = 2 * (3.258 * value) / 4096
     spi.close()
@@ -172,17 +176,11 @@ def get_real_time_clock():
 
     spi = spi_setup()
     # Ask for time
-    msg = [2, 0, 0, 0]
-    spi.writebytes(msg)
-    # Actually get it
-    result = spi.readbytes(4)
+    result = spi_command(spi, [2, 0, 0, 0], True)
     time_str = zero_pad(result[0]) + zero_pad(result[1]) + zero_pad(result[2])
 
     # Ask for date
-    msg = [3, 0, 0, 0]
-    spi.writebytes(msg)
-    # Actually get it
-    result = spi.readbytes(4)
+    result = spi_command(spi, [3, 0, 0, 0], True)
     date_str = zero_pad(result[0]) + zero_pad(result[1]) + zero_pad(result[2] - 4)
     spi.close()
 
@@ -197,21 +195,17 @@ def set_real_time_clock():
 
     spi = spi_setup()
     # Set time to now
-    msg = [4, now.hour, now.minute, now.second]
-    spi.writebytes(msg)
-	
-    time.sleep(0.01)
+    spi_command(spi, [4, now.hour, now.minute, now.second], False)
+
     # Set day to today
-    msg = [5, now.day, now.month, now.year - 2000]
-    spi.writebytes(msg)
+    spi_command(spi, [5, now.day, now.month, now.year - 2000], False)
     spi.close()
 
 
 def schedule_power_off():
     """Schedule the power to be shut down after 30s"""
     spi = spi_setup()
-    msg = [6, 0, 0, 0]
-    spi.xfer2(msg)
+    spi_command(spi, [6, 0, 0, 0], False)
     spi.close()
 
 
