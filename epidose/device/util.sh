@@ -163,8 +163,11 @@ shift $((OPTIND-1))
 log 'Starting up'
 
 # Obtain server URL
-test -z "$1" && usage
-export SERVER_URL="$1"
+if [ -n "$1" ] ; then
+  export SERVER_URL="$1"
+elif [ -z "$SERVER_URL" ] ; then
+  usage
+fi
 
 # Create lock directory
 mkdir -p "$(dirname "$WIFI_USERS_LOCK")"

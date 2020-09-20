@@ -175,6 +175,8 @@ as depicted in the diagram at the end of this section.
   with the epidemic dosimeter's user, handle the uploading of its
   contacts (at that point, or when the test results are out),
   providing a single-use key to authorize and authenticate the upload.
+* `shutdown_epidose`: Performs a graceful shutdown and removes power from
+  the device in order e.g. to ship it.
 
 ![Software architecture](https://raw.githubusercontent.com/dspinellis/epidose/master/doc/software-architecture.svg?sanitize=1)
 
