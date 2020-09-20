@@ -148,10 +148,10 @@ def get_battery_voltage():
     spi = spi_setup()
     # Ask for battery voltage
     msg = [1, 0, 0, 0]
-    spi.xfer2(msg)
+    spi.writebytes(msg)
     # Actually get it
-    msg = [0, 0, 0, 0]
-    result = spi.xfer2(msg)
+    time.sleep(0.001)
+    result=spi.readbytes(4)
     value = (result[0] << 8) | result[1]
     voltage = 2 * (3.258 * value) / 4096
     spi.close()
@@ -173,18 +173,16 @@ def get_real_time_clock():
     spi = spi_setup()
     # Ask for time
     msg = [2, 0, 0, 0]
-    spi.xfer2(msg)
+    spi.writebytes(msg)
     # Actually get it
-    msg = [0, 0, 0, 0]
-    result = spi.xfer2(msg)
+    result = spi.readbytes(4)
     time_str = zero_pad(result[0]) + zero_pad(result[1]) + zero_pad(result[2])
 
     # Ask for date
     msg = [3, 0, 0, 0]
-    spi.xfer2(msg)
+    spi.writebytes(msg)
     # Actually get it
-    msg = [0, 0, 0, 0]
-    result = spi.xfer2(msg)
+    result = spi.readbytes(4)
     date_str = zero_pad(result[0]) + zero_pad(result[1]) + zero_pad(result[2] - 4)
     spi.close()
 
@@ -200,11 +198,12 @@ def set_real_time_clock():
     spi = spi_setup()
     # Set time to now
     msg = [4, now.hour, now.minute, now.second]
-    spi.xfer2(msg)
-
+    spi.writebytes(msg)
+	
+    time.sleep(0.01)
     # Set day to today
     msg = [5, now.day, now.month, now.year - 2000]
-    spi.xfer2(msg)
+    spi.writebytes(msg)
     spi.close()
 
 

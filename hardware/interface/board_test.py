@@ -36,7 +36,7 @@ def stm32_gpio_test():
         	spi.cshigh = True
 # ask for test mode
         	msg = [8,0,0,0]
-        	fake=spi.xfer2(msg)
+        	spi.writebytes(msg)
         	spi.close()
 	except:
         	print("Unexpected error:", sys.exc_info()[0])

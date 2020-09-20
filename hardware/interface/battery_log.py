@@ -33,10 +33,9 @@ def get_battery():
 		spi.cshigh = True
 # ask for battery voltage
 		msg = [1,0,0,0]
-		fake=spi.xfer2(msg)
+		spi.writebytes(msg)
 #actually get it
-		msg = [0,0,0,0]
-		result=spi.xfer2(msg)
+		result=spi.readbytes(4)
 		temp=(result[0]<<8)|result[1]
 		voltage=2*(3.258*temp)/(4096)
 		spi.close()

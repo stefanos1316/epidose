@@ -33,10 +33,9 @@ def shutdown_rpi():
 		msg = [6,0,0,0]
 		os.system('sync')
 
-		fake=spi.xfer2(msg)
+		spi.writebytes(msg)
 		spi.close()
 		os.system('sudo shutdown now')
 	except:
 		print("Unexpected error:", sys.exc_info()[0])
 
-shutdown_rpi()
