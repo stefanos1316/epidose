@@ -13,3 +13,4 @@ repos:
     rev: master
     hooks:
     - id: shellcheck
+      exclude: ^epidose/device/setup/
