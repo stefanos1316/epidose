@@ -8,6 +8,7 @@ repos:
     rev: 3.8.0a2
     hooks:
     - id: flake8
+      args: ['--ignore=W503']
 -   repo: https://github.com/jumanjihouse/pre-commit-hooks
     rev: master
     hooks:
