@@ -433,6 +433,7 @@ Below are links to information directly relevant to this project.
 * [Decentralized Privacy-Preserving Proximity Tracing](https://github.com/DP-3T/documents)
 * [EU key eHealth documents for fighting COVID-19](https://ec.europa.eu/health/ehealth/key_documents_en)
 * [ACM Europe TPC Statement on Principles, Practices for COVID-19 Contact Tracing Applications](https://www.acm.org/binaries/content/assets/public-policy/europe-tpc-contact-tracing-statement.pdf)
+* [Bluetooth-based accurate wireless ranging for automated contact tracing](https://www.digikey.gr/en/articles/build-a-more-accurate-wireless-ranging-solution-for-contact-tracing)
 
 
 ## License
