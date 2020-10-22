@@ -137,7 +137,7 @@ run_python()
 }
 
 # Check the validity of the cuckoo filter
-# preconditions: none 
+# preconditions: none
 # Outputs, through the stdout,
 # the time interval until a Cuckoo filter is valid (in seconds)
 # If 0 is returned, the Cuckoo filter is stale.
@@ -159,11 +159,11 @@ get_filter_validity_age()
   else
     log "No filter available; download required"
     mkdir -p "$(dirname $FILTER)"
-  fi	
+  fi
 }
 
 # Obtain a (new) version of the Cuckoo filter
-# preconditions: WiFi should be turned on 
+# preconditions: WiFi should be turned on
 # Returns an exit code that defines
 # whether a request to the ha-sever, to fetch a new cuckoo filter,
 # was successful.
