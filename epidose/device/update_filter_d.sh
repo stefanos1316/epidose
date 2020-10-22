@@ -39,50 +39,32 @@ UTIL="$(dirname "$0")/util.sh"
 # Wait until a filter file is required
 wait_till_filter_needed()
 {
-  if [ -r "$FILTER" ] ; then
-    filter_mtime=$(stat -c '%Y' "$FILTER")
-    time_now=$(date +%s)
-    filter_age=$((time_now - filter_mtime))
-    if [ $filter_age -lt $MAX_FILTER_AGE ] ; then
-      log "Filter's age ($filter_age s) is current; no update required"
-      to_sleep=$((MAX_FILTER_AGE - filter_age))
-      log "Sleeping for $to_sleep s"
-      sleep $to_sleep
-      log "Waking up from sleep; new filter is now required"
-    fi
-    log "Filter's age ($filter_age s) makes it stale; update required"
-  else
-    log "No filter available; download required"
-    mkdir -p "$(dirname $FILTER)"
+  # Checks whether the Cuckoo filter is stale or fresh
+  # and returns the time until its valid (in seconds)
+  validity_time=$(get_filter_validity_age)
+  if [ "$validity_time" -ne 0 ]; then
+    log "Sleeping for $validity_time s"
+    sleep "$validity_time"
+    log "Waking up from sleep; new filter is now required"
   fi
-}
-
-
-# Obtain a (new) version of the Cuckoo filter
-get_filter()
-{
-  log "Obtaining new filter from $SERVER_URL"
-  while : ; do
-    wifi_acquire
-    if err=$(curl --silent --show-error --fail --output "$FILTER.new" \
-      "$SERVER_URL/filter" 2>&1) ; then
-      wifi_release
-      # Atomically replace existing filter with new one
-      mv "$FILTER.new" "$FILTER"
-      log "New filter obtained: $(stat -c %s "$FILTER") bytes"
-      return
-    else
-      wifi_release
-      log "Unable to get filter: $err"
-      log "Wil retry in $WIFI_RETRY_TIME s"
-      sleep "$WIFI_RETRY_TIME"
-    fi
-  done
 }
 
 while : ; do
   wait_till_filter_needed
-  get_filter
+  log "Obtaining new filter from $SERVER_URL"
+  while : ; do
+    wifi_acquire
+
+    # Tries to get a new cuckoo filter from the ha-server
+    if ! get_new_filter; then
+      wifi_release
+      log "Will retry in $WIFI_RETRY_TIME s"
+      sleep "$WIFI_RETRY_TIME"
+    else
+      wifi_release
+      break
+    fi	    
+  done
   run_python check_infection_risk "$FILTER" || :
   # TODO: Also check for software updates
 done

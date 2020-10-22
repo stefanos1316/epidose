@@ -21,6 +21,13 @@
 # 15 minutes
 export WIFI_RETRY_TIME=$((15 * 60))
 
+# Location of the Cuckoo filter
+FILTER=/var/lib/epidose/client-filter.bin
+
+# Maximum allowed filter age before an update (in seconds)
+# 6 hours
+MAX_FILTER_AGE=$((6 * 60 * 60))
+
 # Directory of WiFi users
 WIFI_USERS=/var/lock/epidose/wifi-users
 
@@ -127,6 +134,53 @@ run_python()
   shift
   # shellcheck disable=SC2086
   "$PYTHON" "$SCRIPT_DIR"/"$prog".py $DEBUG_FLAG $VERBOSE_FLAG "$@"
+}
+
+# Check the validity of the cuckoo filter
+# preconditions: none 
+# Outputs, through the stdout,
+# the time interval until a Cuckoo filter is valid (in seconds)
+# If 0 is returned, the Cuckoo filter is stale.
+get_filter_validity_age()
+{
+  if [ -r "$FILTER" ] ; then
+    filter_mtime=$(stat -c '%Y' "$FILTER")
+    time_now=$(date +%s)
+    filter_age=$((time_now - filter_mtime))
+    if [ $filter_age -lt $MAX_FILTER_AGE ] ; then
+      log "Filter's age ($filter_age s) is current; no update required"
+      validity_time=$((MAX_FILTER_AGE - filter_age))
+      echo "$validity_time"
+    else
+      log "Filter's age ($filter_age s) makes it stale; update required"
+      validity_time=0
+      echo "$validity_time"
+    fi
+  else
+    log "No filter available; download required"
+    mkdir -p "$(dirname $FILTER)"
+  fi	
+}
+
+# Obtain a (new) version of the Cuckoo filter
+# preconditions: WiFi should be turned on 
+# Returns an exit code that defines
+# whether a request to the ha-sever, to fetch a new cuckoo filter,
+# was successful.
+# If 1 is returned, then cuckoo filter was not obtained.
+get_new_filter()
+{
+  if err=$(curl --silent --show-error --fail --output "$FILTER.new" \
+    "$SERVER_URL/filter" 2>&1) ; then
+    # Atomically replace existing filter with new one
+    mv "$FILTER.new" "$FILTER"
+    log "New filter obtained: $(stat -c %s "$FILTER") bytes"
+    return 0
+  else
+    exit_code=$?
+    log "Unable to get filter: $err"
+    return "$exit_code"
+  fi
 }
 
 if [ -z "$APP_NAME" ] ; then
