@@ -43,12 +43,7 @@ SHUTDOWN_VOLTAGE = 3.45
 daemon = None
 
 # Processes to verify
-PROCESSES = [
-    "beacon_rx",
-    "beacon_tx",
-    "update_filter",
-    "upload_seeds",
-]
+PROCESSES = ["beacon_rx", "beacon_tx", "update_filter", "upload_seeds", "wps_scanner"]
 
 # Check state (and flash LED if needed) every so many seconds
 CHECK_INTERVAL = 2

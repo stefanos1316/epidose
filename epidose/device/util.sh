@@ -24,6 +24,9 @@ export WIFI_RETRY_TIME=$((15 * 60))
 # Location of the Cuckoo filter
 FILTER=/var/lib/epidose/client-filter.bin
 
+# Location of update_filter_d sleep process file
+export SLEEP_UPDATE_FILTER_PID=/var/run/epidose_update_filter_sleep
+
 # Maximum allowed filter age before an update (in seconds)
 # 6 hours
 MAX_FILTER_AGE=$((6 * 60 * 60))

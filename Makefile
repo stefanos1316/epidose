@@ -27,5 +27,6 @@ fast-install:
 	cp epidose/device/upload_seeds_d.sh \
 		epidose/device/update_filter_d.sh \
 		epidose/device/shutdown_epidose.sh \
+		epidose/device/wps_scanner_d.sh \
 		epidose/device/util.sh $(OPT)/bin/
 	supervisorctl restart epidose:*
