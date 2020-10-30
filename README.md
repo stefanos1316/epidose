@@ -177,6 +177,11 @@ as depicted in the diagram at the end of this section.
   providing a single-use key to authorize and authenticate the upload.
 * `shutdown_epidose`: Performs a graceful shutdown and removes power from
   the device in order e.g. to ship it.
+* `wps_scanner_d.sh`: Supports WiFi Protected Setup (WPS) to obtain
+  a network connection by using the push button configuration (PBC).
+  It always tries to connect to the network with the strongest signal.
+  If a network connection is obtained, it kills the sleep process of
+  update_filter_d.sh to force it to update the cuckoo filter.
 
 ![Software architecture](https://raw.githubusercontent.com/dspinellis/epidose/master/doc/software-architecture.svg?sanitize=1)
 
