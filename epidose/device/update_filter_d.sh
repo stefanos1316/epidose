@@ -22,10 +22,6 @@ set -e
 # Location of the Cuckoo filter
 FILTER=/var/lib/epidose/client-filter.bin
 
-# Maximum allowed filter age before an update (in seconds)
-# 6 hours
-MAX_FILTER_AGE=$((6 * 60 * 60))
-
 export APP_NAME=update_filter_d
 
 # Pick up utility functions relative to the script's source code
@@ -44,8 +40,15 @@ wait_till_filter_needed()
   validity_time=$(get_filter_validity_age)
   if [ "$validity_time" -ne 0 ]; then
     log "Sleeping for $validity_time s"
-    sleep "$validity_time"
-    log "Waking up from sleep; new filter is now required"
+    # Sleep until filter becomes invalid and store sleep process id
+    sleep "$validity_time" &
+    sleep_pid=$!
+    echo "$sleep_pid" > "$SLEEP_UPDATE_FILTER_PID"
+    if wait $sleep_pid ; then
+      log "Waking up from sleep; new filter is now required"
+    else
+      log "Killed during sleep; obtaining a new filter"
+    fi
   fi
 }
 

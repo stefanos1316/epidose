@@ -43,6 +43,7 @@ setuptools.setup(
         "epidose/device/upload_seeds_d.sh",
         "epidose/device/shutdown_epidose.sh",
         "epidose/device/util.sh",
+        "epidose/device/wps_scanner_d.sh",
     ],
     # Could also support entry_points console_scripts, but they are
     # not supported by the current version of make_deb
