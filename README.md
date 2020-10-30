@@ -242,17 +242,80 @@ Also missing are the following.
 
 ## Installing the reference implementation
 
+Currently, there are two ways of installing the reference implementation.
+You may install it on an existing Raspbian system or create a new image.
+The two alternatives are presented below.
+
+### Install on an existing system
+
 You'll need to install the required libraries and project.
 Here is how you can do it under the Ubuntu GNU/Linux distribution.
 
 ```bash
 sudo apt-get install git libbluetooth-dev libglib2.0-dev python3-dev python3-setuptools shellcheck sqlite3 virtualenv dh-virtualenv debhelper supervisor
-git clone https://github.com/dspinellis/epidose
+git clone https://github.com/eellak/epidose
 cd epidose
 virtualenv venv -p /usr/bin/python3
 . venv/bin/activate
 pip3 install -e .
 ```
+
+### Create a new image
+
+You'll need to download a vanilla Raspbian distribution (Lite version is suggested for this purpose)
+and burn it on a microSD card.
+Then perform the following steps on your microSD card while it is mounted on your workstation.
+
+* [Enable the SSH daemon](https://howtoraspberrypi.com/how-to-raspberry-pi-headless-setup/) by creating an empty file in the boot directory (of the image) named as "ssh" (without any extension) 
+* Allow the device to connect to your network by creating a "wpa_supplicant.conf" file in the boot directory (of the image) with the following content:
+```bash
+ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
+update_config=1
+country=Initials of your country's code, e.g., GR
+
+network={
+	ssid="The name of your WiFi network"
+	psk="The password of your WiFi network"
+}
+```
+* Move the microSD card from your workstation to the Raspberry-Pi and start the device
+
+Then execute the following steps after obtaining an SSH connection
+to your Raspberry-Pi.
+Then [automate the authendication process](https://www.tecmint.com/ssh-passwordless-login-using-ssh-keygen-in-5-easy-steps/) to connect to your device.
+To find the device's IP address, check the logs from the web interface of your router.
+
+* Install the following packages on your Raspberry-Pi device:
+```bash
+sudo apt-get install git ansible
+```
+* Execute the following commands:
+```bash
+git clone https://github.com/eellak/epidose
+cd epidose/epidose/device
+```
+* Execute the ansible script by providing the relevant command-line arguments (see [section](#ansible))
+```bash
+sudo ansible-playbook install_and_configure.yml --tags "production|development" --extra-vars "eduroam_network_psk=password_of_your_eduroam_account"
+cd /home/epidose/epidose/epidose/device
+sudo ansible-playbook install_and_configure.yml --tags "delete"
+```
+
+### Ansible Tags And Extra Variables
+
+The _delete_ tag remoces the default _pi_ user
+and it does not require any command-line arguments.
+To install and prepare the environment to run the epidose,
+the tag _production_ should be used.
+In case you are willing to help the development team of epidose,
+execute the ansible script using the _development_ tag.
+The tag _development_ also runs the epidose software.
+In the case of _production_ and _development_,
+all the defined _extra-vars_ are mandatory run epidose.
+
+_extra-vars_
+* eduroam_network_password is the password of the user's Eduroam account
+
 
 ## Running the client code
 
