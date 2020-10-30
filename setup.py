@@ -39,9 +39,9 @@ setuptools.setup(
         "deploy": ["make-deb"],
     },
     scripts=[
+        "epidose/device/shutdown_epidose.sh",
         "epidose/device/update_filter_d.sh",
         "epidose/device/upload_seeds_d.sh",
-        "epidose/device/shutdown_epidose.sh",
         "epidose/device/util.sh",
         "epidose/device/wps_scanner_d.sh",
     ],
