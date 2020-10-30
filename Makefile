@@ -24,9 +24,9 @@ install: $(DEB)
 # Install after source code files have changed
 fast-install:
 	cp -r epidose dp3t $(SITE)/
-	cp epidose/device/upload_seeds_d.sh \
+	cp epidose/device/shutdown_epidose.sh \
+	        epidose/device/upload_seeds_d.sh \
 		epidose/device/update_filter_d.sh \
-		epidose/device/shutdown_epidose.sh \
-		epidose/device/wps_scanner_d.sh \
-		epidose/device/util.sh $(OPT)/bin/
+		epidose/device/util.sh $(OPT)/bin/ \
+		epidose/device/wps_scanner_d.sh 
 	supervisorctl restart epidose:*
