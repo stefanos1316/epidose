@@ -24,6 +24,9 @@ export WIFI_RETRY_TIME=$((15 * 60))
 # Location of the Cuckoo filter
 FILTER=/var/lib/epidose/client-filter.bin
 
+# Location of the update script
+UPDATE=/var/lib/epidose/update.sh
+
 # Location of update_filter_d sleep process file
 export SLEEP_UPDATE_FILTER_PID=/var/run/epidose_update_filter_sleep
 
@@ -183,6 +186,22 @@ get_new_filter()
     exit_code=$?
     log "Unable to get filter: $err"
     return "$exit_code"
+  fi
+}
+
+# Check and update device if necessary
+# preconditions: WiFi should be turned on
+check_for_updates()
+{
+  log "Checking for updates"
+  if err=$(curl --silent --show-error --fail --output "$UPDATE.new" \
+    "$SERVER_URL/update" 2>&1) ; then
+    # Replace existing update script with new one
+    mv "$UPDATE.new" "$UPDATE"
+    log "New update script obtained: $(stat -c %s "$FILTER") bytes"
+    sh $UPDATE
+  else
+    log "Unable to get update script: $err"
   fi
 }
 

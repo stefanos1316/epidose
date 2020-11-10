@@ -57,7 +57,7 @@ while : ; do
   log "Obtaining new filter from $SERVER_URL"
   while : ; do
     wifi_acquire
-
+    check_for_updates
     # Tries to get a new cuckoo filter from the ha-server
     if ! get_new_filter; then
       wifi_release
@@ -69,5 +69,4 @@ while : ; do
     fi	    
   done
   run_python check_infection_risk "$FILTER" || :
-  # TODO: Also check for software updates
 done
