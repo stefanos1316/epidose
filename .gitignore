@@ -6,6 +6,9 @@ __pycache__/
 /dist/
 *.egg-info/
 
+# Ansible
+*.retry
+
 # Development
 venv/
 *.swp
