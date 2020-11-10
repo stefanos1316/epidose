@@ -282,21 +282,22 @@ network={
 
 Then execute the following steps after obtaining an SSH connection
 to your Raspberry-Pi.
-Then [automate the authendication process](https://www.tecmint.com/ssh-passwordless-login-using-ssh-keygen-in-5-easy-steps/) to connect to your device.
-To find the device's IP address, check the logs from the web interface of your router.
 
-* Install the following packages on your Raspberry-Pi device:
+* [Automate the authentication process](https://www.tecmint.com/ssh-passwordless-login-using-ssh-keygen-in-5-easy-steps/) to connect to your device.
+To find the device's IP address, check your router's or access point's logs.
+
+* Install the following packages on your Raspberry-Pi device.
 ```bash
 sudo apt-get install git ansible
 ```
-* Execute the following commands:
+* Execute the following commands.
 ```bash
 git clone https://github.com/eellak/epidose
 cd epidose/epidose/device
 ```
-* Execute the ansible script by providing the relevant command-line arguments (see [section](#ansible))
+* Execute the Ansible script by providing the relevant command-line arguments (see [section](#Ansible))
 ```bash
-sudo ansible-playbook install_and_configure.yml --tags "production|development" --extra-vars "eduroam_network_psk=password_of_your_eduroam_account"
+sudo ansible-playbook install_and_configure.yml --tags "production|development" --extra-vars "eduroam_network_psk=password_of_the_epidose_eduroam_account"
 cd /home/epidose/epidose/epidose/device
 sudo ansible-playbook install_and_configure.yml --tags "delete"
 ```
@@ -308,13 +309,14 @@ and it does not require any command-line arguments.
 To install and prepare the environment to run the epidose,
 the tag _production_ should be used.
 In case you are willing to help the development team of epidose,
-execute the ansible script using the _development_ tag.
+execute the Ansible script using the _development_ tag.
 The tag _development_ also runs the epidose software.
 In the case of _production_ and _development_,
 all the defined _extra-vars_ are mandatory run epidose.
 
 _extra-vars_
-* eduroam_network_password is the password of the user's Eduroam account
+* password_of_the_epidose_eduroam_account is the password of the the
+  Eduroam account set up for Epidose.
 
 
 ## Running the client code
