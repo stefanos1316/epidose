@@ -92,6 +92,14 @@
          msg: "{{ setup_env_output.stdout_lines|list }}"
       tags: production, development
 
+    - name: set git name and email
+      tags: production, development
+      become: yes
+      become_user: root
+      shell: |
+       git config --system user.name "epidose"
+       git config --system user.email "epidose@device.com"
+
     - name: installl fake-hwclock to /sbin
       tags: production, development
       become: yes

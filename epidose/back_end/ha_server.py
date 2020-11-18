@@ -34,6 +34,7 @@ db = None
 
 FILTER_LOCATION = "/var/lib/epidose/filter.bin"
 DATABASE_LOCATION = "/var/lib/epidose/server-database.db"
+UPDATE_LOCATION = "/var/lib/epidose/update.sh"
 
 
 def shutdown_server():
@@ -66,6 +67,12 @@ def filter():
     such as nginx.
     """
     return send_from_directory(dirname(FILTER_LOCATION), basename(FILTER_LOCATION))
+
+
+@app.route("/update", methods=["GET"])
+def update():
+    """Send the update shell script as a static file."""
+    return send_from_directory(dirname(UPDATE_LOCATION), basename(UPDATE_LOCATION))
 
 
 @app.route("/shutdown")

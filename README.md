@@ -437,6 +437,40 @@ Timestamp            Epoch       Seed        Ephid
 [...]
 ```
 
+
+### Update user's device
+Apart form fetching Cuckoo filters, the device will also fetch Shell scritps from
+the health authority server to update the device.
+The update scripts can update the Epidose software, upgrade the Kernel, update the microcontrollers' firmware, etc.
+The update scripts can have the following format:
+
+```sh
+#!/bin/sh
+
+# Go the local repository
+cd /home/epidose/epidose
+
+# Pull the latest changes from the remote production branch
+git pull origin production
+
+# Change pulled files owner and group from root to epidose
+git ls-files | xargs chown epidose:epidose
+
+cp -r epidose dp3t /opt/venvs/epidose/lib/python3.7/site-packages/
+cp epidose/device/shutdown_epidose.sh \
+	epidose/device/upload_seeds_d.sh \
+	epidose/device/update_filter_d.sh \
+	epidose/device/util.sh \
+	epidose/device/wps_scanner_d.sh /opt/venvs/epidose/bin/
+
+# Reboot to apply changes and restart all epidose daemons
+reboot
+```
+
+Note that it is mandatory to reboot the device after obtaining
+new Epidose updates in order to restart the Epidose daemons.
+
+
 ## Development
 
 For development, you should install the development and test dependencies:
