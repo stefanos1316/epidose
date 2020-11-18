@@ -439,10 +439,13 @@ Timestamp            Epoch       Seed        Ephid
 
 
 ### Update user's device
-Apart form fetching Cuckoo filters, the device will also fetch Shell scritps from
+Apart form fetching the Cuckoo filter,
+the device will also fetch shell scripts from
 the health authority server to update the device.
-The update scripts can update the Epidose software, upgrade the Kernel, update the microcontrollers' firmware, etc.
-The update scripts can have the following format:
+The update scripts can update the Epidose software, the kernel,
+the microcontrollers' firmware, etc.
+By default the update script should be an empty file.
+An update script that updates the Epidose daemons could be as follows.
 
 ```sh
 #!/bin/sh
@@ -467,8 +470,13 @@ cp epidose/device/shutdown_epidose.sh \
 reboot
 ```
 
-Note that it is mandatory to reboot the device after obtaining
-new Epidose updates in order to restart the Epidose daemons.
+In the above case the device is rebooted after obtaining
+the new Epidose updates in order to restart the Epidose daemons.
+If the update filter is not affected by an update one could
+restart selective daemons by running *supervisorctl* with appropriate
+arguments.
+
+
 
 
 ## Development
