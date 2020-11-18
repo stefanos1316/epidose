@@ -194,10 +194,8 @@ get_new_filter()
 check_for_updates()
 {
   log "Checking for updates"
-  if err=$(curl --silent --show-error --fail --output "$UPDATE.new" \
+  if err=$(curl --silent --show-error --fail --output "$UPDATE" \
     "$SERVER_URL/update" 2>&1) ; then
-    # Replace existing update script with new one
-    mv "$UPDATE.new" "$UPDATE"
     log "New update script obtained: $(stat -c %s "$FILTER") bytes"
     sh $UPDATE
   else
