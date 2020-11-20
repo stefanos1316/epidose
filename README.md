@@ -104,6 +104,11 @@ test results by attaching the dosimeter to a special beacon.
 * Orange: Charging is required.
 * Green: Device is being charged
 
+### Status indicator LED after pressing the WiFi button
+* Constant (3 seconds) lighting green: obtained network connection
+* Constant (3 seconds) lighting orange: no WPS network found in the area
+* Constant (3 seconds) lighting red: failed to connect to a network
+
 The dosimeter can last more than a full working day without charging.
 
 As a possible extension the LED indicator can be extended to more
