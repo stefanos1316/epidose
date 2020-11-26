@@ -59,14 +59,14 @@ while : ; do
     wifi_acquire
     check_for_updates
     # Tries to get a new cuckoo filter from the ha-server
-    if ! get_new_filter; then
+    if get_new_filter; then
+      wifi_release
+      break
+    else
       wifi_release
       log "Will retry in $WIFI_RETRY_TIME s"
       sleep "$WIFI_RETRY_TIME"
-    else
-      wifi_release
-      break
-    fi	    
+    fi
   done
   run_python check_infection_risk "$FILTER" || :
 done
