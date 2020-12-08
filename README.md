@@ -287,16 +287,25 @@ network={
 
 Then execute the following steps after obtaining an SSH connection
 to your Raspberry-Pi.
+To find the device's IP address, check your router's or access point's
+status or logs.
 
-* [Automate the authentication process](https://www.tecmint.com/ssh-passwordless-login-using-ssh-keygen-in-5-easy-steps/) to connect to your device.
-To find the device's IP address, check your router's or access point's logs.
+* [Create an authorized keys file](https://www.tecmint.com/ssh-passwordless-login-using-ssh-keygen-in-5-easy-steps/)
+to connect to the device as user `pi` using a private key.
+This step is required so that you can be able to login later,
+once the `pi` user is replaced by the `epidose` user.
 
+* Update the operating system.
+```sh
+sudo apt-get update
+sudo apt-get upgrade
+```
 * Install the following packages on your Raspberry-Pi device.
-```bash
+```sh
 sudo apt-get install git ansible
 ```
 * Execute the following commands.
-```bash
+```sh
 git clone https://github.com/eellak/epidose
 cd epidose/epidose/device
 ```
@@ -306,6 +315,9 @@ sudo ansible-playbook install_and_configure.yml --tags "production|development" 
 cd /home/epidose/epidose/epidose/device
 sudo ansible-playbook install_and_configure.yml --tags "delete"
 ```
+
+* After executing this step, you will be able to login as user `epidose` with
+the private key you established previously for logging in as user `pi`.
 
 ### Ansible Tags And Extra Variables
 
