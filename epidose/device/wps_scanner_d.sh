@@ -120,6 +120,8 @@ while : ; do
     # Stop the sleep process of update_filter_d to get a new filter
     log "Killing update_filter_d's sleep process" 
     kill -9 "$(cat "$SLEEP_UPDATE_FILTER_PID")"
+    # Allow time for update_filter to also acquire the WiFi
+    sleep 5
   fi
   run_python check_interface_risk "$FILTER" || :
   wifi_release
