@@ -58,6 +58,8 @@ while : ; do
   while : ; do
     wifi_acquire
     check_for_updates
+    # Provide a chance for a remote user to log in
+    sleep 60
     # Tries to get a new cuckoo filter from the ha-server
     if get_new_filter; then
       wifi_release
