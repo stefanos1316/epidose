@@ -29,7 +29,7 @@ UTIL="$(dirname "$0")/util.sh"
 
 # Source common functionality (logging, WiFi)
 # shellcheck source=epidose/device/util.sh
-SERVER_URL="http://ha-server:5010" . "$UTIL"
+. "$UTIL"
 
 # Light up LED lights to indicate network status messages.
 # precondition: none
