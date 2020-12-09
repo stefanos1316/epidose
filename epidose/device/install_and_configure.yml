@@ -127,14 +127,19 @@
       blockinfile: |
         dest=/etc/wpa_supplicant/wpa_supplicant.conf backup=yes
         content='network={
-                    ssid="eduroam"
-                    scan_ssid=1
-                    key_mgmt=WPA-EAP
-                    eap=PEAP
-                    identity="epidose"
-                    password="{{ eduroam_network_psk }}"
-                    phase1="peaplabel=0"
-                    phase2="auth=MSCHAPV2" }'
+                ssid="eduroam"
+                scan_ssid=1
+                key_mgmt=WPA-EAP
+                pairwise=CCMP
+                group=CCMP TKIP
+                eap=TTLS
+                ca_cert=/etc/wpa_supplicant/ca.pem
+                identity="epidose@aueb.gr"
+                altsubject_match="DNS:eduroam.servers.aueb.gr"
+                phase2="auth=PAP"
+                password="{{ eduroam_network_psk }}"
+                anonymous_identity=""
+          }'
 
     - name: enable SPIO
       tags: production, development
