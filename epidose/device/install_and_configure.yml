@@ -119,8 +119,51 @@
        wpa-roam /etc/wpa_supplicant/wpa_supplicant.conf
        EOF
 
-    # Setup Eduroam network configurations
-    - name: setup Eduroam
+    - name: create certifcate file for Eduroam
+      tags: production, development
+      become: yes
+      become_user: root
+      file:
+        path: /etc/wpa_supplicant/ca.pem
+        state: touch
+
+    - name: fill certificate file for Eduroam
+      tags: production, development
+      become: yes
+      become_user: root
+      blockinfile: |
+        dest=/etc/wpa_supplicant/ca.pem
+        content='-----BEGIN CERTIFICATE-----
+                MIIEzjCCA7agAwIBAgIJANDIrtAyV/2IMA0GCSqGSIb3DQEBCwUAMIGFMQswCQYD
+                VQQGEwJHUjE0MDIGA1UEChMrQXRoZW5zIFVuaXZlcnNpdHkgb2YgRWNvbm9taWNz
+                IGFuZCBCdXNpbmVzczFAMD4GA1UEAxM3QXRoZW5zIFVuaXZlcnNpdHkgb2YgRWNv
+                bm9taWNzIGFuZCBCdXNpbmVzcyBFQVAgQ0EgMjAxNzAeFw0xNzAxMTkxMDExNTha
+                Fw0yNzAxMTcxMDExNThaMIGFMQswCQYDVQQGEwJHUjE0MDIGA1UEChMrQXRoZW5z
+                IFVuaXZlcnNpdHkgb2YgRWNvbm9taWNzIGFuZCBCdXNpbmVzczFAMD4GA1UEAxM3
+                QXRoZW5zIFVuaXZlcnNpdHkgb2YgRWNvbm9taWNzIGFuZCBCdXNpbmVzcyBFQVAg
+                Q0EgMjAxNzCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAKC2v+pDCkpW
+                DGMKdB39vlKiZD3rwgYhL70KUXmQuhQBiMuez9fd4IjmAxHUgtLKFyS3ywKMhUb5
+                Np4vhnbyD09S/nohVxaoAmL5iOEf3VVhtVzBQn1ES1NQ8RUCF2a4WL4yUzrHEpFu
+                qsHHVQOEX0DfqoCXATYs/H4ciiSdJ16I8CUYT/nKygWSOKcRMjPMjBd+Kd5X7YTM
+                oTGcSQSHbLVclbw0AlBxS4tC7RqV5Vnbj6GHC4o5aVWJLQwZyrJOUZt0e8j1GSlg
+                r6+shBvtmogx+MvNSPIy3cv9mOXPmVVANHKPnLD/1L74EXMFYdytwvPl+thhIskW
+                hiwTsF0Sz68CAwEAAaOCAT0wggE5MB0GA1UdDgQWBBTlG6AaDCr5SSIsApYxskuU
+                Pe+mEjCBugYDVR0jBIGyMIGvgBTlG6AaDCr5SSIsApYxskuUPe+mEqGBi6SBiDCB
+                hTELMAkGA1UEBhMCR1IxNDAyBgNVBAoTK0F0aGVucyBVbml2ZXJzaXR5IG9mIEVj
+                b25vbWljcyBhbmQgQnVzaW5lc3MxQDA+BgNVBAMTN0F0aGVucyBVbml2ZXJzaXR5
+                IG9mIEVjb25vbWljcyBhbmQgQnVzaW5lc3MgRUFQIENBIDIwMTeCCQDQyK7QMlf9
+                iDBKBgNVHR8EQzBBMD+gPaA7hjlodHRwOi8vb3JzLWNybC5lZHVyb2FtLmdyL2Ny
+                bC9lZHVyb2FtLnNlcnZlcnMuYXVlYi5nci5jcmwwDwYDVR0TAQH/BAUwAwEB/zAN
+                BgkqhkiG9w0BAQsFAAOCAQEAJ1+VdkQKScMm+A+y1ot54Jf6BGQigNqAXtkt6s6i
+                MDCJvMB/b2Gsx/QHk8fPfM2T8rZG4LxGmoYqhWgz+uf8YpbIs6+V6yGhQxalFnOp
+                gq1+IGtd1N+vYsZz7V4OJKQ/vE8YY4QtM/40vaY6qwOjMU4MIikMDuWWhoBTsUk3
+                4XYbCb/QAYo9Ws44OjG7wO4+By4mYlK0sFiJwfg7o77dUyx7I2fMJ9ilz+W/w8FX
+                tv7kPn84y+5qBAQ40VazM1PYC1UJH6xMV6NGtj7FP7oxu6ZynuMhKFc2kw5KvQwk
+                jOuCF+8OnXwP3mBfkqPcwLN10A5Wv/O8PwtNXB/FZUdvFg==
+                -----END CERTIFICATE-----'
+
+    # Setup Eduroam and epidose backup network configurations
+    - name: setup Eduroam and epidose backup networks
       tags: production, development
       become: yes
       become_user: root
@@ -133,12 +176,17 @@
                 pairwise=CCMP
                 group=CCMP TKIP
                 eap=TTLS
-                ca_cert=/etc/wpa_supplicant/ca.pem
+                ca_cert="/etc/wpa_supplicant/ca.pem"
                 identity="epidose@aueb.gr"
                 altsubject_match="DNS:eduroam.servers.aueb.gr"
                 phase2="auth=PAP"
                 password="{{ eduroam_network_psk }}"
                 anonymous_identity=""
+          }
+          
+          network={
+          ssid="epidose"
+          psk="{{ epidose_backup_network_psk }}"
           }'
 
     - name: enable SPIO
