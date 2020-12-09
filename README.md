@@ -495,6 +495,36 @@ arguments.
 
 
 
+### Update server's URL
+To update the server's URL where the epidose device
+fetchs the filters and updates, modify the the URLs
+of the *update_filter*, *upload_seed*, and *wps_scanner*
+daemons from the *epidose/device/supervisord.conf* file.
+After commiting the changes add an update.sh file
+on the previous server link (not the newly add server URL),
+to update the devices.
+An update script to change the server's URL can be as follows.
+
+```sh
+#!/bin/sh
+
+# Go the local repository
+cd /home/epidose/epidose
+
+# Pull the latest changes from the remote production branch
+git pull origin production
+
+# Change pulled files owner and group from root to epidose
+git ls-files | xargs chown epidose:epidose
+
+# Copy the supervisord configs the update daemons server URL
+cp epidose/device/supervisord.conf /etc/supervisor/conf.d/epidose.conf
+
+# Reboot to apply changes
+reboot
+```
+
+
 
 ## Development
 

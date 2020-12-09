@@ -29,4 +29,5 @@ fast-install:
 		epidose/device/update_filter_d.sh \
 		epidose/device/util.sh \
 		epidose/device/wps_scanner_d.sh $(OPT)/bin/
-	supervisorctl restart epidose:*
+	cp epidose/device/supervisord.conf /etc/supervisor/conf.d/epidose.conf
+	systemctl reload supervisor
