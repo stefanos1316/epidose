@@ -136,6 +136,15 @@
                     phase1="peaplabel=0"
                     phase2="auth=MSCHAPV2" }'
 
+    - name: enable SPIO
+      tags: production, development
+      become: yes
+      become_user: root
+      replace:
+        path: /boot/config.txt
+        regexp: '#dtparam=spi=on'
+        replace: 'dtparam=spi=on'
+
     # Delete pi user
     - name: remove pi user
       tags: delete
