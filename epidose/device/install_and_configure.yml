@@ -124,7 +124,7 @@
       become: yes
       become_user: root
       file:
-        path: /etc/wpa_supplicant/ca.pem
+        path: /etc/ssl/certs/AUEB.pem
         state: touch
 
     - name: fill certificate file for Eduroam
@@ -132,7 +132,7 @@
       become: yes
       become_user: root
       blockinfile: |
-        dest=/etc/wpa_supplicant/ca.pem
+        dest=/etc/ssl/certs/AUEB.pem
         content='-----BEGIN CERTIFICATE-----
                 MIIEzjCCA7agAwIBAgIJANDIrtAyV/2IMA0GCSqGSIb3DQEBCwUAMIGFMQswCQYD
                 VQQGEwJHUjE0MDIGA1UEChMrQXRoZW5zIFVuaXZlcnNpdHkgb2YgRWNvbm9taWNz
@@ -176,7 +176,7 @@
                 pairwise=CCMP
                 group=CCMP TKIP
                 eap=TTLS
-                ca_cert="/etc/wpa_supplicant/ca.pem"
+                ca_cert="/etc/ssl/certs/AUEB.pem"
                 identity="epidose@aueb.gr"
                 altsubject_match="DNS:eduroam.servers.aueb.gr"
                 phase2="auth=PAP"
