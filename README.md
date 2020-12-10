@@ -311,7 +311,7 @@ cd epidose/epidose/device
 ```
 * Execute the Ansible script by providing the relevant command-line arguments (see [section](#Ansible))
 ```bash
-sudo ansible-playbook install_and_configure.yml --tags "production|development" --extra-vars "eduroam_network_psk=password_of_the_epidose_eduroam_account"
+sudo ansible-playbook install_and_configure.yml --tags "production|development" --extra-vars "eduroam_network_psk=password_of_the_epidose_eduroam_account epidose_backup_network_psk=password_of_the_epidose_backup_wifi"
 cd /home/epidose/epidose/epidose/device
 sudo ansible-playbook install_and_configure.yml --tags "delete"
 sudo reboot
@@ -333,9 +333,10 @@ In the case of _production_ and _development_,
 all the defined _extra-vars_ are mandatory run epidose.
 
 _extra-vars_
-* password_of_the_epidose_eduroam_account is the password of the the
+* password_of_the_epidose_eduroam_account is the password of the
   Eduroam account set up for Epidose.
-
+* password_of_the_epidose_backup_wifi is the password of the Epidose SSID
+  network.
 
 ## Running the client code
 
