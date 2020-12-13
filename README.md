@@ -314,6 +314,7 @@ cd epidose/epidose/device
 sudo ansible-playbook install_and_configure.yml --tags "production|development" --extra-vars "eduroam_network_psk=password_of_the_epidose_eduroam_account"
 cd /home/epidose/epidose/epidose/device
 sudo ansible-playbook install_and_configure.yml --tags "delete"
+sudo reboot
 ```
 
 * After executing this step, you will be able to login as user `epidose` with
