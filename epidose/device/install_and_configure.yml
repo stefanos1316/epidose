@@ -39,8 +39,15 @@
         group: epidose
         mode: 0700
 
+    - name: define variable for authorized_keys
+      tags: production, development
+      stat:
+        path: /home/epidose/.ssh/authorized_keys
+      register: epidose_ssh
+
     - name: copy authorized_keys to epidose user
       tags: production, development
+      when: not epidose_ssh.stat.exists
       copy:
        src: /home/pi/.ssh/authorized_keys
        dest: /home/epidose/.ssh/authorized_keys
