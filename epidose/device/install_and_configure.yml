@@ -205,6 +205,14 @@
         regexp: '#dtparam=spi=on'
         replace: 'dtparam=spi=on'
 
+    - name: enable serial port
+      tags: production, development
+      become: yes
+      become_user: root
+      blockinfile: |
+        dest=/boot/config.txt
+        content='enable_uart=1'
+
     # Delete pi user
     - name: remove pi user
       tags: delete
