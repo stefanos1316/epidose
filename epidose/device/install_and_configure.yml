@@ -113,18 +113,25 @@
       become_user: root
       shell: cp /home/epidose/epidose/epidose/device/setup/fake-hwclock /sbin
 
+    - name: create wlan0 for wpa-roam  
+      tags: production, development
+      become: yes
+      become_user: root
+      file:
+        path: /etc/network/interfaces.d/wlan0
+        state: touch
+
     # The configurations below are necessary to allow wireless roaming
     - name: enable network roaming
       tags: production, development
       become: yes
       become_user: root
-      shell: |
-       cat > /etc/network/interfaces.d/wlan0 << EOF
-       # The wireless network interface
-       allow-hotplug wlan0
-       iface wlan0 inet manual
-       wpa-roam /etc/wpa_supplicant/wpa_supplicant.conf
-       EOF
+      blockinfile: |
+        dest=/etc/network/interfaces.d/wlan0
+        content='# The wireless network interface
+                allow-hotplug wlan0
+                iface wlan0 inet manual
+                wpa-roam /etc/wpa_supplicant/wpa_supplicant.conf'
 
     - name: create certifcate file for Eduroam
       tags: production, development
