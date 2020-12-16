@@ -373,9 +373,22 @@ sudo venv/bin/gunicorn epidose.back_end.ha_server:app --daemon --pid=/run/ha_ser
 You can then monitor the server's operation with
 `tail -F /var/log/ha_server_error_log` and
 `tail -F /var/log/ha_server_access_log`.
-Note that in a production setting the server process must be configured
-to run behind a hardened and efficient web server, such as
-[NGINX](https://www.nginx.com/).
+
+
+To install the `ha-server` through the Ansible script execute the following steps
+on the machine you like to deploy it.
+The step below will also install and configure an Nginx server
+for the `ha-server`.
+
+```sh
+sudo apt install git ansible
+git clone https://github.com/eellak/epidose
+cd epidose/epidose/back_end
+sudo ansible-playbook deploy.yml --extra-vars "server_name=hostname_of_server"
+```
+
+The *server_name* can be the domain name you have bought (e.g., epidose.ellak.gr)
+After executing the above script, the `ha-server` should be up and running.
 
 
 ## End-to-end operation
