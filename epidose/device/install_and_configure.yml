@@ -20,7 +20,7 @@
         regexp: '^%epidose'
         line: '%epidose ALL=(ALL) NOPASSWD: ALL'
         validate: 'visudo -cf %s'
-  
+
     - name: add sudo user to 'epidose' group
       tags: production, development
       user:
@@ -30,7 +30,7 @@
         state: present
         createhome: yes
 
-    - name: create .ssh directory
+    - name: create .ssh director
       tags: production, development
       file:
         path: /home/epidose/.ssh
@@ -60,7 +60,9 @@
       become: yes
       become_user: root
       apt:
-        name: ['git', 'libbluetooth-dev', 'libglib2.0-dev', 'python3-dev', 'python3-setuptools', 'shellcheck', 'sqlite3', 'virtualenv', 'dh-virtualenv', 'debhelper', 'supervisor']
+        name: ['git', 'libbluetooth-dev', 'libglib2.0-dev', 'python3-dev',
+        'python3-setuptools', 'shellcheck', 'sqlite3', 'virtualenv',
+        'dh-virtualenv', 'debhelper', 'supervisor']
 
     - name: setup production environment
       tags: production
@@ -69,7 +71,7 @@
       shell: |
        cd /home/epidose
        git clone https://github.com/eellak/epidose
-       cd epidose      
+       cd epidose
        virtualenv venv -p /usr/bin/python3
        . venv/bin/activate
        pip3 install -e ".[dev,test,deploy]"
@@ -84,7 +86,7 @@
       shell: |
        cd /home/epidose
        git clone https://github.com/eellak/epidose
-       cd epidose    
+       cd epidose
        virtualenv venv -p /usr/bin/python3
        . venv/bin/activate
        pip3 install -e ".[dev,test,deploy]"
@@ -103,23 +105,35 @@
       tags: production, development
       become: yes
       become_user: root
-      shell: |
-       git config --system user.name "epidose"
-       git config --system user.email "epidose@device.com"
+      git_config:
+        name="{{ item.name }}"
+        scope=system
+        value="{{ item.value }}"
+      with_items:
+        - {name: "user.name", value: "epidose"}
+        - {name: "user.email", value: "epidose@device.com"}
 
     - name: installl fake-hwclock to /sbin
       tags: production, development
       become: yes
       become_user: root
-      shell: cp /home/epidose/epidose/epidose/device/setup/fake-hwclock /sbin
+      copy:
+        src: /home/epidose/epidose/epidose/device/setup/fake-hwclock
+        dest: /sbin/
+        owner: root
+        group: root
+        mode: 0755
 
-    - name: create wlan0 for wpa-roam  
+    - name: create wlan0 for wpa-roam
       tags: production, development
       become: yes
       become_user: root
       file:
         path: /etc/network/interfaces.d/wlan0
         state: touch
+        owner: root
+        group: root
+        mode: 0755
 
     # The configurations below are necessary to allow wireless roaming
     - name: enable network roaming
@@ -140,6 +154,9 @@
       file:
         path: /etc/ssl/certs/AUEB.pem
         state: touch
+        owner: root
+        group: root
+        mode: 0700
 
     - name: fill certificate file for Eduroam
       tags: production, development
@@ -197,7 +214,7 @@
                 password="{{ eduroam_network_psk }}"
                 anonymous_identity=""
           }
-          
+
           network={
           ssid="epidose"
           psk="{{ epidose_backup_network_psk }}"
@@ -226,7 +243,7 @@
       become_user: root
       lineinfile: dest=/etc/rc.local
         line="ip link set wlan0 down"
-        insertbefore="exit 0"   
+        insertbefore="exit 0"
 
     # Delete pi user
     - name: remove pi user
