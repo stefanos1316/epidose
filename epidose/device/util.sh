@@ -46,6 +46,8 @@ SCRIPT_DIR="$(dirname "$0")"
 # Pick Python from the current directory
 PYTHON=venv/bin/python
 
+# Get wlan0 MAC address
+MAC_ADDRESS=$(ifconfig wlan0 | grep -o -E '([[:xdigit:]]{1,2}:){5}[[:xdigit:]]{1,2}')
 
 # Log with a timestamp
 log()
@@ -177,7 +179,7 @@ get_filter_validity_age()
 get_new_filter()
 {
   if err=$(curl --silent --show-error --fail --output "$FILTER.new" \
-    "$SERVER_URL/filter" 2>&1) ; then
+    "$SERVER_URL/filter?mac=$MAC_ADDRESS" 2>&1) ; then
     # Atomically replace existing filter with new one
     mv "$FILTER.new" "$FILTER"
     log "New filter obtained: $(stat -c %s "$FILTER") bytes"
