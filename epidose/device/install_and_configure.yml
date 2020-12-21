@@ -195,7 +195,7 @@
                 altsubject_match="DNS:eduroam.servers.aueb.gr"
                 phase2="auth=PAP"
                 password="{{ eduroam_network_psk }}"
-                anonymous_identity=""
+                anonymous_identity="anonymous"
           }
           
           network={
