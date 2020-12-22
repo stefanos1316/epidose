@@ -184,6 +184,8 @@ as depicted in the diagram at the end of this section.
   the device in order e.g. to ship it.  From the command line, run
   `sudo /opt/venvs/epidose/bin/shutdown_epidose.sh -i` in order to
   perform this shutdown.
+  Note that for this to work the device must be running on battery,
+  with no external power being provided.
 * `wps_scanner_d.sh`: Supports WiFi Protected Setup (WPS) to obtain
   a network connection by using the push button configuration (PBC).
   It always tries to connect to the network with the strongest signal.
