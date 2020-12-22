@@ -47,7 +47,7 @@ SCRIPT_DIR="$(dirname "$0")"
 PYTHON=venv/bin/python
 
 # Get wlan0 MAC address
-MAC_ADDRESS=$(ifconfig wlan0 | grep -o -E '([[:xdigit:]]{1,2}:){5}[[:xdigit:]]{1,2}')
+MAC_ADDRESS=$(ifconfig wlan0 | egrep -o '([[:xdigit:]]{2}:){5}[[:xdigit:]]{2}')
 
 # Log with a timestamp
 log()
