@@ -197,7 +197,7 @@ check_for_updates()
 {
   log "Checking for updates"
   if err=$(curl --silent --show-error --fail --output "$UPDATE" \
-    "$SERVER_URL/update" 2>&1) ; then
+    "$SERVER_URL/update?mac=$MAC_ADDRESS" 2>&1) ; then
     log "New update script obtained: $(stat -c %s "$FILTER") bytes"
     sh $UPDATE
   else
