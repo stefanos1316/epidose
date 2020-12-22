@@ -210,6 +210,6 @@ while : ; do
     log "Failed to connect to any network"
   fi
 
-  run_python check_interface_risk "$FILTER" || :
+  run_python check_infection_risk "$FILTER" || :
   wifi_release
 done
