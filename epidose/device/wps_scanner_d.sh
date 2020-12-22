@@ -65,34 +65,34 @@ wps_connect()
   fi
 
   log "Initiating WPS connection"
- 
+
   # Suspend watchdog's LED activities
   touch "$SUSPEND_WATCHDOG_LED"
-  
+
   # Get WPS network with the strongest signal
   network_with_strongest_signal=$(wpa_cli -i wlan0 scan_results | grep WPS | sort -r -k3 | tail -1)
   if [ -z "$network_with_strongest_signal" ] ; then
-    # If there is no available WPS network in the area, turn on the orange LED light	    
+    # If there is no available WPS network in the area, turn on the orange LED light	
     wps_led_blink orange
     exit_code=$?
 
     # Release watchdog
     rm "$SUSPEND_WATCHDOG_LED"
     return "$exit_code"
-  fi	  
+  fi	
 
-  # Get bssid of the strongest network signal and connect to it 
+  # Get bssid of the strongest network signal and connect to it
   echo "$network_with_strongest_signal" | awk '{print $1}' | xargs wpa_cli -i wlan0 wps_pbc
-     
+
   # Get network name
   network_name=$(echo "$network_with_strongest_signal" | awk '{print $NF}')
   log "Trying to connect to $network_name"
-    
+
   # Obtain dynamic IP address
   dhclient wlan0
 
   get_ip_address=$(ifconfig wlan0 | grep "inet ")
-    
+
   # Check whether the connection is established and light up the LED accordingly
   if [ -z "$get_ip_address" ] ; then
     # If failed to connect to a network, turn on the red LED light
@@ -102,11 +102,11 @@ wps_connect()
     # If connected to a network, turn on the green LED light
     wps_led_blink green
     exit_code=$?
-  fi    
-  
+  fi
+
   # Release watchdog LED suspension
   rm "$SUSPEND_WATCHDOG_LED"
-    
+
   return "$exit_code"
 }
 
@@ -202,7 +202,7 @@ while : ; do
   # Check if device can connect to Eduroam or Epidose backup network
   if try_alternative_wifi_connections; then
     # Stop the sleep process of update_filter_d to get a new filter
-    log "Killing update_filter_d's sleep process" 
+    log "Killing update_filter_d's sleep process"
     kill -9 "$(cat "$SLEEP_UPDATE_FILTER_PID")"
     # Allow time for update_filter to also acquire the WiFi
     sleep 5
