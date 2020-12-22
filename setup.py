@@ -12,7 +12,7 @@ setuptools.setup(
     description="Epidemic dosimeter based on DP3T",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/dspinellis/epidose",
+    url="https://github.com/eellak/epidose",
     packages=setuptools.find_packages(),
     classifiers=[
         "Development Status :: 3 - Alpha",
