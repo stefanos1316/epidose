@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="epidose",
-    version="0.0.1",
+    version="0.0.2",
     author="Diomidis Spinellis,EPFL",
     maintainer="Diomidis Spinellis",
     maintainer_email="dds@aueb.gr",
