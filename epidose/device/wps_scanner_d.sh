@@ -147,7 +147,7 @@ connect_to_saved_network()
   fi
 
   # Get $1 network's id, list_networks checks the /etc/wpa_supplicant/wpa_supplicant.conf file
-  network_id=$(wpa_cli list_networks | awk '$2 ~ /^"$1"$/ {print $1}')
+  network_id=$(wpa_cli list_networks | awk -v network_name="$1" '$2 ~ network_name {print $1}')
   if [ -z "$network_id" ]; then
     log "Network $1 configurations not found"
     return 1
@@ -188,7 +188,7 @@ try_alternative_wifi_connections()
 
   log "Trying to connect with WPS"
   if wps_connect; then
-   return 0
+    return 0
   fi
 
   return 1
@@ -203,7 +203,10 @@ while : ; do
   if try_alternative_wifi_connections; then
     # Stop the sleep process of update_filter_d to get a new filter
     log "Killing update_filter_d's sleep process"
-    kill -9 "$(cat "$SLEEP_UPDATE_FILTER_PID")"
+    # Catch non-zero exitcode to avoid daemon crush
+    if ! kill -9 "$(cat "$SLEEP_UPDATE_FILTER_PID")"; then
+      log "Button pressed too early; updates may still running"
+    fi
     # Allow time for update_filter to also acquire the WiFi
     sleep 5
   else
