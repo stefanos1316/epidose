@@ -181,7 +181,9 @@ as depicted in the diagram at the end of this section.
   contacts (at that point, or when the test results are out),
   providing a single-use key to authorize and authenticate the upload.
 * `shutdown_epidose`: Performs a graceful shutdown and removes power from
-  the device in order e.g. to ship it.
+  the device in order e.g. to ship it.  From the command line, run
+  `sudo /opt/venvs/epidose/bin/shutdown_epidose.sh -i` in order to
+  perform this shutdown.
 * `wps_scanner_d.sh`: Supports WiFi Protected Setup (WPS) to obtain
   a network connection by using the push button configuration (PBC).
   It always tries to connect to the network with the strongest signal.
