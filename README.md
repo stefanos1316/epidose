@@ -310,15 +310,26 @@ git clone https://github.com/eellak/epidose
 cd epidose/epidose/device
 ```
 * Execute the Ansible script by providing the relevant command-line arguments (see [section](#Ansible))
-```bash
+```sh
 sudo ansible-playbook install_and_configure.yml --tags "production|development" --extra-vars "eduroam_network_psk=password_of_the_epidose_eduroam_account epidose_backup_network_psk=password_of_the_epidose_backup_wifi"
 cd /home/epidose/epidose/epidose/device
 sudo ansible-playbook install_and_configure.yml --tags "delete"
-sudo reboot
 ```
 
 * After executing this step, you will be able to login as user `epidose` with
 the private key you established previously for logging in as user `pi`.
+Moreover, after executing the _delete_ tag of Ansible,
+the default `pi` user will be deleted.
+Therefore, you can only login as user `epidose`.
+
+* To apply the configuration changes, you will need to reboot the device.
+First, you need to `exit` from the current `ssh` connection,
+then login as user `epidose`, and execute the reboot command in the terminal.
+```sh
+exit
+ssh epidose@IP_address_of_your_device
+sudo reboot
+```
 
 ### Ansible Tags And Extra Variables
 
