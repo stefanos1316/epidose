@@ -195,25 +195,23 @@ as depicted in the diagram at the end of this section.
 ![Software architecture](https://raw.githubusercontent.com/dspinellis/epidose/master/doc/software-architecture.svg?sanitize=1)
 
 ## Hardware
-Instructions for building a prototype device can be found [here](https://www.spinellis.gr/blog/20200520/).
+The device consists of three boards: a Rasberry Pi Zero-W, sandwiched between
+a [controller board](https://github.com/eellak/epidose/blob/master/epidose/hardware/circuit/controller.pdf)
+that controls power and provides a real-time clock, and an
+[interface board](https://github.com/eellak/epidose/blob/master/epidose/hardware/circuit/interface.pdf)
+that provides the LEDs, switches, and the USB charging port.
 
-### Parts list
-* Raspberry Pi Zero-W
-* Li-on rechargeable battery 3.7V / 3400mAh
-* Enclosure (3D printed)
-* Battery holder
-* [Li-on battery charging module with step up boost converter](https://grobotronics.com/lithium-charging-module-with-step-up-boost-converter-3.7v-9v-5v-2a.html)
-* I/O PCB
-  * RGB LED
-  * 330 Ohm current-limiting resistor
-  * Physical interlock micro-switch
-  * 40-pin connector (receptacle for prototyping, soldered for mass production)
-* 8GB microSDHC Class 10 card
-* 5V USB charger
+Instructions for building an earlier, prototype, device can be found [here](https://www.spinellis.gr/blog/20200520/).
 
-### Circuit diagram
 
-![Circuit diagram](https://raw.githubusercontent.com/dspinellis/epidose/master/hardware/circuit/circuit.svg?sanitize=1)
+### Controller board
+
+![controller](https://raw.githubusercontent.com/eellak/epidose/master/epidose/hardware/circuit/controller.png)
+
+
+### Interface board
+
+![interface](https://raw.githubusercontent.com/eellak/epidose/master/epidose/hardware/circuit/interface.png)
 
 
 ## What is implemented
