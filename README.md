@@ -553,6 +553,36 @@ reboot
 ```
 
 
+An update script for testing installed images before deployment
+could be as follows.
+Through this, (given an appropriate WiFi setup)
+testing a new board involves observing the heartbeat
+and then observing the green steady LED.
+After the green LED turns off the device is also turned and is ready
+for shipping.
+
+```sh
+#!/bin/sh
+
+touch /tmp/pre-update
+
+# No updates on development boards
+test -f /tmp/development && exit
+
+# Allow watchdog to run for 5'
+sleep 300
+
+# Turn on green LED for 5'
+cd /home/epidose/epidose
+supervisorctl stop epidose:watchdog
+venv/bin/python epidose/device/device_io.py -G
+sleep 301
+
+touch /tmp/post-update
+
+# Turn off device
+/opt/venvs/epidose/bin/shutdown_epidose.sh -i
+```
 
 ## Development
 
@@ -569,7 +599,7 @@ formatted:
 pre-commit install
 ```
 
-Finally, it's a good idea to clone and regularly integrate the DP-3T
+It's a good idea to clone and regularly integrate the DP-3T
 reference implementation, which is the base of this code's cryptographic
 protocol.
 
@@ -577,6 +607,16 @@ protocol.
 git remote add dp3t https://github.com/DP-3T/reference_implementation.git
 git fetch
 ```
+
+To login into a production device over WiFi, follow these steps.
+* Press the WPS button to establish a WiFi connection
+* ssh to the device as epidose with the private key provided to you
+* Terminate the daemon that will turn off the WiFi connection by running
+  `sudo supervisorctl stop epidose:update_filter`
+* Terminate the pre-deployment update script, if this is running, to avoid
+  having the machine turned off.
+* Run `touch /tmp/development` to sidestep remote updates
+  (unless you want to test them).
 
 ### Running the tests
 
