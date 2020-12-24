@@ -77,9 +77,9 @@ of comparable phone apps.
 
 ## Overview and Use
 
-<img width="300" alt="Epidemic dosimeter concept drawing" src="https://raw.githubusercontent.com/dspinellis/epidose/master/hardware/concept.svg">
+<img width="300" alt="Epidemic dosimeter concept drawing" src="https://raw.githubusercontent.com/eellak/epidose/master/epidose/hardware/concept.svg">
 
-<img width="300" alt="Epidemic dosimeter prototype box" src="https://raw.githubusercontent.com/dspinellis/epidose/master/hardware/box.svg">
+<img width="300" alt="Epidemic dosimeter prototype box" src="https://raw.githubusercontent.com/eellak/epidose/master/epidose/hardware/box.svg">
 
 The epidemic dosimeter is a lightweight (<100g), low-cost
 (mass-produced <40€), self-contained device, housed in a package with a
@@ -192,7 +192,7 @@ as depicted in the diagram at the end of this section.
   If a network connection is obtained, it kills the sleep process of
   update_filter_d.sh to force it to update the cuckoo filter.
 
-![Software architecture](https://raw.githubusercontent.com/dspinellis/epidose/master/doc/software-architecture.svg?sanitize=1)
+![Software architecture](https://raw.githubusercontent.com/eellak/epidose/master/doc/software-architecture.svg?sanitize=1)
 
 ## Hardware
 The device consists of three boards: a Rasberry Pi Zero-W, sandwiched between
