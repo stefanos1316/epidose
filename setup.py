@@ -34,7 +34,7 @@ setuptools.setup(
         "spidev",
     ],
     extras_require={
-        "dev": ["black", "flake8", "pre-commit"],
+        "dev": ["black", "flake8", "pre-commit", "ansible-lint"],
         "test": ["pytest", "testfixtures"],
         "deploy": ["make-deb"],
     },
