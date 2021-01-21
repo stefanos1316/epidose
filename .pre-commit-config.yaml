@@ -14,3 +14,8 @@ repos:
     hooks:
     - id: shellcheck
       exclude: ^epidose/device/setup/
+-   repo: https://github.com/ansible/ansible-lint.git
+    rev: master
+    hooks:
+      - id: ansible-lint
+        entry: venv/bin/ansible-lint epidose/device/install_and_configure.yml epidose/back_end/deploy.yml

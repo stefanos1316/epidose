@@ -52,7 +52,7 @@
         state: touch
         owner: root
         group: root
-        mode: 644
+        mode: 0644
 
     - name: add ha-server configurations
       become: yes

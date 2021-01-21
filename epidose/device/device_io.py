@@ -42,7 +42,8 @@ ORANGE_LED_PORT = 4
 GREEN_LED_PORT = 26
 
 # Touched on every LED status change
-LED_CHANGE = Path("/var/lib/epidose/led-change")
+# Located on /run, which is mounted on tmpfs, to avoid SSD wear
+LED_CHANGE = Path("/run/epidose-led-change")
 
 
 def setup():

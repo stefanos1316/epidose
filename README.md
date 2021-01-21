@@ -77,9 +77,9 @@ of comparable phone apps.
 
 ## Overview and Use
 
-<img width="300" alt="Epidemic dosimeter concept drawing" src="https://raw.githubusercontent.com/dspinellis/epidose/master/hardware/concept.svg">
+<img width="300" alt="Epidemic dosimeter concept drawing" src="https://raw.githubusercontent.com/eellak/epidose/master/epidose/hardware/concept.svg">
 
-<img width="300" alt="Epidemic dosimeter prototype box" src="https://raw.githubusercontent.com/dspinellis/epidose/master/hardware/box.svg">
+<img width="300" alt="Epidemic dosimeter prototype box" src="https://raw.githubusercontent.com/eellak/epidose/master/epidose/hardware/box.svg">
 
 The epidemic dosimeter is a lightweight (<100g), low-cost
 (mass-produced <40€), self-contained device, housed in a package with a
@@ -192,28 +192,26 @@ as depicted in the diagram at the end of this section.
   If a network connection is obtained, it kills the sleep process of
   update_filter_d.sh to force it to update the cuckoo filter.
 
-![Software architecture](https://raw.githubusercontent.com/dspinellis/epidose/master/doc/software-architecture.svg?sanitize=1)
+![Software architecture](https://raw.githubusercontent.com/eellak/epidose/master/doc/software-architecture.svg?sanitize=1)
 
 ## Hardware
-Instructions for building a prototype device can be found [here](https://www.spinellis.gr/blog/20200520/).
+The device consists of three boards: a Rasberry Pi Zero-W, sandwiched between
+a [controller board](https://github.com/eellak/epidose/blob/master/epidose/hardware/circuit/controller.pdf)
+that controls power and provides a real-time clock, and an
+[interface board](https://github.com/eellak/epidose/blob/master/epidose/hardware/circuit/interface.pdf)
+that provides the LEDs, switches, and the USB charging port.
 
-### Parts list
-* Raspberry Pi Zero-W
-* Li-on rechargeable battery 3.7V / 3400mAh
-* Enclosure (3D printed)
-* Battery holder
-* [Li-on battery charging module with step up boost converter](https://grobotronics.com/lithium-charging-module-with-step-up-boost-converter-3.7v-9v-5v-2a.html)
-* I/O PCB
-  * RGB LED
-  * 330 Ohm current-limiting resistor
-  * Physical interlock micro-switch
-  * 40-pin connector (receptacle for prototyping, soldered for mass production)
-* 8GB microSDHC Class 10 card
-* 5V USB charger
+Instructions for building an earlier, prototype, device can be found [here](https://www.spinellis.gr/blog/20200520/).
 
-### Circuit diagram
 
-![Circuit diagram](https://raw.githubusercontent.com/dspinellis/epidose/master/hardware/circuit/circuit.svg?sanitize=1)
+### Controller board
+
+![controller](https://raw.githubusercontent.com/eellak/epidose/master/epidose/hardware/circuit/controller.png)
+
+
+### Interface board
+
+![interface](https://raw.githubusercontent.com/eellak/epidose/master/epidose/hardware/circuit/interface.png)
 
 
 ## What is implemented
@@ -555,6 +553,36 @@ reboot
 ```
 
 
+An update script for testing installed images before deployment
+could be as follows.
+Through this, (given an appropriate WiFi setup)
+testing a new board involves observing the heartbeat
+and then observing the green steady LED.
+After the green LED turns off the device is also turned and is ready
+for shipping.
+
+```sh
+#!/bin/sh
+
+touch /tmp/pre-update
+
+# No updates on development boards
+test -f /tmp/development && exit
+
+# Allow watchdog to run for 5'
+sleep 300
+
+# Turn on green LED for 5'
+cd /home/epidose/epidose
+supervisorctl stop epidose:watchdog
+venv/bin/python epidose/device/device_io.py -G
+sleep 301
+
+touch /tmp/post-update
+
+# Turn off device
+/opt/venvs/epidose/bin/shutdown_epidose.sh -i
+```
 
 ## Development
 
@@ -571,7 +599,7 @@ formatted:
 pre-commit install
 ```
 
-Finally, it's a good idea to clone and regularly integrate the DP-3T
+It's a good idea to clone and regularly integrate the DP-3T
 reference implementation, which is the base of this code's cryptographic
 protocol.
 
@@ -579,6 +607,16 @@ protocol.
 git remote add dp3t https://github.com/DP-3T/reference_implementation.git
 git fetch
 ```
+
+To login into a production device over WiFi, follow these steps.
+* Press the WPS button to establish a WiFi connection
+* ssh to the device as epidose with the private key provided to you
+* Terminate the daemon that will turn off the WiFi connection by running
+  `sudo supervisorctl stop epidose:update_filter`
+* Terminate the pre-deployment update script, if this is running, to avoid
+  having the machine turned off.
+* Run `touch /tmp/development` to sidestep remote updates
+  (unless you want to test them).
 
 ### Running the tests
 
