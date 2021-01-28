@@ -1,0 +1,87 @@
+﻿Assembly,Type,Designators,Descriprion,Manufacturer,Manufacturer Part Number,Supplier 1,Supplier 1 Part Number,Supplier 2,Supplier 2 Part Number,Quantity
+Main Board,PCB Component,"C1,C2,C3,C4,C5",Capacitor 1uF - 0603,AVX,0603YC105KAT4A,Mouser,581-0603YC105KAT4A ,Farnell,3340859,5
+Main Board,PCB Component,"C6,C11,C13,C14,C15,C16,C17",Capacitor 100nF - 0603,Wurth Elektronik,885012206071,Mouser,710-885012206071,Farnell,2495173,7
+Main Board,PCB Component,"C7,C9",Capacitor 10uF - 0805,KEMET,C0805C106K9PACTU,Mouser,80-C0805C106K9P,Farnell,9227814,2
+Main Board,PCB Component,"C8,C10",Capacitor 10pF - 0603,AVX,0603YC100KAT2A,Mouser,581-0603YC100KAT2A,,,2
+Main Board,PCB Component,L1,Inductor 4.2uH,Sumida,CDRH5D18NP-4R1NC,Mouser,851-CDRH5D18NP-4R1NC,,,1
+Main Board,PCB Component,P3,FPC Connector,TE Connectivity,1-2328702-0,Mouser,571-1-2328702-0,Farnell,2946032,1
+Main Board,PCB Component,"R1,R7,R8,R10,R13,R14,R21,R22",Resistor 5K6 - 0603,Bourns,CR0603-JW-562ELF,Mouser,652-CR0603JW-562ELF,Farnell,2333591,8
+Main Board,PCB Component,"R5,R6",Resistor 220K - 0603,Vishay / Dale,CRCW0603220KFKEAC ,Mouser,71-CRCW0603220KFKEAC,,,2
+Main Board,PCB Component,"R15,R16,R17,R18,R19,R20",Resistor 1K - 0603,Vishay / Dale,CRCW06031K00FKEAC,Mouser,71-CRCW06031K00FKEAC,,,6
+Main Board,PCB Component,U1,LDO 3V3,Microchip Technology / Micrel,MIC5365-3.3YD5-TR,Mouser,998-MIC5365-3.3YD5TR,Farnell,2857638RL,1
+Main Board,PCB Component,U2,Battery Charger,Microchip Technology,MCP73831T,Mouser,579-MCP73831T-2ACIOT,,,1
+Main Board,PCB Component,U3,Boost Converter 5V,Microchip Technology,MCP1642B-50I/MS,Mouser,579-MCP1642B-50I/MS,Farnell,2920811,1
+Main Board,PCB Component,U4,Microcontroller,STMicroelectronics,STM32L010F4P6,Mouser,511-STM32L010F4P6,Farnell,2980875,1
+Main Board,PCB Component,X1,32.768KHz Crystal,ECS,ECX-.327-CDX-1293,Mouser,520-ECX-.327CDX-1293,,,1
+Main Board,Non-Populated,"R2,R3,R4,C12,U5",,,,,,,,
+IO Board,PCB Component,P2,Micro USB Connector,Molex,105133-0011,Mouser,538-105133-0011,Farnell,2614949,1
+IO Board,PCB Component,"LED1,LED2",RGB LEDs,Cree Inc.,UHD1110-FKA-CL1A13r3q1BBQFMF3,Mouser,941-UHD0FKAC11BQFMF3,Farnell,3218599,2
+IO Board,PCB Component,"PB1,PB2,PB3",Pushbuttons,C&K,PTS645SM43SMTR92LFS,Mouser,611-PTS645SM43SMTR92,Farnell,2320087RL,3
+IO Board,PCB Component,P1,FPC Connector,TE Connectivity,1-2328702-0,Mouser,571-1-2328702-0,Farnell,2946032,1
+,,,,,,,,,,
+,,,,,,,,,,
+,,,,,,,,,,
+,,,,,,,,,,
+,,,,,,,,,,
+,,,,,,,,,,
+,,,,,,,,,,
+,,,,,,,,,,
+,,,,,,,,,,
+,,,,,,,,,,
+,,,,,,,,,,
+,,,,,,,,,,
+,,,,,,,,,,
+,,,,,,,,,,
+,,,,,,,,,,
+,,,,,,,,,,
+,,,,,,,,,,
+,,,,,,,,,,
+,,,,,,,,,,
+,,,,,,,,,,
+,,,,,,,,,,
+,,,,,,,,,,
+,,,,,,,,,,
+,,,,,,,,,,
+,,,,,,,,,,
+,,,,,,,,,,
+,,,,,,,,,,
+,,,,,,,,,,
+,,,,,,,,,,
+,,,,,,,,,,
+,,,,,,,,,,
+,,,,,,,,,,
+,,,,,,,,,,
+,,,,,,,,,,
+,,,,,,,,,,
+,,,,,,,,,,
+,,,,,,,,,,
+,,,,,,,,,,
+,,,,,,,,,,
+,,,,,,,,,,
+,,,,,,,,,,
+,,,,,,,,,,
+,,,,,,,,,,
+,,,,,,,,,,
+,,,,,,,,,,
+,,,,,,,,,,
+,,,,,,,,,,
+,,,,,,,,,,
+,,,,,,,,,,
+,,,,,,,,,,
+,,,,,,,,,,
+,,,,,,,,,,
+,,,,,,,,,,
+,,,,,,,,,,
+,,,,,,,,,,
+,,,,,,,,,,
+,,,,,,,,,,
+,,,,,,,,,,
+,,,,,,,,,,
+,,,,,,,,,,
+,,,,,,,,,,
+,,,,,,,,,,
+,,,,,,,,,,
+,,,,,,,,,,
+,,,,,,,,,,
+,,,,,,,,,,
+,,,,,,,,,,
