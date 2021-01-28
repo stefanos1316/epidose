@@ -677,5 +677,9 @@ Below are links to information directly relevant to this project.
 Unless otherwise noted, this code is licensed under the Apache 2.0 license,
 as found in the LICENSE file.
 
-The code under epidose/device/bdaddr is licensed under the terms of
+The code under `epidose/device/bdaddr` is licensed under the terms of
 the GNU General Public License, as published the Free Software Foundation.
+
+Some files under `epidose/hardware/firmware` are copyrighted
+by STMicroelectronics and licensed under the
+[BSD 3-Clause license](https://opensource.org/licenses/BSD-3-Clause).
