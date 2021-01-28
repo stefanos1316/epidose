@@ -196,22 +196,31 @@ as depicted in the diagram at the end of this section.
 
 ## Hardware
 The device consists of three boards: a Rasberry Pi Zero-W, sandwiched between
-a [controller board](https://github.com/eellak/epidose/blob/master/epidose/hardware/circuit/controller.pdf)
+a [controller board](https://github.com/eellak/epidose/blob/master/epidose/hardware/circuit/MainBoard.pdf)
 that controls power and provides a real-time clock, and an
-[interface board](https://github.com/eellak/epidose/blob/master/epidose/hardware/circuit/interface.pdf)
+[interface board](https://github.com/eellak/epidose/blob/master/epidose/hardware/circuit/IOBoard.pdf)
 that provides the LEDs, switches, and the USB charging port.
+
+The repository contains the hardware
+[bill of materials](https://raw.githubusercontent.com/eellak/epidose/master/epidose/hardware/BOM.csv),
+[PCB Gerber files](https://github.com/eellak/epidose/tree/master/epidose/hardware/Gerber),
+[compiled firmware](https://raw.githubusercontent.com/eellak/epidose/master/epidose/hardware/firmware/image.hex),
+and
+[firmware source code](https://github.com/eellak/epidose/tree/master/epidose/hardware/firmware)
+(as an STM32CubeIDE project),
+which can be used for mass-manufacturing the current Epidose device.
 
 Instructions for building an earlier, prototype, device can be found [here](https://www.spinellis.gr/blog/20200520/).
 
 
 ### Controller board
 
-![controller](https://raw.githubusercontent.com/eellak/epidose/master/epidose/hardware/circuit/controller.png)
+![controller](https://raw.githubusercontent.com/eellak/epidose/master/epidose/hardware/circuit/MainBoard.png)
 
 
 ### Interface board
 
-![interface](https://raw.githubusercontent.com/eellak/epidose/master/epidose/hardware/circuit/interface.png)
+![interface](https://raw.githubusercontent.com/eellak/epidose/master/epidose/hardware/circuit/IOBoard.png)
 
 
 ## What is implemented
