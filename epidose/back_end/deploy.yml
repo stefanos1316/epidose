@@ -101,10 +101,10 @@
       become_user: root
       shell: certbot --nginx --non-interactive -d {{ server_name }} --agree-tos --email stefanos1316@gmail.com --email dds@aueb.gr
 
-    - name: add cron entry to renew cert every 12 hours
+    - name: add cron entry to renew cert every 4 days
       become: yes
       become_user: root
       cron:
-        name: update cert every 12 hours
-        minutes: "1, 31"
+        name: update cert every 4 days
+        day: "*/4"
         job: "/usr/bin/certbot renew --quiet && service nginx reload"
